@@ -1,0 +1,316 @@
+Lecciones de aprender un lenguaje funcional
+===========================================
+Esteban Manchado_Velázquez <emanchado@demiurgo.org>
+
+Los lenguajes funcionales son una familia de lenguajes que la mayoría de los
+programadores conoce de oídas, pero desgraciadamente no muchos conocen
+suficientemente bien. Y digo «desgraciadamente» porque, independientemente de
+que por una razón u otra los lenguajes funcionales son muy poco demandados en
+el mercado laboral, aprenderlos nos pueden brindar muchas ideas interesantes,
+patrones, buenas costumbres y lecciones que podemos aplicar a muchos otros
+lenguajes.
+
+Es difícil trazar una línea clara entre los lenguajes funcionales y los
+lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang y Scala como
+lenguajes funcionales más populares actualmente. Muchos lenguajes de
+programación populares tienen algunos rasgos funcionales, como Javascript, Ruby
+y Python. Los lenguajes funcionales (o, en general, de cualquier paradigma al
+que no estemos acostumbrados) nos puede dar ideas que podemos publicar no
+solamente en estos lenguajes que tienen rasgos funcionales, sino
+en casi cualquier lenguaje.
+
+Aprender un lenguaje funcional lo suficiente como para aprender e inspirarse no
+tiene por qué llevar mucho tiempo. Además, disponemos no sólo de internet, sino
+de excelentes libros que están pensados precisamente para programadores que
+vienen de otros lenguajes. El resto de este artículo explora algunas técnicas,
+buenas costumbres e ideas comunes en lenguajes funcionales, que podemos aplicar
+fácilmente en otros lenguajes. Por supuesto, algunas de estas lecciones se
+pueden aprender simplemente por experiencia, y no son necesariamente exclusivas
+de los lenguajes funcionales.
+
+Los lenguajes son diferentes
+----------------------------
+Los lenguajes de programación son como los idiomas humanos en muchos sentidos:
+tienen sintaxis, expresiones comunes, son mejores o peores que otros para
+expresar ciertas ideas, se pueden «hablar» con mayor o menor fluidez e incluso
+se puede decir que sus «hablantes» tienen una cierta «cultura» diferente de los
+«hablantes» de otros lenguajes.
+
+Así, cuando aprendemos un lenguaje nuevo es un error verlo como «una nueva
+sintaxis»: aprender un lenguaje bien nos hace cambiar cómo pensamos y cómo
+resolvemos los problemas. Por ejemplo, digamos que empezamos a aprender Lisp y
+que sólo conocemos lenguajes imperativos «clásicos» como C o Java. Como parte
+de un programa que estamos escribiendo tenemos una función que calcula el valor
+total a pagar por unos artículos, dado el importe de cada artículo, el número
+de artículos, el porcentaje de impuesto, y el límite pasado el cual hay que
+aplicar el impuesto (p.ej.: tenemos 2 artículos a 5 euros cada uno, un
+impuesto del 10% y un límite de 8, el precio final será 11; si el límite es 15,
+el precio final será 10 porque no se aplica el impuesto). Una forma de
+escribirla en Lisp sería la siguiente:
+
+[source,lisp]
+._Mal_ ejemplo de cómo resolverlo en Lisp
+(defun calcularprecioMAL (importe narticulos limite impuestoporciento)
+  (setq preciototal (* importe narticulos))
+  (if (> preciototal limite)
+      (progn
+        (setq impuesto (* preciototal (/ impuestoporciento 100)))
+        (setq preciototal (+ preciototal impuesto))))
+  preciototal)
+
+Sin embargo, si escribimos la función así no aprendemos nada nuevo y mostramos
+nuestro «acento extranjero» al escribir Lisp. Este código no es legible ni para
+programadores de Java ni para programadores de Lisp, y además no aprovechamos
+las ventajas del lenguaje, mientras que no evitamos sus desventajas.
+Simplemente usamos Lisp como «un mal Java». Compárese el anterior código con el
+siguiente:
+
+[source,lisp]
+.Solución usando Lisp de una forma más convencional
+(defun calcularprecio (importe narticulos limite impuestoporciento)
+  (let* ((preciototal (* importe narticulos))
+         (impuesto    (* preciototal (/ impuestoporciento 100))))
+    (if (> preciototal limite)
+      (+ preciototal impuesto)
+      preciototal)))
+
+Este código se parece más a lo que muchos programadores de Lisp esperarían o
+escribirían ellos mismos y a la mayoría de las personas que sepan un poco de
+Lisp les parecerá más legible y fácil de mantener. La razón es que estamos
+jugando con las fortalezas de Lisp, en vez de intentar adaptar el lenguaje a
+nuestros conocimientos previos.
+
+Concretamente, el segundo ejemplo se aprovecha de dos detalles muy comunes en
+Lisp que no son tan comunes en lenguajes no funcionales:
+
+1. No usar variables, sino «valores con nombre». O, dicho de otra manera,
+evitar asignar más de una vez a cada variable. Esto se puede ver en el bloque
++let*+: las dos «variables» del bloque, +preciototal+ e +impuesto+, nunca
+reciben otros valores. Así, el contenido del bloque +let*+ contiene una lista
+de valores con nombres simbólicos, lo que hace el código más claro y
+mantenible. Para más información ver el apartado «Efectos colaterales» más
+abajo.
+2. La construcción +if+ sigue el patrón funcional de ser una _expresión_ que
+devuelve un valor. En este caso, recibe una condición y dos expresiones: la
+primera se devuelve si la condición es verdadera, y la segunda si la condición
+resulta ser falsa. Funciona de una forma parecida al operador ternario de C y
+Java (+valor = condicion ? valorsiverdadero : valorsifalso+).
+
+Sabiendo esto, y que la última expresión de una función Lisp es el valor
+devuelto por ésta, se puede entender el segundo ejemplo mucho mejor.
+
+
+Pensar en el objetivo, no en el proceso
+---------------------------------------
+Aunque el ejemplo de arriba es bastante simplista, también ilustra que los
+lenguajes funcionales tienden a hacerte pensar más en el objetivo que en el
+proceso. Para algoritmos, generalmente una solución en un lenguaje funcional se
+parece más a la definición matemática. En el primer ejemplo, la implementación
+de la función está basada en el proceso de calcular. En el segundo, en el
+significado de las operaciones.
+
+Si lo pensamos en castellano, el primer ejemplo sería algo así:
+
+[quote]
+Primero multiplicamos el +importe+ por +narticulos+ para calcular el precio
+base, y lo guardamos en +preciototal+. Si éste está por encima del +limite+,
+entonces primero calculamos el +impuesto+ a base de multiplicar el
++preciototal+ por +impuestoporciento+ dividido por 100, y luego guardamos en
++preciototal+ la suma del antiguo +preciototal+ más +impuesto+. El resultado es
+el valor guardado en +preciototal+ al final del proceso.
+
+El segundo ejemplo, en cambio, sería algo así:
+
+[quote]
+Llamamos +preciototal+ a la multiplicación de +importe+ por +narticulos+.
+Llamamos +impuesto+ a la multiplicación de +preciototal+ por
++impuestoporciento+ dividido entre 100. El resultado es la suma de
++preciototal+ e +impuesto+ si +preciototal+ está por encima de +limite+, o
++preciototal+ en caso contrario.
+
+Esto está relacionado con el siguiente apartado, «Diseño de abajo a arriba,
+funciones pequeñas»: para poder pensar en el significado, muchas de las
+operaciones tienen que abstraerse en pequeñas funciones.
+
+TODO: Añadir alguna nota sobre el «val» en Scala.
+
+
+Diseño de abajo a arriba, funciones pequeñas
+--------------------------------------------
+Otra característica común de la programación funcional es intentar acercar el
+lenguaje a la tarea que se intenta resolver. Una de las maneras de hacerlo es
+escribir funciones que, aunque sean pequeñas y simples, escondan detalles de
+implementación que no nos interesen y que suban el nivel de abstracción. La
+lección aquí es que escribir funciones y métodos de una o dos líneas es útil
+_si_ suben el nivel de abstracción. No se trata de «esconder código» para no
+tenerlo a la vista, se trata de hacerse olvidar a uno mismo lo complicada que
+es la tarea que está intentando llevar a cabo.
+
+Como ejemplo un tanto simplista, sigamos con el ejemplo anterior de los precios
+y los artículos. Una de las operaciones que hacemos es calcular un tanto por
+ciento. Si suponemos que es una operación que usaremos más de una vez, podría
+tener sentido abstraer ese cálculo. No nos vamos a ahorrar líneas de código,
+pero esta versión puede requerir menos esfuerzo mental y ser más fácil de leer:
+
+[source,lisp]
+.Solución abstrayendo el cálculo de porcentajes
+----------------------------------
+; En el caso de Lisp, podríamos haber llamado a esta función '%', de modo que
+; la llamada de abajo quedaría '(% impuestoporciento preciototal)'
+(defun porciento (tantoporciento cantidad)
+  (* cantidad (/ tantoporciento 100)))
+
+(defun calcularprecio (importe narticulos limite impuestoporciento)
+  (let* ((preciototal (* importe narticulos))
+         (impuesto    (porciento impuestoporciento preciototal)))
+    (if (> preciototal limite)
+      (+ preciototal impuesto)
+      preciototal)))
+----------------------------------
+
+Calcular un tanto por ciento es trivial, y por escribir la función +porciento+
+no estamos ahorrando líneas de código, pero cada segundo que ahorramos en
+entender trivialidades al leer la fuente es un segundo más que podemos dedicar
+a asuntos más importantes. Y el tiempo que necesitamos para entender código sin
+las abstracciones apropiadas con frecuencia crece exponencialmente, no
+linealmente, al añadir nuevas faltas de abstracción.
+
+Otra ventaja de abstraer funciones de esta manera es que estas funciones
+normalmente son bastante fáciles de probar, porque tienden a tener interfaces
+sencillas y responsabilidades claras. En el caso de lenguajes que tienen una
+consola interactiva (como Lisp, Python, Ruby y otros) es fácil experimentar con
+la función y ver lo que hace, y facilita escribir pruebas unitarias en
+cualquier lenguaje. Especialmente si evitamos los efectos colaterales, como
+veremos en el siguiente apartado.
+
+
+Efectos colaterales
+-------------------
+Los llamados _efectos colaterales_ son uno de los conceptos más importantes de
+la programación funcional, por no decir que el más importante. Es lo que
+diferencia los lenguajes puramente funcionales de los lenguajes funcionales no
+puros. Incluso los programadores de los lenguajes que no son puramente
+funcionales (¡como Lisp!) generalmente intentan evitar efectos colaterales.
+
+Un efecto colateral es cualquier cambio que una función produce fuera del
+ámbito de la función en sí. Por ejemplo, una función que modifique una variable
+que ha recibido como parámetro (es decir, «parámetros de entrada/salida») o que
+modifique variables globales o cualquier otra cosa que no sean variables
+locales a la función está produciendo efectos colaterales.
+
+¿Por qué es tan importante evitar efectos colaterales? De nuevo, como en el
+caso de las pequeñas funciones que suban el nivel de abstracción, evitar un
+solo efecto colateral no es una ventaja muy grande. Sin embargo, evitar efectos
+colaterales como regla general hace que los programas sean más fáciles de
+entender y mantener, y que haya menos sorpresas. La razón es que evitar efectos
+colaterales _garantiza_ que ningún error en la función pueda afectar a nada
+más. Si además no hacemos referencia a nada externo a la función, como
+variables globales, tenemos una garantía extra importantísima: la función es
+independiente del resto del código, lo que significa que ningún fallo del resto
+del programa puede afectar a nuestra función, y que podemos probar la función
+independientemente del resto del código, lo cual no sólo es práctico, sino que
+hace más fácil asegurarse de que cubrimos todos los casos posibles de la
+función con baterías de pruebas.
+
+Veamos un ejemplo de efectos colaterales en Python. El método +sort+,
+desgraciadamente, modifica la lista sobre la que se llama. Esto puede
+producir sorpresas desagradables, como veremos en el primer ejemplo. Digamos
+que estamos escribiendo un programa para gestionar competiciones de carreras y
+escribimos una función +mejortiempo+ que recibe una lista de números y devuelve
+el menor:
+
+[source,python]
+.Sorpresa desagradable debida a un efecto colateral
+----------------------------------
+def mejor_tiempo_MAL(lista):
+  if len(lista) == 0:     
+    return None
+  lista.sort()
+  return lista[0]
+
+tiempos = [5, 9, 4, 6, 10, 8]
+mejor_tiempo_MAL(tiempos)  # Devuelve 4
+print tiempos              # ¡Esto imprime "[4, 5, 6, 8, 9, 10]"!
+----------------------------------
+
+Una forma de resolver este problema es usar la función +sorted+ en vez del
+método +sort+:
+
+[source,python]
+.Mejor implementación, sin efectos colaterales
+----------------------------------
+def mejor_tiempo(lista):
+  if len(lista) == 0:
+    return None
+  return sorted(lista)[0]
+
+tiempos = [5, 9, 4, 6, 10, 8]
+mejor_tiempo(tiempos)  # Devuelve 4
+print tiempos          # Imprime "[5, 9, 4, 6, 10, 8]"
+----------------------------------
+
+En Ruby normalmente se usa la convención de añadir un «!» al final del nombre
+del método si éste produce efectos colaterales. El ejemplo de arriba se podría
+traducir a Ruby de la siguiente manera:
+
+[source,ruby]
+.Efectos colaterales en Ruby
+----------------------------------
+require 'pp'             # Pretty printer
+
+def mejor_tiempo_MAL(lista)
+  if lista.empty?
+    nil
+  else
+    lista.sort!          # «sort!», ¡con efectos colaterales!
+    lista[0]
+  end
+end
+
+tiempos = [5, 9, 4, 6, 10, 8]
+mejor_tiempo_MAL(tiempos)  # Devuelve 4
+pp tiempos                 # Imprime "[4, 5, 6, 8, 9, 10]"
+
+def mejor_tiempo(lista)
+  if lista.empty?
+    nil
+  else
+    lista.sort[0]       # «sort», sin «!»
+  end
+end
+
+tiempos2 = [5, 9, 4, 6, 10, 8]
+mejor_tiempo(tiempos2)  # Devuelve 4
+pp tiempos2             # Imprime "[5, 9, 4, 6, 10, 8]"
+----------------------------------
+
+
+Funciones como parámetros
+-------------------------
+Uso de funciones como any/all/map/grep y paquetes de funciones como valentine.
+
+http://es.wikipedia.org/wiki/Función_de_orden_superior
+
+
+Evaluación perezosa
+-------------------
+¿Mindfuck con Haskell?
+
+[source,haskell]
+.Implemetación de la serie de Fibonacci, en Haskell
+fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
+
+
+[bibliography]
+Bibliografía
+------------
+- [[[onlisp]]] Paul Graham 'On Lisp' Prentice Hall. ISBN 0130305529.
+  http://www.paulgraham.com/onlisp.html
+- [[[landoflisp]]] Conrad Barski 'Land of Lisp' No Starch Press. ISBN
+  978-1-59327-281-4. http://landoflisp.com/
+- [[[learnhaskell]]] Miran Lipovača 'Learn You a Haskell for Great Good!' No
+  Starch Press. ISBN 978-1-59327-283-8. http://learnyouahaskell.com/
+- [[[progscala]]] Dean Wampler and Alex Payne 'Programming Scala' O'Reilly
+  Media.  ISBN 978-0-596-15595-7. http://ofps.oreilly.com/titles/9780596155957/
+- [[[proginscala]]] Martin Odersky, Lex Spoon, and Bill Venners 'Programming in
+  Scala' Artima.  ISBN 9780981531601.  http://www.artima.com/pins1ed/
