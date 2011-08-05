@@ -287,6 +287,85 @@ pp tiempos2             # Imprime "[5, 9, 4, 6, 10, 8]"
 
 Funciones como parámetros
 -------------------------
+Otra de las características comunes de los lenguajes funcionales es tratar a
+las funciones como «ciudadanos de primera clase». Es decir, las funciones son
+valores más o menos normales que se pueden pasar como parámetros, asignar a
+variables y devolver como resultado de la llamada a una función. Las funciones
+que utilizan esta característica, es decir, que manipulan o devuelven
+funciones, reciben el nombre de _funciones de orden superior_.
+Afortunadamente, muchos lenguajes populares tienen este tipo de funciones.
+
+La primera vez que uno se encuentra funciones de orden superior puede pensar
+que sus usos son limitados, pero realmente tienen muchas aplicaciones. Por un
+lado, tenemos las funciones y métodos que traiga el lenguaje de serie, por lo
+general de manejo de listas. Por otro, tenemos la posibilidad de escribir
+nuestras propias funciones y métodos de orden superior, para separar o
+reutilizar código de manera más efectiva.
+
+Veamos un ejemplo de lo primero en Ruby. Algunos de los métodos de la clase
++Array+ reciben una función como parámetro (en Ruby se los llama _bloques_), lo
+que permite escribir código bastante compacto y expresivo:
+
+[source,ruby]
+.Métodos de orden superior en Ruby
+----------------------------------
+# Comprobar si todas las palabras tienen menos de 5 letras
+if palabras.all? {|pal| pal.length < 5 }
+   # ...
+end
+
+# Comprobar si el cliente tiene algún envío pendiente
+if cliente.pedidos.any? {|p| not p.enviado? }
+   # ...
+end
+
+# Obtener los suspensos del alumno
+asignaturas_suspendidas = alumno.asignaturas.find_all {|asig| asig.nota < 5 }
+
+# Dividir los candidatos entre los que saben más de dos idiomas y los demás
+poliglotas, otros = candidatos.partition {|c| c.idiomas.length > 2 }
+
+# Obtener una versión todo en mayúsculas de las palabras de la lista
+gritos = ["hoygan", "kiero", "hanime", "gratix"].map {|p| p.upcase}
+----------------------------------
+
+El código equivalente que habría que escribir para conseguir el mismo resultado
+sin funciones de orden superior es bastante más largo y difícil de leer.
+Además, si quisiéramos hacer operaciones parecidas variando la condición
+(digamos, en una parte del código queremos comprobar si todas las palabras
+tienen menos de cinco letras, y en otra queremos comprobar si todas las
+palabras se componen exclusivamente de letras, sin números u otros caracteres)
+el código empeoraría rápidamente.
+
+Escribir nuestras propias funciones tampoco tiene que ser difícil, ni usarse en
+casos muy especiales. Pueden ser usos tan comunes y sencillos como el siguiente
+ejemplo en Javascript:
+
+[source,javascript]
+.Escribir funciones de orden superior en Javascript
+----------------------------------
+// Queremos poder escribir el siguiente código
+soloConPermiso('lectura', usuario, function() {
+    // ...
+    mostrarDatos();
+    // ...
+});
+
+// La implementación es muy sencilla
+function soloConPermiso(permiso, usuario, f) {
+    if (usuario.tienePermiso(permiso))) {
+        // Sólo llamamos a la función f si los permisos son correctos
+        f();
+    } else {
+        alert("Acceso denegado, necesitas el permiso '" + permiso + "'");
+    }
+}
+----------------------------------
+
+Aunque como hemos visto en este ejemplo Javascript tiene funciones de orden
+superior, los métodos disponibles en Javascript dejan un poco que desear. Una
+de las posibilidades es usar el paquete «Valentine».
+
 Uso de funciones como any/all/map/grep y paquetes de funciones como valentine.
 
 http://es.wikipedia.org/wiki/Función_de_orden_superior
