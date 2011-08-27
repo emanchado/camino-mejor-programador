@@ -12,12 +12,12 @@ lenguajes.
 
 Es difícil trazar una línea clara entre los lenguajes funcionales y los
 lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang y Scala como
-lenguajes funcionales más populares actualmente. Muchos lenguajes de
+los lenguajes funcionales más populares actualmente. Muchos lenguajes de
 programación populares tienen algunos rasgos funcionales, como Javascript, Ruby
 y Python. Los lenguajes funcionales (o, en general, de cualquier paradigma al
 que no estemos acostumbrados) nos puede dar ideas que podemos publicar no
-solamente en estos lenguajes que tienen rasgos funcionales, sino
-en casi cualquier lenguaje.
+solamente en estos lenguajes que tienen rasgos funcionales, sino en casi
+cualquier lenguaje.
 
 Aprender un lenguaje funcional lo suficiente como para aprender e inspirarse no
 tiene por qué llevar mucho tiempo. Además, disponemos no sólo de internet, sino
@@ -132,12 +132,12 @@ explicación de los valores declarados en el bloque +let*+. En muchos casos, y
 siempre que hayamos escogido buenos nombres para esos valores, no hará falta
 leer el bloque +let*+ para entender la función.
 
-Usar «variables» que no cambian una vez les hemos asignado un valor es una
+Usar variables que no cambian una vez les hemos asignado un valor es una
 buena costumbre porque hace más fácil entender de dónde sale cada valor. Por
 esa razón, el lenguaje Scala distingue entre dos tipos de variables: +var+ y
-+val+. El segundo tipo, que es el más usado con diferencia, declara un _valor
-constante_, por lo que el compilador nos asegura que no podemos asignar ningún
-otro valor una vez declarada.
++val+. El segundo tipo, que es el más usado con diferencia, declara una
+variable _inmutable_, por lo que el compilador nos asegura que no podemos
+asignar ningún otro valor una vez declarada.
 
 Esto está relacionado con el siguiente apartado, «Diseño de abajo a arriba,
 funciones pequeñas»: para poder pensar en el significado, muchas de las
@@ -159,7 +159,8 @@ Como ejemplo, sigamos con el caso anterior de los precios y los artículos. Una
 de las operaciones que hacemos es calcular un tanto por ciento. Si suponemos
 que es una operación que usaremos más de una vez, podría tener sentido abstraer
 ese cálculo. No nos vamos a ahorrar líneas de código, pero esta versión puede
-requerir menos esfuerzo mental y ser más fácil de leer:
+requerir menos esfuerzo mental y ser más fácil de leer (imagínese el siguiente
+ejemplo en castellano, tal y como hicimos en el anterior apartado):
 
 [source,lisp]
 .Solución abstrayendo el cálculo de porcentajes
@@ -181,7 +182,7 @@ Calcular un tanto por ciento es trivial, y por escribir la función +porciento+
 no estamos ahorrando líneas de código, pero cada segundo que ahorramos en
 entender trivialidades al leer la fuente es un segundo más que podemos dedicar
 a asuntos más importantes. Y el tiempo que necesitamos para entender código sin
-las abstracciones apropiadas con frecuencia crece exponencialmente, no
+las abstracciones apropiadas, con frecuencia crece exponencialmente, no
 linealmente, al añadir nuevas faltas de abstracción.
 
 Otra ventaja de abstraer funciones de esta manera es que estas funciones
@@ -207,7 +208,7 @@ que ha recibido como parámetro (es decir, «parámetros de entrada/salida») o 
 modifique variables globales o cualquier otra cosa que no sean variables
 locales a la función está produciendo efectos colaterales. Esto incluye
 cualquier tipo de entrada/salida, como leer o escribir ficheros o interactuar
-con la pantalla o los dispositivos de entrada como el teclado o el ratón.
+con la pantalla, el teclado o el ratón.
 
 ¿Por qué es tan importante evitar efectos colaterales? De nuevo, como en el
 caso de las pequeñas funciones que suban el nivel de abstracción, evitar un
@@ -409,11 +410,11 @@ La evaluación perezosa consiste en no hacer cálculos que no sean necesarios.
 Por ejemplo, digamos que escribimos una función que genere recursivamente una
 lista de 10 elementos, y otra función que llame a la primera, pero que sólo use
 el valor del cuarto elemento. Cuando se ejecute la segunda función, Haskell
-ejecutará la primera recursivamente hasta que el cuarto elemento sea calculado.
-Es decir: Haskell no ejecutará, como la mayoría de los lenguajes, la primera
-función hasta que _devuelva_ su valor (una lista de 10 elementos); sólo
-ejecutará la función hasta que se _genere_ el cuarto elemento de la lista, que
-es lo único que necesita para continuar la ejecución del programa principal.
+ejecutará la primera hasta que el cuarto elemento sea calculado.  Es decir:
+Haskell no ejecutará, como la mayoría de los lenguajes, la primera función
+hasta que _devuelva_ su valor (una lista de 10 elementos); sólo ejecutará la
+función hasta que se _genere_ el cuarto elemento de la lista, que es lo único
+que necesita para continuar la ejecución del programa principal.
 
 ¿Cuál es la ventaja de la evaluación perezosa? En la mayoría de los casos,
 eficiencia. En otros casos, legibilidad. Cuando no tenemos que preocuparnos por
@@ -474,6 +475,17 @@ automáticamente a todo el lenguaje. Un posible uso es calcular tablas de
 valores que son lentos de calcular: en algunos casos podríamos cargar una tabla
 precalculada en memoria, pero el coste puede ser prohibitivo si la tabla es
 grande o potencialmente infinita.
+
+
+Conclusión
+----------
+Aprender lenguajes nuevos, especialmente de paradigmas con los que estamos
+menos familiarizados, nos puede enseñar muchas cosas sobre programación en
+general. Este proceso de aprendizaje nos hará mejores programadores, y muchas
+de esas lecciones serán aplicables a todos los lenguajes que conozcamos, no
+sólo a los lenguajes similares al que acabemos de aprender. En particular, los
+lenguajes funcionales son suficientemente accessibles y similares a los
+lenguajes más populares como para enseñarnos muchas lecciones útiles.
 
 
 [bibliography]
