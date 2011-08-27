@@ -1,0 +1,274 @@
+Siete consejos para probar programas
+====================================
+Esteban Manchado_Velázquez <emanchado@demiurgo.org>
+
+La mayoría de los profesionales de la informática coincidirán en que probar es
+una de las tareas fundamentales del desarrollo, pero si ya es díficil aprender
+técnicas de programación, mucho más difícil es aprender técnicas de pruebas,
+tanto manuales como automáticas. Primero, porque desgraciadamente es un
+conocimiento menos extendido. Segundo, porque es aún más abstracto que la
+programación.
+
+Por ello, todos los consejos y la experiencia compartida de los que nos podamos
+aprovechar son especialmente importantes. Los siguientes consejos están
+centrados en escribir pruebas automáticas, pero muchos de ellos se pueden
+aplicar también a las pruebas manuales. Están ordenados según la experiencia
+que requieren para entenderlos bien y aplicarlos: el primer consejo es útil
+incluso para desarrolladores que nunca han escrito pruebas, y los últimos son
+útiles incluso para desarrolladores con años de experiencia.
+
+Como todos los consejos, siempre hay que aplicarlos entendiendo por qué, cómo y
+cuándo son útiles, nunca siguiéndolos ciegamente en todas las situaciones.
+
+
+Dejar las pruebas para el final
+-------------------------------
+Aunque es normal que al acercarse al final de cada ciclo de desarrollo se
+intensifique el esfuerzo de pruebas (especialmente las manuales), es un error
+mayúsculo no haber probado desde el principio del desarrollo. Esto no es un
+simple tópico o una consideración puramente teórica o académica: no probar
+desde el principio del ciclo de desarrollo tiene muchas desventajas.
+
+1. El esfuerzo mental de probar un programa grande es mucho mayor que el
+esfuerzo de probar un programa pequeño. No se sabe por dónde empezar, es
+difícil saber cuándo terminar, y es fácil quedarse con la sensación de que no
+todo está probado correctamente. Si probamos los componentes que vamos creando
+desde el principio, es mucho más fácil saber cómo atacar el problema y hacer
+pruebas más completas.
+
+2. Si probamos mientras escribimos código y sabemos el nivel de calidad de
+éste, será más fácil hacer estimaciones sobre los recursos necesarios para
+terminar el trabajo que quede por hacer. Esto nos dará mucha más flexibilidad
+para renegociar fechas o las características que se tendrán que quedar fuera,
+en vez de pasar al estado de alarma cuando nos demos cuenta, demasiado tarde,
+de que no tenemos tiempo de arreglar los fallos que encontremos los últimos
+días.
+
+3. Cuando hemos «terminado» un proyecto y sólo queda probar, es normal tener la
+tendencia a «no querer ver fallos» o restarles importancia, de que nos inunde
+un falso optimismo que confirme que de verdad hemos terminado y no queda nada
+por hacer. Sobre todo si quedan pocos días hasta la entrega y sentimos que no
+podemos hacer gran cosa, y sólo queremos entregar el resultado y olvidarnos del
+proyecto. Esto ocurre mucho menos si tenemos profesionales exclusivamente
+dedicados a las pruebas, claro.
+
+4. Probar desde el principio significa que estaremos probando durante más
+tiempo, por lo que habremos tenido más tiempo de ver distintos casos que puedan
+ser problemáticos, encontrando más fallos (y las soluciones a éstos, antes de
+que sea demasiado tarde).
+
+5. Todas las pruebas que hagamos pronto ayudarán a aumentar la calidad del
+código, lo que no sólo afecta a la calidad final del producto, sino a lo fácil
+que es escribir y depurar cualquier otro código que dependa del primero. Los
+fallos de interacción entre las dos bases de código serán más fáciles de
+encontrar y, en particular, la fuente de los errores.
+
+6. Si desde el principio escribimos pruebas automáticas, nos obligaremos a
+nosotros mismos a escribir APIs más limpias. Generalmente, código más fácil de
+probar es código más desacoplado, más limpio y más estable. Indudablemente, una
+de las ventajas de escribir pruebas automáticas es que ayudan a mantener un
+diseño de mayor calidad. Pero si no probamos desde el principio, perdemos esta
+ventaja.
+
+7. Al no probar desde el principio, desarrollaremos código que no es
+especialmente fácil de probar, y cuando más tarde empecemos a adaptar el código
+para que lo sea, más esfuerzo costará. Una vez hayamos escrito una gran
+cantidad de código sin tener en cuenta si es fácil de probar o no, la tentación
+de dejar muchas partes sin pruebas será irresistible. Y, por supuesto, si no
+hacemos el esfuerzo de adaptar el código en ese momento, entraremos en un
+círculo vicioso.
+
+Como tarde o temprano se tendrá que probar el resultado del trabajo, mejor
+empezar temprano porque es menos costoso (en tiempo y esfuerzo mental) y los
+resultados son mejores. Escribir código sin probar es simplemente irresponsable
+y una falta de respeto con respecto a los usuarios del producto _y_ el resto de
+los miembros del equipo, especialmente los que tengan que mantener el código
+después y cualquier otro miembro del equipo que use directa o indirectamente el código sin probar.
+
+
+Ser demasiado específico en las comprobaciones
+----------------------------------------------
+Esto es un problema bastante común, sobre todo cuando se empiezan a hacer
+pruebas. Las pruebas automáticas son, de alguna manera, una descripción de lo
+que se espera que el programa haga. Una especificación en código, por así
+decir. Como tal, sólo debe describir el comportamiento que esperamos que no
+cambie. Si somos demasiado específicos o exigentes en las comprobaciones de
+nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código, sino también que podamos hacer ciertos cambios en él.
+
+Por ejemplo, digamos que estamos escribiendo una aplicación de tareas
+pendientes muy sencilla. La clase que representa una lista de tareas se llama
+BrownList, y podría tener una pinta así en Ruby:
+
+[source,ruby]
+.Ejemplo de implementación de la clase +BrownList+
+----------------------------------
+class BrownList
+  def initialize(db)
+    # ...
+  end
+
+  def add_brown(title)
+    # Insertamos en una base de datos, devolvemos un id
+  end
+
+  def mark_brown_done(id)
+    # Marcamos el id dado como hecho
+  end
+
+  def pending_browns
+    # Devolvemos una lista de las tareas pendientes
+  end
+end
+
+# Se usa así
+bl = BrownList.new(db_handle)
+id = bl.add_brown("Tarea pendiente")
+bl.mark_brown_done(id)
+lista_tareas_pendientes = bl.pending_browns
+----------------------------------
+
+Ahora, para probar que el método +add_brown+ funciona, puede que se nos ocurra
+conectarnos a la base de datos y comprobar si tiene la fila correcta. En la
+gran mayoría de los casos esto es un error. Para entender por qué, hay que
+darse cuenta de que las pruebas definen _qué_ significa que el código funcione.
+Así, si las pruebas usan detalles de la implementación, se estará definiendo de
+manera implícita que el programa sólo «funciona bien» si mantiene los mismos
+detalles de implementación. Lo cual es, naturalmente, un error, porque no
+permite que el código evolucione.
+
+[source,ruby]
+._Mal_ ejemplo de prueba del método +add_brown+ de +BrownList+
+----------------------------------
+class TestBrownList < Test::Unit::TestCase
+  def setup
+    # Recreamos la base de datos de pruebas para que esté vacía
+  end
+
+  def test_add_brown_simple_____MAL
+    db_handle = ...
+    bl = BrownList.new(db_handle)
+    bl.add_brown("Tarea de prueba")
+
+    count = db_handle.execute("SELECT COUNT(*) FROM browns")
+    assert_equal 1, count
+  end
+end
+----------------------------------
+
+En este ejemplo concreto, hay muchos casos en los que esta prueba fallaría, a
+pesar de que el código podría estar funcionando perfectamente:
+
+* El nombre de la tabla donde guardamos las tareas cambia
+* Añadimos la característica multiusuario, por lo que podría haber más tareas
+  en esa tabla de las que queremos contar
+* Decidimos que vamos a usar una base de datos no-SQL, por lo que la manera de
+  contar cambiaría
+* Añadimos un paso intermedio de algún tipo, de tal manera que las tareas no se
+  crearían inicialmente en la base de datos, sino en algo como memcached, y
+  unos segundos después irían a la base de datos
+
+Las pruebas no deben limitarnos cuando reorganizamos código o cambiamos
+detalles de implementación. De hecho, una de las ventajas de tener pruebas
+automáticas es que cuando reorganicemos código, sabremos si estamos haciendo
+algo mal porque las pruebas fallarán. Si no estamos seguros de que cuando una
+prueba falla es porque hay un problema en el código, nuestras pruebas no nos
+están ayudando. Al menos, no todo lo que deberían.
+
+Lo que queremos comprobar en la prueba es, realmente, si hay una nueva tarea
+añadida. Una manera de probarlo es usar el método +pending_browns+.  Uno podría pensar que no es una buena idea porque, si hay un error en +add_brown+ y otro en
++pending_browns+ que se cancelen mutuamente, las pruebas pasarán igualmente. Eso es
+verdad, pero en la mayoría de los casos _no importa_, porque desde el punto de
+vista del usuario de la clase, ésta se comporta como debería. Cuando
+descubramos el fallo, lo podemos arreglar no sólo sin tener que cambiar las
+pruebas o el código que llama a +BrownList+, sino sin que haya habido ningún
+cambio en el comportamiento de +BrownList+ desde el punto de vista de los
+usuarios.
+
+[source,ruby]
+.Mejor ejemplo de prueba del método +add_brown+ de +BrownList+
+----------------------------------
+class TestBrownList < Test::Unit::TestCase
+  def setup
+    # Recreamos la base de datos de pruebas para que esté vacía
+  end
+
+  def test_add_brown_simple
+    db_handle = ...
+    bl = BrownList.new(db_handle)
+    bl.add_brown("Tarea de prueba")
+
+    assert_equal 1, bl.pending_browns.length
+  end
+end
+----------------------------------
+
+Para terminar de ilustrar este consejo, imaginemos ahora que escribimos una
+interfaz web para nuestra aplicación de tareas pendientes. Si queremos
+comprobar que la interfaz web funciona correctamente, una (mala) idea que puede
+pasarnos por la cabeza es comparar el HTML de la página con el HTML que
+esperamos.  Si comparamos el HTML completo (o una captura de pantalla),
+nuestras pruebas serán muy, muy frágiles. Por ejemplo, nuestras pruebas
+fallarán cuando hagamos cualquiera de estos cambios:
+
+* Cambiar el id de algún elemento o el nombre de alguna clase CSS
+* Cambiar un elemento de sitio o intercambiar la posición de dos opciones en un
+  menú 
+* Añadir una nueva opción o información extra
+* Corregir una falta de ortografía o redactar un texto de forma diferente
+
+Si nuestras pruebas comparan la salida HTML exacta, implícitamente estamos
+definiendo nuestra aplicación no como una aplicación web con ciertas
+características, sino como una aplicación que genera ciertas cadenas de HTML.
+Ya que al usuario no le importa el HTML generado, sino que la aplicación
+funcione, podemos ver que este enfoque no es el más apropiado.
+
+Una forma mucho mejor de probar una aplicación web es _buscar_ las partes
+interesantes. Por ejemplo, comprobar que el título de la nueva tarea aparece en
+el contenido de la página justo después de crearla. O comprobar que ya no está
+ahí después de borrarla. O comprobar que, al renombrar una tarea, el título
+antiguo ya no aparece, pero sí el nuevo. Sin embargo, hacer esas comprobaciones
+directamente puede ser tedioso y puede añadir algo de fragilidad a nuestras
+pruebas, por lo que lo mejor es desacoplar los detalles del HTML generado de
+las comprobaciones que queremos hacer. Una de las técnicas para conseguir esto
+se conoce como _PageObjects_, pero explorar _PageObjects_ va mucho más allá del
+objetivo de este artículo.
+
+Como resumen de este consejo, podemos decir que las _pruebas no sólo deben
+fallar cuando hay algún problema, sino que también deben pasar mientras no haya
+ninguno_.
+
+
+No ejecutarlos con frecuencia
+-----------------------------
+Y en una máquina «neutral», como con integración continua.
+
+
+No controlar el entorno
+-----------------------
+Incluyendo no rehacer los datos.
+
+
+Reusar datos de prueba
+----------------------
+Pos-eso.
+
+
+No construir herramientas/infraestructura
+-----------------------------------------
+Como la programación, debería ser fácil.
+
+
+Depender de muchos servicios externos
+-------------------------------------
+Excepto en pruebas de integración.
+
+
+[bibliography]
+Bibliografía
+------------
+- [[[pseudocode]]] Esteban Manchado Velázquez 'From pseudo-code to code'
+  http://hcoder.org/2010/08/10/from-pseudo-code-to-code/
+- [[[testing123]]] Esteban Manchado Velázquez 'Software automated testing 123'
+  http://www.demiurgo.org/charlas/testing-123/
+
+- AÑADIR ALGÚN ENLACE A PAGEOBJECTS

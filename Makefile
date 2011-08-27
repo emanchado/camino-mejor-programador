@@ -1,4 +1,4 @@
-all: funcionales.html
+all: funcionales.html consejospruebas.html
 
-funcionales.html: funcionales.asciidoc
+%.html: %.asciidoc
 	asciidoc $<
