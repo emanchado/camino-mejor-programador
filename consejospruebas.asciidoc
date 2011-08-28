@@ -1,5 +1,5 @@
-Siete consejos para probar programas
-====================================
+Siete problemas al probar programas
+===================================
 Esteban Manchado_Velázquez <emanchado@demiurgo.org>
 
 La mayoría de los profesionales de la informática coincidirán en que probar es
@@ -10,15 +10,15 @@ conocimiento menos extendido. Segundo, porque es aún más abstracto que la
 programación.
 
 Por ello, todos los consejos y la experiencia compartida de los que nos podamos
-aprovechar son especialmente importantes. Los siguientes consejos están
-centrados en escribir pruebas automáticas, pero muchos de ellos se pueden
-aplicar también a las pruebas manuales. Están ordenados según la experiencia
-que requieren para entenderlos bien y aplicarlos: el primer consejo es útil
-incluso para desarrolladores que nunca han escrito pruebas, y los últimos son
-útiles incluso para desarrolladores con años de experiencia.
+aprovechar son especialmente importantes. Los siguientes problemas están
+centrados en las pruebas automáticas, pero muchos de ellos ocurren también al
+hacer pruebas manuales. Están ordenados por experiencia: el primer consejo es
+principalmente para desarrolladores que nunca han escrito pruebas, y los
+últimos los cometen incluso desarrolladores con años de experiencia.
 
-Como todos los consejos, siempre hay que aplicarlos entendiendo por qué, cómo y
-cuándo son útiles, nunca siguiéndolos ciegamente en todas las situaciones.
+Como todo, hay que aplicar las soluciones propuestas entendiendo por qué, cómo
+y cuándo son aplicables y útiles, nunca siguiéndolas ciegamente en todas las
+situaciones.
 
 
 Dejar las pruebas para el final
@@ -27,7 +27,8 @@ Aunque es normal que al acercarse al final de cada ciclo de desarrollo se
 intensifique el esfuerzo de pruebas (especialmente las manuales), es un error
 mayúsculo no haber probado desde el principio del desarrollo. Esto no es un
 simple tópico o una consideración puramente teórica o académica: no probar
-desde el principio del ciclo de desarrollo tiene muchas desventajas.
+desde el principio del ciclo de desarrollo tiene muchas desventajas. Por
+ejemplo:
 
 1. El esfuerzo mental de probar un programa grande es mucho mayor que el
 esfuerzo de probar un programa pequeño. No se sabe por dónde empezar, es
@@ -38,18 +39,17 @@ pruebas más completas.
 
 2. Si probamos mientras escribimos código y sabemos el nivel de calidad de
 éste, será más fácil hacer estimaciones sobre los recursos necesarios para
-terminar el trabajo que quede por hacer. Esto nos dará mucha más flexibilidad
-para renegociar fechas o las características que se tendrán que quedar fuera,
-en vez de pasar al estado de alarma cuando nos demos cuenta, demasiado tarde,
-de que no tenemos tiempo de arreglar los fallos que encontremos los últimos
-días.
+terminar el resto del trabajo. Esto nos dará mucha más flexibilidad para
+renegociar fechas o las características que se tendrán que quedar fuera, en vez
+de pasar al estado de alarma cuando nos demos cuenta, demasiado tarde, de que
+no tenemos tiempo de arreglar los fallos que encontremos los últimos días.
 
 3. Cuando hemos «terminado» un proyecto y sólo queda probar, es normal tener la
-tendencia a «no querer ver fallos» o restarles importancia, de que nos inunde
+tendencia a «no querer ver fallos» o restarles importancia, a que nos inunde
 un falso optimismo que confirme que de verdad hemos terminado y no queda nada
 por hacer. Sobre todo si quedan pocos días hasta la entrega y sentimos que no
 podemos hacer gran cosa, y sólo queremos entregar el resultado y olvidarnos del
-proyecto. Esto ocurre mucho menos si tenemos profesionales exclusivamente
+proyecto. Esto ocurre mucho menos si tenemos a profesionales exclusivamente
 dedicados a las pruebas, claro.
 
 4. Probar desde el principio significa que estaremos probando durante más
@@ -81,9 +81,10 @@ círculo vicioso.
 Como tarde o temprano se tendrá que probar el resultado del trabajo, mejor
 empezar temprano porque es menos costoso (en tiempo y esfuerzo mental) y los
 resultados son mejores. Escribir código sin probar es simplemente irresponsable
-y una falta de respeto con respecto a los usuarios del producto _y_ el resto de
+y una falta de respeto con respecto a los usuarios del producto _y_ al resto de
 los miembros del equipo, especialmente los que tengan que mantener el código
-después y cualquier otro miembro del equipo que use directa o indirectamente el código sin probar.
+después y cualquier miembro del equipo que use directa o indirectamente el
+código sin probar.
 
 
 Ser demasiado específico en las comprobaciones
@@ -93,7 +94,8 @@ pruebas. Las pruebas automáticas son, de alguna manera, una descripción de lo
 que se espera que el programa haga. Una especificación en código, por así
 decir. Como tal, sólo debe describir el comportamiento que esperamos que no
 cambie. Si somos demasiado específicos o exigentes en las comprobaciones de
-nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código, sino también que podamos hacer ciertos cambios en él.
+nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código,
+sino también que podamos hacer ciertos cambios en él.
 
 Por ejemplo, digamos que estamos escribiendo una aplicación de tareas
 pendientes muy sencilla. La clase que representa una lista de tareas se llama
@@ -175,10 +177,11 @@ prueba falla es porque hay un problema en el código, nuestras pruebas no nos
 están ayudando. Al menos, no todo lo que deberían.
 
 Lo que queremos comprobar en la prueba es, realmente, si hay una nueva tarea
-añadida. Una manera de probarlo es usar el método +pending_browns+.  Uno podría pensar que no es una buena idea porque, si hay un error en +add_brown+ y otro en
-+pending_browns+ que se cancelen mutuamente, las pruebas pasarán igualmente. Eso es
-verdad, pero en la mayoría de los casos _no importa_, porque desde el punto de
-vista del usuario de la clase, ésta se comporta como debería. Cuando
+añadida. Una manera de probarlo es usar el método +pending_browns+.  Uno podría
+pensar que no es una buena idea porque, si hay un error en +add_brown+ y otro
+en +pending_browns+ que se cancelen mutuamente, las pruebas pasarán igualmente.
+Eso es verdad, pero en la mayoría de los casos _no importa_, porque desde el
+punto de vista del usuario de la clase, ésta se comporta como debería. Cuando
 descubramos el fallo, lo podemos arreglar no sólo sin tener que cambiar las
 pruebas o el código que llama a +BrownList+, sino sin que haya habido ningún
 cambio en el comportamiento de +BrownList+ desde el punto de vista de los
@@ -240,12 +243,101 @@ ninguno_.
 
 No ejecutarlos con frecuencia
 -----------------------------
-Y en una máquina «neutral», como con integración continua.
+Las pruebas no son un añadido al código, son parte integrante de éste.
+Asimismo, ejecutarlas es parte del ciclo normal de desarrollo. Si no las
+ejecutamos con frecuencia, no van a ser tan efectivas. Primero, porque cuando
+haya fallos, es probable que sea más de uno. En ese caso, será más difícil
+encontrar la razón (¿es un solo error el que provoca todos los fallos en las
+pruebas? ¿uno por cada prueba?) y arreglar los problemas. Segundo, porque si
+hemos hecho muchos cambios desde la última vez que ejecutamos las pruebas,
+tendremos más código que revisar en buscar del problema.
+
+Ejecutar las pruebas con frecuencia (idealmente, después de cada cambio que
+hacemos) hace que sea muy fácil encontrar la causa del error, porque lo único
+que puede haber sido la causa de los fallos son los cambios desde la última vez
+que las ejecutamos. Si ejecutamos las pruebas antes de mandar nuestros cambios
+al control de versiones, y vemos que una de las pruebas falla, será suficiente
+ejecutar +git diff+ (o +svn diff+ o similar) para ver qué cambios deben de
+haber producido el problema. Además, cuanto más alta sea la frecuencia con la
+que ejecutemos las pruebas, más seguros estaremos de que el código funciona
+correctamente. En la medida de lo posible, en el mundo de la programación es
+mejor evitar la fé: trabajaremos más tranquilos y con más confianza si podemos
+demostrar que el código funciona en los casos cubiertos por las pruebas.
+
+El último punto importante de este consejo es utilizar integración continua.
+Aunque la integración continua es más que eso, la idea base es tener una
+máquina «neutral» que ejecute las pruebas automáticas que tengamos, _cada vez
+que alguien manda un cambio al control de versiones_. Las ventajas son muchas:
+
+* Incluso si alguien se olvida de ejecutar las pruebas antes de enviar los
+  cambios, tenemos garantizado que las pruebas se ejecutarán.
+* Si alguien se olvida de añadir un fichero al control de versiones, ese
+  fichero no aparecerá en la máquina de integración continua, por lo que las
+  pruebas fallarán y nos daremos cuenta del error.
+* Los resultados de las pruebas en la máquina de integración continua son más
+  fiables, porque tiene la misma configuración que las máquinas de producción.
+  Por ejemplo, si un programador escribe una nueva prueba que depende de un
+  nuevo módulo o de un cambio de configuración que sólo existe en la máquina de
+  ese programador, la prueba pasará en esa máquina, pero fallará en integración
+  continua. Este fallo nos avisará del problema antes de que el proyecto pase a
+  producción.
+* Como tenemos los resultados de las pruebas para cada cambio que se haya
+  hecho, y ejecutados en la misma máquina, podemos saber qué cambio exacto
+  produjo el problema, lo que hace mucho más fácil arreglarlo.
 
 
 No controlar el entorno
 -----------------------
-Incluyendo no rehacer los datos.
+Otro problema bastante común es escribir pruebas sin controlar el entorno en el
+que se ejecutan. En parte esta (mala) costumbre viene de la creencia de que las
+pruebas tienen que adaptarse a diferentes circunstancias y ser robustas como
+los programas que escribimos. Esto es un malentendido.
+
+Volvamos al ejemplo anterior de la aplicación de tareas pendientes. Cuando
+escribimos las pruebas, los pasos _no_ fueron:
+
+1. Obtener el número de tareas actuales, llamarlo _n_
+2. Añadir una tarea
+3. Comprobar que el número de tareas actuales es _n_ + 1
+
+Los pasos fueron:
+
+1. Dejar la base de datos en un estado conocido (en este caso, vacía)
+2. Añadir una tarea
+3. Comprobar que el número de tareas es _exactamente_ 1
+
+Esta diferencia es fundamental. Uno podría pensar que la primera prueba es
+mejor porque «funciona en más casos». Sin embargo, esto es un error por las
+siguientes razones:
+
+* Requiere más esfuerzo mental al escribir y mantener las pruebas, porque
+  tenemos que pensar en los casos posibles.
+* Las pruebas serán menos flexibles, porque no podremos probar qué ocurre en
+  casos específicos (p.ej. cuando hay exactamente 20 tareas, cuando hay más de
+  100 tareas, etc.).
+* Si no controlamos y rehacemos el entorno de ejecución de las pruebas, unas
+  pruebas dependerán, potencialmente, de otras. Lo que significa que el
+  comportamiento de unas pruebas puede cambiar el resultado de otras. En el
+  caso ideal, que es el caso común (aunque no siempre se puede alcanzar), las
+  pruebas se pueden ejecutar una a una independientemente y tienen exactamente
+  el mismo resultado.
+* No siempre darán el mismo resultado, incluso cuando las ejecutemos por sí
+  solas. Por ejemplo, digamos que hay un fallo en +add_brown+ que sólo aparece
+  cuando hay más de 20 tareas. En ese caso, si nunca borramos la base de datos,
+  nuestras pruebas fallarán... cuando las hayamos ejecutado suficientes veces.
+  Y si las dejamos así, y hay otro fallo que sólo aparece cuando no haya
+  ninguna tarea, las pruebas nunca nos avisarán del segundo fallo.
+
+Si queremos probar ciertos casos de datos iniciales, es más claro y más fiable
+probar esos casos expresamente y por separado. Tendremos la ventaja de que
+estará claro al leer las pruebas qué casos cubrimos, y ejecutar las pruebas
+_una sola vez_ nos hará estar seguros de que _todos_ los casos que nos
+interesan funcionan perfectamente. Como regla general, cualquier incertidumbre
+sobre la ejecución o resultados de las pruebas debe ser eliminada.
+
+Podemos terminar este consejo con una reflexión: _las pruebas no son mejores
+porque pasen con más frecuencia, sino porque demuestren que un mayor
+número de casos interesantes funcionan exactamente como queremos_.
 
 
 Reusar datos de prueba
@@ -271,4 +363,5 @@ Bibliografía
 - [[[testing123]]] Esteban Manchado Velázquez 'Software automated testing 123'
   http://www.demiurgo.org/charlas/testing-123/
 
-- AÑADIR ALGÚN ENLACE A PAGEOBJECTS
+- AÑADIR ENLACE A PAGEOBJECTS
+- AÑADIR ENLACE AL ARTÍCULO SOBRE INTEGRACIÓN CONTINUA
