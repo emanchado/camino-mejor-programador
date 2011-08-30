@@ -241,7 +241,7 @@ fallar cuando hay algún problema, sino que también deben pasar mientras no hay
 ninguno_.
 
 
-No ejecutarlos con frecuencia
+No ejecutarlas con frecuencia
 -----------------------------
 Las pruebas no son un añadido al código, son parte integrante de éste.
 Asimismo, ejecutarlas es parte del ciclo normal de desarrollo. Si no las
@@ -310,8 +310,8 @@ Esta diferencia es fundamental. Uno podría pensar que la primera prueba es
 mejor porque «funciona en más casos». Sin embargo, esto es un error por las
 siguientes razones:
 
-* Requiere más esfuerzo mental al escribir y mantener las pruebas, porque
-  tenemos que pensar en los casos posibles.
+* Escribir código robusto requiere mucho más esfuerzo mental, especialmente a
+  medida que crecen las posibilidades.
 * Las pruebas serán menos flexibles, porque no podremos probar qué ocurre en
   casos específicos (p.ej. cuando hay exactamente 20 tareas, cuando hay más de
   100 tareas, etc.).
@@ -333,7 +333,8 @@ probar esos casos expresamente y por separado. Tendremos la ventaja de que
 estará claro al leer las pruebas qué casos cubrimos, y ejecutar las pruebas
 _una sola vez_ nos hará estar seguros de que _todos_ los casos que nos
 interesan funcionan perfectamente. Como regla general, cualquier incertidumbre
-sobre la ejecución o resultados de las pruebas debe ser eliminada.
+o indeterminismo sobre la ejecución o resultados de las pruebas que podamos
+eliminar, debe ser eliminado.
 
 Podemos terminar este consejo con una reflexión: _las pruebas no son mejores
 porque pasen con más frecuencia, sino porque demuestren que un mayor
@@ -342,12 +343,49 @@ número de casos interesantes funcionan exactamente como queremos_.
 
 Reusar datos de prueba
 ----------------------
-Pos-eso.
+Cuando empezamos a escribir pruebas, algo que necesitamos con frecuencia son
+datos iniciales o de prueba (en inglés, _fixtures_). Si no tenemos una forma
+fácil de crear esos bancos de datos para cada prueba, tendremos la tentación de
+tener un solo conjunto de datos iniciales que usaremos en _todas_ las pruebas
+de nuestro proyecto. Aunque en algunos casos pueda resultar práctico compartir
+datos de prueba entre _algunas_ pruebas, esta costumbre puede traer un problema
+consigo, descrito a continuación.
+
+A medida que escribimos nuevas pruebas, éstas necesitarán más datos de prueba.
+Si añadimos los nuevos datos de prueba a nuestro único conjunto de datos
+iniciales, cabe la posibilidad de que algunas de las pruebas antiguas empiece a
+fallar (p.ej. una prueba que cuente el número de tareas en el sistema). Si ante
+este problema reescribimos la prueba antigua para que pase con el nuevo
+conjunto de datos, estaremos haciendo más complejas nuestras pruebas, y además
+corremos el riesgo de cometer un fallo al reescribir la prueba antigua. Por no
+mencionar que si seguimos por este camino, puede que en la siguiente ocasión
+tengamos que reescribir dos pruebas. O cinco. O veinte.
+
+Todo esto está relacionado, en cierta manera, con el problema descrito en el
+anterior apartado: pensar en las pruebas como pensamos en el resto del código.
+En este caso, pensar que tener más datos de prueba es mejor, porque se parecerá
+más al caso real en el que se ejecutará el programa. Sin embargo, en la mayoría
+de los casos esto no representa ninguna ventaja, pero sí que tiene al menos una
+desventaja: cuando alguna prueba falle y tengamos que investigar por qué,
+será más difícil encontrar el problema real cuantos más datos haya. Si podemos
+escribir nuestras pruebas teniendo un solo objeto de prueba, o incluso ninguno,
+mejor que mejor.
 
 
 No construir herramientas/infraestructura
 -----------------------------------------
-Como la programación, debería ser fácil.
+El apartado sobre ejecutar las pruebas con frecuencia ya mencionaba que las
+pruebas son parte integrante del código. Aunque no funciona exactamente de la
+misma manera ni tienen las mismas propiedades, sí que se tiene que mantener con
+el mismo cuidado y esfuerzo con el que mantenemos el resto del código.
+
+En este caso, el hincapié está en que tenemos que escribir infraestructura y
+herramientas para hacer nuestro trabajo más fácil. Las pruebas no son una
+necesidad molesta a la que tenemos que dedicar el menor tiempo posible: son
+parte integrante del proyecto, y como tal un ciudadano de primera clase que se
+merece tiempo de diseño y de creación de herramientas.
+
+Veamos un ejemplo: ...
 
 
 Depender de muchos servicios externos
