@@ -372,25 +372,72 @@ escribir nuestras pruebas teniendo un solo objeto de prueba, o incluso ninguno,
 mejor que mejor.
 
 
-No construir herramientas/infraestructura
------------------------------------------
+Pensar que es difícil probar y no hacer nada por evitarlo
+---------------------------------------------------------
 El apartado sobre ejecutar las pruebas con frecuencia ya mencionaba que las
 pruebas son parte integrante del código. Aunque no funciona exactamente de la
 misma manera ni tienen las mismas propiedades, sí que se tiene que mantener con
 el mismo cuidado y esfuerzo con el que mantenemos el resto del código.
 
-En este caso, el hincapié está en que tenemos que escribir infraestructura y
-herramientas para hacer nuestro trabajo más fácil. Las pruebas no son una
-necesidad molesta a la que tenemos que dedicar el menor tiempo posible: son
-parte integrante del proyecto, y como tal un ciudadano de primera clase que se
-merece tiempo de diseño y de creación de herramientas.
+Este apartado hace hincapié en que tenemos que hacer lo posible para facilitar
+la escritura de pruebas. Éstas no son una necesidad molesta a la que tenemos
+que dedicar el menor tiempo posible: son parte integrante del proyecto, y como
+tal un ciudadano de primera clase que se merece la misma dedicación que el
+resto del código.
 
-Veamos un ejemplo: ...
+Nuestro código de prueba debe ser legible, conciso y fácil de escribir. Si
+cuesta escribir pruebas, ya sea en tiempo, esfuerzo mental o líneas de código,
+debemos hacer algo para mejorar la situación. Reorganizar código, escribir
+métodos de conveniencia o cualquier otra cosa que nos ayude. Desgraciadamente,
+muchos desarrolladores piensan que es normal que sea costoso escribir pruebas,
+y esto hace que el equipo escriba menos pruebas, y de peor calidad.  Este
+problema se extiende a todas las tareas relacionadas con probar nuestro código,
+no sólo mantener el código de pruebas automáticas. Digamos que escribimos un
+programa cliente-servidor. Si cada vez que encontramos un problema no somos
+capaces de depurarlo, o de estar seguros de si está de verdad arreglado o no
+porque no tenemos una forma fácil de probar el cliente o el servidor por
+separado, tenemos un problema. Una de las varias soluciones posibles es tener
+un cliente de prueba con el que podamos enviar al servidor cualquier petición
+que se nos ocurra, y un servidor de prueba con el que podamos enviar al cliente
+cualquier respuesta que se nos ocurra. Herramientas para capturar _fácilmente_
+el tráfico entre cliente y servidor también pueden ahorrarnos mucho tiempo a la
+larga.
+
+Al fin y al cabo, estamos hablando de la calidad de nuestro trabajo, no en un
+sentido abstracto o teórico, sino en el sentido más pragmático desde el punto
+de vista del usuario. Si no podemos comprobar que nuestro programa se comporta
+debidamente, los usuarios seguramente comprobarán que el programa _no_ se
+comporta debidamente.
 
 
 Depender de muchos servicios externos
 -------------------------------------
-Excepto en pruebas de integración.
+El último consejo es el más avanzado, y es el consejo con el que hay que tener
+más cuidado al aplicarlo. La tendencia natural al crear entornos de prueba es
+replicar algo lo más parecido posible al entorno real, usando las mismas bases
+de datos, los mismos servidores y la misma configuración. Aunque esto tiene
+sentido y es _necesario_ en pruebas de aceptación y pruebas de integración (las
+pruebas más completas que hacemos, que determinan si todo funciona desde el
+punto de vista del usuario), puede ser bastante contraproducente en pruebas
+unitarias y similares, en las que sólo queremos probar componentes
+relativamente pequeños.
+
+Depender de servicios externos como una base de datos, un servidor web, una
+cola de tareas, etc. hace que las pruebas sean más frágiles, porque aumentan
+las posibilidades de que fallen por una mala configuración, en vez de porque
+hemos encontrado un problema en el código. Como en la mayoría de los tipos de
+pruebas, como las unitarias, sólo queremos probar que cierto componente
+concreto funciona correctamente, no hace falta que lo integremos con el resto
+de los componentes. En muchos casos, podemos reemplazar esos componentes con
+versiones «de pega» que se comporten como nos haga falta para cada prueba.
+
+Volvamos, de nuevo, al ejemplo de la aplicación de las tareas:
+
+CÓDIGO DE PRUEBA INICIAL (QUIZÁS EL MISMO DE ARRIBA)
+CÓDIGO DE PRUEBA CON MOCKS O ALGO ASÍ
+(O QUIZÁS NO, PORQUE A LO MEJOR ES LA ÚNICA FORMA DE PROBAR ESO)
+(QUIZÁS EXPLICAR QUE SE PUEDE USAR SQLITE, AUNQUE PODRÍA SER DIFERENTE)
+(QUIZÁS PONER EL EJEMPLO DE SCALA OPERA LINK)
 
 
 [bibliography]
@@ -403,3 +450,4 @@ Bibliografía
 
 - AÑADIR ENLACE A PAGEOBJECTS
 - AÑADIR ENLACE AL ARTÍCULO SOBRE INTEGRACIÓN CONTINUA
+- AÑADIR ENLACE A PYDOUBLES ??
