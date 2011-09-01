@@ -372,8 +372,8 @@ escribir nuestras pruebas teniendo un solo objeto de prueba, o incluso ninguno,
 mejor que mejor.
 
 
-Pensar que es difícil probar y no hacer nada por evitarlo
----------------------------------------------------------
+No facilitar el proceso de pruebas
+----------------------------------
 El apartado sobre ejecutar las pruebas con frecuencia ya mencionaba que las
 pruebas son parte integrante del código. Aunque no funciona exactamente de la
 misma manera ni tienen las mismas propiedades, sí que se tiene que mantener con
@@ -381,27 +381,102 @@ el mismo cuidado y esfuerzo con el que mantenemos el resto del código.
 
 Este apartado hace hincapié en que tenemos que hacer lo posible para facilitar
 la escritura de pruebas. Éstas no son una necesidad molesta a la que tenemos
-que dedicar el menor tiempo posible: son parte integrante del proyecto, y como
-tal un ciudadano de primera clase que se merece la misma dedicación que el
-resto del código.
+que dedicar el menor tiempo posible: como parte integrante se merece la misma
+dedicación que el resto del código. Así, nuestro código de prueba debe ser
+legible, conciso y fácil de escribir. Si cuesta escribir pruebas, ya sea en
+tiempo, esfuerzo mental o líneas de código, tenemos un problema que debemos
+resolver, ya sea reorganizando código, escribiendo métodos de conveniencia o
+con cualquier otra técnica que nos ayude. Desgraciadamente, muchos
+desarrolladores piensan que es normal que sea costoso escribir pruebas, y no
+hacen nada por mejorar la situación. En última instancia, esto hace que el
+equipo escriba menos pruebas, y de peor calidad.
 
-Nuestro código de prueba debe ser legible, conciso y fácil de escribir. Si
-cuesta escribir pruebas, ya sea en tiempo, esfuerzo mental o líneas de código,
-debemos hacer algo para mejorar la situación. Reorganizar código, escribir
-métodos de conveniencia o cualquier otra cosa que nos ayude. Desgraciadamente,
-muchos desarrolladores piensan que es normal que sea costoso escribir pruebas,
-y esto hace que el equipo escriba menos pruebas, y de peor calidad.  Este
-problema se extiende a todas las tareas relacionadas con probar nuestro código,
-no sólo mantener el código de pruebas automáticas. Digamos que escribimos un
-programa cliente-servidor. Si cada vez que encontramos un problema no somos
-capaces de depurarlo, o de estar seguros de si está de verdad arreglado o no
-porque no tenemos una forma fácil de probar el cliente o el servidor por
-separado, tenemos un problema. Una de las varias soluciones posibles es tener
-un cliente de prueba con el que podamos enviar al servidor cualquier petición
-que se nos ocurra, y un servidor de prueba con el que podamos enviar al cliente
-cualquier respuesta que se nos ocurra. Herramientas para capturar _fácilmente_
-el tráfico entre cliente y servidor también pueden ahorrarnos mucho tiempo a la
-larga.
+Veamos un caso concreto. Digamos que queremos probar la interfaz web de nuestra
+aplicación de tareas pendientes. Una de las primeras pruebas que escribiríamos
+aseguraría que crear una tarea simple funciona. Una primera implementación
+podría quedar así.
+
+[source,python]
+.Ejemplo de prueba funcional difícil de escribir
+----------------------------------
+class TestBrownListDashboard_______MAL(unittest.TestCase):
+
+    def setUp(self):
+        # Rehacemos la base de datos y creamos el navegador en self.driver
+
+    def testAddBrownSimple______MAL(self):
+        self.driver.get('/')
+        self.driver.findElementById("username").send_keys("usuario")
+        self.driver.findElementById("password").send_keys("contraseña")
+        self.driver.findElementById("login").click()
+
+        new_brown_title = "My title"
+        self.driver.findElementById("new_brown").send_keys(new_brown_title)
+        self.driver.findElementById("create_brown").click()
+        title_tag = self.driver.findElementByTagName('task-1-title')
+        self.assertEqual(title_tag.text, new_brown_title)
+----------------------------------
+
+Aunque aisladamente, este código es relativamente fácil de leer y entender, tiene varios problemas:
+
+* No es todo lo compacto que podría ser
+* Contiene código que sabemos que se duplicará en otras pruebas
+* No contiene abstracciones, por lo que cuando haya cambios en la aplicación
+  (digamos, el id de "username" o "password" cambia), tendremos que buscar
+  dónde nos referimos a éstos para actualizar el código
+* No está escrito usando el lenguaje del dominio de la aplicación, sino usando
+  el lenguaje de automatización de un navegador, por lo que es más difícil de
+  leer y mantener
+
+Una alternativa mucho mejor sería la siguiente:
+
+[source,python]
+.Ejemplo de prueba funcional más fácil de escribir
+----------------------------------
+class TestBrownListDashboard(BrownFunctionalTestCase):
+
+    def testAddBrownSimple(self):
+        self.assertLogin("usuario", "contraseña")
+
+        new_brown_title = "My title"
+        self.createBrown(new_brown_title)
+        self.assertBrownExists(new_brown_title)
+----------------------------------
+
+Las mejoras de la segunda versión son las siguientes:
+
+* +TestBrownListDashboard+ ahora hereda de una nueva clase,
+  +BrownFunctionalTestCase+, que será una clase base para todas nuestras clases
+  de prueba. Aquí añadiremos todos los métodos comunes y de conveniencia que
+  sean comunes a diferentes partes de las pruebas de nuestra aplicación.
+* Como tenemos una clase base, ya no necesitamos escribir el método +setUp+
+  porque la clase base ya crea la base de datos e inicializa el navegador de
+  prueba por nosotros.
+* Para abrir sesión, simplemente llamamos a un nuevo método +assertLogin+. No
+  sólo es mucho más compacto y legible, sino que si alguna vez cambian los
+  detalles de cómo iniciamos sesión, podemos simplemente cambiar la
+  implementación de este método.
+* Crear una nueva tarea es tan fácil como llamar a un nuevo método
+  +createBrown+, y comprobar que está ahí se lleva a cabo llamando al método
+  +assertBrownExists+. Dependiendo del caso, podríamos incluso haber creado un
+  método +assertCreateBrown+, pero por ahora parece mejor dejar ambas
+  operaciones separadas.
+
+Como se puede ver, una simple reorganización del código (del mismo tipo que
+haríamos con el código principal del programa) puede tener un impacto muy
+grande en la facilidad de mantenimiento de nuestras pruebas.
+
+La necesidad de facilitar la escritura de pruebas se extiende a todas las
+tareas relacionadas con probar nuestro código, no sólo mantener el código de
+pruebas automáticas. Digamos que escribimos un programa cliente-servidor. Si
+cada vez que encontramos un problema no somos capaces de depurarlo, o de
+asegurar si está de verdad arreglado o no porque no tenemos una forma fácil de
+probar el cliente o el servidor por separado, tenemos un problema. Una de las
+varias soluciones posibles es tener un cliente de prueba con el que podamos
+enviar al servidor cualquier petición que se nos ocurra, y un servidor de
+prueba con el que podamos enviar al cliente cualquier respuesta que se nos
+ocurra.  Herramientas para capturar _fácilmente_ el tráfico entre cliente y
+servidor también pueden ahorrarnos mucho tiempo a la larga.
 
 Al fin y al cabo, estamos hablando de la calidad de nuestro trabajo, no en un
 sentido abstracto o teórico, sino en el sentido más pragmático desde el punto
@@ -447,7 +522,8 @@ Bibliografía
   http://hcoder.org/2010/08/10/from-pseudo-code-to-code/
 - [[[testing123]]] Esteban Manchado Velázquez 'Software automated testing 123'
   http://www.demiurgo.org/charlas/testing-123/
+- [[[ci]]] Martin Fowler 'Continuous Integration'
+  http://www.martinfowler.com/articles/continuousIntegration.html
 
 - AÑADIR ENLACE A PAGEOBJECTS
-- AÑADIR ENLACE AL ARTÍCULO SOBRE INTEGRACIÓN CONTINUA
 - AÑADIR ENLACE A PYDOUBLES ??
