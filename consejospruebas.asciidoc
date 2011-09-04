@@ -13,8 +13,8 @@ Por ello, todos los consejos y la experiencia compartida de los que nos podamos
 aprovechar son especialmente importantes. Los siguientes problemas están
 centrados en las pruebas automáticas, pero muchos de ellos ocurren también al
 hacer pruebas manuales. Están ordenados por experiencia: el primer consejo es
-principalmente para desarrolladores que nunca han escrito pruebas, y los
-últimos los cometen incluso desarrolladores con años de experiencia.
+principalmente para desarrolladores que nunca han escrito pruebas, y el último
+lo tienen incluso desarrolladores con años de experiencia.
 
 Como todo, hay que aplicar las soluciones propuestas entendiendo por qué, cómo
 y cuándo son aplicables y útiles, nunca siguiéndolas ciegamente en todas las
@@ -26,9 +26,8 @@ Dejar las pruebas para el final
 Aunque es normal que al acercarse al final de cada ciclo de desarrollo se
 intensifique el esfuerzo de pruebas (especialmente las manuales), es un error
 mayúsculo no haber probado desde el principio del desarrollo. Esto no es un
-simple tópico o una consideración puramente teórica o académica: no probar
-desde el principio del ciclo de desarrollo tiene muchas desventajas. Por
-ejemplo:
+tópico o una consideración teórica o académica: no probar desde el principio
+del ciclo de desarrollo tiene muchas desventajas. Por ejemplo:
 
 1. El esfuerzo mental de probar un programa grande es mucho mayor que el
 esfuerzo de probar un programa pequeño. No se sabe por dónde empezar, es
@@ -53,9 +52,9 @@ proyecto. Esto ocurre mucho menos si tenemos a profesionales exclusivamente
 dedicados a las pruebas, claro.
 
 4. Probar desde el principio significa que estaremos probando durante más
-tiempo, por lo que habremos tenido más tiempo de ver distintos casos que puedan
-ser problemáticos, encontrando más fallos (y las soluciones a éstos, antes de
-que sea demasiado tarde).
+tiempo, por lo que habremos encontrado más casos que puedan ser problemáticos,
+y por tanto más fallos (y las soluciones a éstos, antes de que sea demasiado
+tarde).
 
 5. Todas las pruebas que hagamos pronto ayudarán a aumentar la calidad del
 código, lo que no sólo afecta a la calidad final del producto, sino a lo fácil
@@ -95,7 +94,7 @@ que se espera que el programa haga. Una especificación en código, por así
 decir. Como tal, sólo debe describir el comportamiento que esperamos que no
 cambie. Si somos demasiado específicos o exigentes en las comprobaciones de
 nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código,
-sino también que podamos hacer ciertos cambios en él.
+sino también que podamos hacer otro tipo de cambios.
 
 Por ejemplo, digamos que estamos escribiendo una aplicación de tareas
 pendientes muy sencilla. La clase que representa una lista de tareas se llama
@@ -166,7 +165,7 @@ pesar de que el código podría estar funcionando perfectamente:
 * Decidimos que vamos a usar una base de datos no-SQL, por lo que la manera de
   contar cambiaría
 * Añadimos un paso intermedio de algún tipo, de tal manera que las tareas no se
-  crearían inicialmente en la base de datos, sino en algo como memcached, y
+  crearían inicialmente en la base de datos, sino en algo como _memcached_, y
   unos segundos después irían a la base de datos
 
 Las pruebas no deben limitarnos cuando reorganizamos código o cambiamos
@@ -182,7 +181,7 @@ pensar que no es una buena idea porque, si hay un error en +add_brown+ y otro
 en +pending_browns+ que se cancelen mutuamente, las pruebas pasarán igualmente.
 Eso es verdad, pero en la mayoría de los casos _no importa_, porque desde el
 punto de vista del usuario de la clase, ésta se comporta como debería. Cuando
-descubramos el fallo, lo podemos arreglar no sólo sin tener que cambiar las
+descubramos el fallo, lo podremos arreglar no sólo sin tener que cambiar las
 pruebas o el código que llama a +BrownList+, sino sin que haya habido ningún
 cambio en el comportamiento de +BrownList+ desde el punto de vista de los
 usuarios.
@@ -264,10 +263,9 @@ correctamente. En la medida de lo posible, en el mundo de la programación es
 mejor evitar la fé: trabajaremos más tranquilos y con más confianza si podemos
 demostrar que el código funciona en los casos cubiertos por las pruebas.
 
-El último punto importante de este consejo es utilizar integración continua.
-Aunque la integración continua es más que eso, la idea base es tener una
-máquina «neutral» que ejecute las pruebas automáticas que tengamos, _cada vez
-que alguien manda un cambio al control de versiones_. Las ventajas son muchas:
+El último punto importante de este consejo es tener una máquina «neutral» que
+ejecute las pruebas automáticas que tengamos, _cada vez que alguien manda un
+cambio al control de versiones_. Las ventajas son muchas:
 
 * Incluso si alguien se olvida de ejecutar las pruebas antes de enviar los
   cambios, tenemos garantizado que las pruebas se ejecutarán.
@@ -278,12 +276,15 @@ que alguien manda un cambio al control de versiones_. Las ventajas son muchas:
   fiables, porque tiene la misma configuración que las máquinas de producción.
   Por ejemplo, si un programador escribe una nueva prueba que depende de un
   nuevo módulo o de un cambio de configuración que sólo existe en la máquina de
-  ese programador, la prueba pasará en esa máquina, pero fallará en integración
+  ese programador, la prueba pasará en su máquina, pero fallará en integración
   continua. Este fallo nos avisará del problema antes de que el proyecto pase a
   producción.
 * Como tenemos los resultados de las pruebas para cada cambio que se haya
   hecho, y ejecutados en la misma máquina, podemos saber qué cambio exacto
   produjo el problema, lo que hace mucho más fácil arreglarlo.
+
+Véase el artículo de Martin Fowler sobre integración continua para más
+información.
 
 
 No controlar el entorno
@@ -311,16 +312,16 @@ mejor porque «funciona en más casos». Sin embargo, esto es un error por las
 siguientes razones:
 
 * Escribir código robusto requiere mucho más esfuerzo mental, especialmente a
-  medida que crecen las posibilidades.
+  medida que crecen las posibilidades. Como no necesitamos esa robustez, mejor
+  dejarla de lado.
 * Las pruebas serán menos flexibles, porque no podremos probar qué ocurre en
   casos específicos (p.ej. cuando hay exactamente 20 tareas, cuando hay más de
   100 tareas, etc.).
 * Si no controlamos y rehacemos el entorno de ejecución de las pruebas, unas
   pruebas dependerán, potencialmente, de otras. Lo que significa que el
   comportamiento de unas pruebas puede cambiar el resultado de otras. En el
-  caso ideal, que es el caso común (aunque no siempre se puede alcanzar), las
-  pruebas se pueden ejecutar una a una independientemente y tienen exactamente
-  el mismo resultado.
+  caso ideal, que es el caso común, las pruebas se pueden ejecutar una a una
+  independientemente y tienen exactamente el mismo resultado.
 * No siempre darán el mismo resultado, incluso cuando las ejecutemos por sí
   solas. Por ejemplo, digamos que hay un fallo en +add_brown+ que sólo aparece
   cuando hay más de 20 tareas. En ese caso, si nunca borramos la base de datos,
@@ -376,18 +377,18 @@ No facilitar el proceso de pruebas
 ----------------------------------
 El apartado sobre ejecutar las pruebas con frecuencia ya mencionaba que las
 pruebas son parte integrante del código. Aunque no funciona exactamente de la
-misma manera ni tienen las mismas propiedades, sí que se tiene que mantener con
-el mismo cuidado y esfuerzo con el que mantenemos el resto del código.
+misma manera ni tienen las mismas propiedades, sí que se tienen que mantener
+con el mismo cuidado y esfuerzo con el que mantenemos el resto del código.
 
 Este apartado hace hincapié en que tenemos que hacer lo posible para facilitar
 la escritura de pruebas. Éstas no son una necesidad molesta a la que tenemos
-que dedicar el menor tiempo posible: como parte integrante se merece la misma
-dedicación que el resto del código. Así, nuestro código de prueba debe ser
+que dedicar el menor tiempo posible: como parte integrante de nuestro código se
+merece la misma dedicación que el resto. Así, nuestro código de prueba debe ser
 legible, conciso y fácil de escribir. Si cuesta escribir pruebas, ya sea en
 tiempo, esfuerzo mental o líneas de código, tenemos un problema que debemos
 resolver, ya sea reorganizando código, escribiendo métodos de conveniencia o
-con cualquier otra técnica que nos ayude. Desgraciadamente, muchos
-desarrolladores piensan que es normal que sea costoso escribir pruebas, y no
+usando cualquier otra técnica que nos ayude. Desgraciadamente, muchos
+desarrolladores piensan que es normal que sea costoso escribir pruebas y no
 hacen nada por mejorar la situación. En última instancia, esto hace que el
 equipo escriba menos pruebas, y de peor calidad.
 
@@ -447,11 +448,11 @@ Las mejoras de la segunda versión son las siguientes:
 
 * +TestBrownListDashboard+ ahora hereda de una nueva clase,
   +BrownFunctionalTestCase+, que será una clase base para todas nuestras clases
-  de prueba. Aquí añadiremos todos los métodos comunes y de conveniencia que
-  sean comunes a diferentes partes de las pruebas de nuestra aplicación.
+  de prueba. Aquí añadiremos todo el código común a diferentes pruebas de
+  nuestra aplicación.
 * Como tenemos una clase base, ya no necesitamos escribir el método +setUp+
-  porque la clase base ya crea la base de datos e inicializa el navegador de
-  prueba por nosotros.
+  porque ésta ya crea la base de datos e inicializa el navegador de prueba por
+  nosotros.
 * Para abrir sesión, simplemente llamamos a un nuevo método +assertLogin+. No
   sólo es mucho más compacto y legible, sino que si alguna vez cambian los
   detalles de cómo iniciamos sesión, podemos simplemente cambiar la
@@ -482,7 +483,7 @@ Al fin y al cabo, estamos hablando de la calidad de nuestro trabajo, no en un
 sentido abstracto o teórico, sino en el sentido más pragmático desde el punto
 de vista del usuario. Si no podemos comprobar que nuestro programa se comporta
 debidamente, los usuarios seguramente comprobarán que el programa _no_ se
-comporta debidamente.
+comporta debidamente, una vez lo entreguemos.
 
 
 Depender de muchos servicios externos
@@ -492,10 +493,10 @@ más cuidado al aplicarlo. La tendencia natural al crear entornos de prueba es
 replicar algo lo más parecido posible al entorno real, usando las mismas bases
 de datos, los mismos servidores y la misma configuración. Aunque esto tiene
 sentido y es _necesario_ en pruebas de aceptación y pruebas de integración (las
-pruebas más completas que hacemos, que determinan si todo funciona desde el
-punto de vista del usuario), puede ser bastante contraproducente en pruebas
-unitarias y similares, en las que sólo queremos probar componentes
-relativamente pequeños.
+pruebas más completas que hacemos, que determinan si el proyecto, como un todo,
+funciona desde el punto de vista del usuario), puede ser bastante
+contraproducente en pruebas unitarias y similares, en las que sólo queremos
+probar componentes relativamente pequeños.
 
 Depender de servicios externos como una base de datos, un servidor web, una
 cola de tareas, etc. hace que las pruebas sean más frágiles, porque aumentan
@@ -506,13 +507,111 @@ concreto funciona correctamente, no hace falta que lo integremos con el resto
 de los componentes. En muchos casos, podemos reemplazar esos componentes con
 versiones «de pega» que se comporten como nos haga falta para cada prueba.
 
-Volvamos, de nuevo, al ejemplo de la aplicación de las tareas:
+Un ejemplo claro de las ventajas de usar componentes «de pega» es el desarrollo
+y prueba de una aplicación que usa una API, tanto en el caso de que escribimos
+sólo el cliente como en el caso de que escribimos tanto el cliente como el
+servidor. Aunque para hacer pruebas de integración deberíamos usar el servidor
+real, la mayoría de las pruebas tendrán un ámbito más limitado (bien sean
+pruebas unitarias, o pruebas funcionales que sólo cubran el comportamiento del
+cliente). Para éstas sabemos, al tener la documentación de dicha API:
 
-CÓDIGO DE PRUEBA INICIAL (QUIZÁS EL MISMO DE ARRIBA)
-CÓDIGO DE PRUEBA CON MOCKS O ALGO ASÍ
-(O QUIZÁS NO, PORQUE A LO MEJOR ES LA ÚNICA FORMA DE PROBAR ESO)
-(QUIZÁS EXPLICAR QUE SE PUEDE USAR SQLITE, AUNQUE PODRÍA SER DIFERENTE)
-(QUIZÁS PONER EL EJEMPLO DE SCALA OPERA LINK)
+1. Qué llamadas debe generar nuestra aplicación en ciertas situaciones.
+
+2. Cómo tiene que reaccionar nuestra aplicación ante ciertas respuestas del
+servidor.
+
+Armados con este conocimiento, podemos diseñar pruebas que no dependen del
+servidor. No depender del servidor tiene varias ventajas, entre otras:
+
+* Las pruebas se ejecutan más rápido.
+
+* Las pruebas se pueden ejecutar sin tener conexión a internet o acceso al
+  servidor (incluyendo que el servidor esté funcionando correctamente).
+
+* Cuando hay fallos, éstos son más fáciles de depurar y corregir.
+
+* Podemos probar muchas situaciones que no podemos reproducir fácilmente en un
+  servidor real, como no poder conectar al servidor, que el servidor devuelva
+  cualquier tipo de error, que devuelva ciertas combinaciones de datos que son
+  difíciles de obtener, condiciones de carrera, etc.
+
+No todo son ventajas, claro. Si el servidor introduce cambios que rompen la
+compatibilidad con la documentación que tenemos, esos fallos no se descubrirán
+hasta las pruebas de integración. De manera similar, si nuestras pruebas
+dependen de un comportamiento concreto, documentado o no, y este comportamiento
+cambia, de nuevo no detectaremos estos fallos hasta las pruebas de integración.
+
+Veamos un ejemplo más concreto. Digamos que escribimos un programa que utiliza
+la API pública de Kiva, una organización que permite, mediante microcréditos,
+prestar dinero a personas que lo necesitan. Nuestra aplicación mostrará los
+últimos préstamos listados en la web de Kiva (digamos, 50), información que
+obtenemos usando la llamada +/loans/newest+. Sin embargo, hay varios casos que
+son muy difíciles de probar con un servidor real:
+
+* Esa funcionalidad de la API sólo devuelve 20 elementos por llamada, por lo
+  que tenemos que hacer varias llamadas para obtener todos los préstamos que
+  queremos.
+* Si se añaden nuevos préstamos mientras estamos haciendo las llamadas para
+  obtener 50 préstamos, tendremos préstamos repetidos, lo que queremos evitar.
+* Puede ocurrir que no haya 50 préstamos en un momento dado, así que tendremos
+  que conformarnos con los datos que haya (en vez de, por ejemplo, entrar en un
+  bucle infinito).
+* Puede que el servidor tenga algún problema y no devuelva una respuesta
+  correcta, o que simplemente haya problemas de conectividad entre el cliente y
+  el servidor. Como mínimo queremos asegurarnos, como en el caso anterior, de
+  que el cliente no se queda en un bucle infinito, haciendo peticiones
+  ciegamente hasta que hayamos recibido 50 préstamos.
+
+Probar todos esos casos a mano con el servidor real de Kiva es prácticamente
+imposible, principalmente porque no podemos hacer que el servidor devuelva las
+respuestas necesarias para reproducir cada caso. Si todas nuestras pruebas
+dependen del servidor no podremos estar seguros de si el código funciona bien.
+Sin embargo, todos estos casos son muy fáciles de probar si evitamos
+conectarnos al servidor real. Los casos mencionados arriba se podrían escribir
+de la siguiente manera en Javascript, usando Jasmine:
+
+[source,javascript]
+.Ejemplo de cómo probar el cliente ficticio de la API de Kiva
+----------------------------------
+it("should correctly get items from several pages", function() {
+  var fakeServer = new FakeServer(fixtureWith100Loans);
+  var kivaLoanLoader = new KivaLoanLoader(fakeServer);
+  kivaLoanLoader.fetchLoans(50);
+  expect(kivaLoanLoader.loans.length).toEqual(50);
+  expect(kivaLoanLoader.loans[0].id).toEqual("loan1");
+  expect(kivaLoanLoader.loans[50].id).toEqual("loan50");
+});
+
+it("should correctly skip items duplicated in different pages", function() {
+  var fakeServer = new FakeServer(fixtureWith100LoansSomeRepeated);
+  var kivaLoanLoader = new KivaLoanLoader(fakeServer);
+  kivaLoanLoader.fetchLoans(25);
+  expect(kivaLoanLoader.loans.length).toEqual(25);
+  expect(kivaLoanLoader.loans[19].id).toEqual("loan20");
+  // El siguiente caso será loan20 repetido, si el código no funciona bien
+  expect(kivaLoanLoader.loans[20].id).toEqual("loan21");
+  expect(kivaLoanLoader.loans[24].id).toEqual("loan25");
+});
+
+it("should stop when there's no more data", function() {
+  var fakeServer = new FakeServer(fixtureWith30Loans);
+  var kivaLoanLoader = new KivaLoanLoader(fakeServer);
+  // La línea siguiente será un bucle infinito si el código no es correcto
+  kivaLoanLoader.fetchLoans(40);
+  expect(kivaLoanLoader.loans.length).toEqual(30);
+  expect(kivaLoanLoader.loans[0].id).toEqual("loan1");
+  expect(kivaLoanLoader.loans[29].id).toEqual("loan30");
+});
+
+it("should stop on server errors", function() {
+  var fakeServer = new FakeServer(fixtureWithOnlyServerError);
+  var kivaLoanLoader = new KivaLoanLoader(fakeServer);
+  // La línea siguiente será un bucle infinito si el código no es correcto
+  kivaLoanLoader.fetchLoans(20);
+  expect(kivaLoanLoader.loans.length).toEqual(0);
+});
+----------------------------------
+
 
 
 [bibliography]
@@ -524,6 +623,11 @@ Bibliografía
   http://www.demiurgo.org/charlas/testing-123/
 - [[[ci]]] Martin Fowler 'Continuous Integration'
   http://www.martinfowler.com/articles/continuousIntegration.html
+- [[[kivaapi]]] API pública de Kiva http://build.kiva.org/docs/
+- [[[loanmeter]]] Esteban Manchado Velázquez 'World Loanmeter'
+  https://github.com/emanchado/world-loanmeter
+- [[[jasmine]]] Página web de Jasmine, un módulo de pruebas para Javascript
+  http://pivotal.github.com/jasmine/
 
 - AÑADIR ENLACE A PAGEOBJECTS
 - AÑADIR ENLACE A PYDOUBLES ??
