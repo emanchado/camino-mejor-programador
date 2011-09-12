@@ -391,10 +391,8 @@ function soloConPermiso(permiso, usuario, f) {
 }
 ----------------------------------
 
-Aunque, como hemos visto en este ejemplo, Javascript tiene funciones de orden
-superior, los métodos disponibles en Javascript dejan un poco que desear.
-Afortunadamente, hay paquetes como «Valentine» que cubren esta necesidad,
-implementando las funciones de orden superior más comunes.
+A partir de Ecmascript 5, la clase +Array+ dispone de varios métodos de orden
+superior que facilitan mucho usar un estilo funcional para resolver problemas.
 
 
 Evaluación perezosa
@@ -501,4 +499,6 @@ Bibliografía
   Media.  ISBN 978-0-596-15595-7. http://ofps.oreilly.com/titles/9780596155957/
 - [[[proginscala]]] Martin Odersky, Lex Spoon, and Bill Venners 'Programming in
   Scala' Artima.  ISBN 9780981531601.  http://www.artima.com/pins1ed/
-- [[[valentine]]] https://github.com/ded/valentine
+- [[[jsfuncional]]] Dmitry A. Soshnikov 'JavaScript array "extras" in detail'
+  Dev Opera
+  http://dev.opera.com/articles/view/javascript-array-extras-in-detail/
