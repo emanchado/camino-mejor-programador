@@ -1,0 +1,103 @@
+Conocer las herramientas
+========================
+Esteban Manchado_Velázquez <emanchado@demiurgo.org>
+
+Conocer las herramientas es importante. Este artículo se centrará en los
+editores de texto, dando ejemplos de configuración para los dos grandes
+«clásicos» de edición de texto para programadores: VIM y Emacs.
+
+
+«La mejor herramienta»
+----------------------
+Siempre ha habido y habrá discusiones sobre qué herramientas son mejores o
+peores. No hay respuesta única, cada persona tiene un estilo y unas necesidades
+diferentes. Lo importante no es escoger «la mejor», sino escoger una buena
+herramienta y aprenderla bien.
+
+VIM: pequeño, disponible en cualquier sitio, se puede aprender y usar en
+cualquier sitio.
+
+Emacs: grande, muy completo, lleno de extensiones, centrado en la
+programabilidad. No muy útil con la configuración de paquete, se aprender la
+configuración propia. Ver también Emacs Starter Kit.
+
+No está mal adaptarse a las herramientas y cambiar la manera de trabajar para
+usarlas de manera más efectiva, pero conocer las opciones también es
+importante.
+
+VIM: scrolloff, wildmenu, wildignore, winheight, incsearch, showmatch.
+
+
+Movimiento, búsquedas y sustituciones
+-------------------------------------
+Intentar mantener las manos en la posición relajada, no usar las flechas. Al
+menos en Emacs, reasignar la tecla «Bloq. Mayús» como una tercera tecla
+Control. En VIM, estar _siempre_ en el modo de órdenes; acostumbrarse a pulsar
+Esc cuando terminamos de escribir cualquier texto, por pequeño que sea.
+*Ninguna* orden de VIM empieza con Esc.
+
+VIM: hjkl.
+Emacs: C-n, C-p, C-f, C-b. Búsquedas con C-s.
+
+
+Búsquedas y sustituciones
+-------------------------
+VIM: /, ?, *, #, n, N.
+Emacs: C-s, C-r.
+
+[Sustituciones]
+VIM: :s/.../.../
+Emacs: M-%, M-x replace-regexp
+
+
+Sangrado automático
+-------------------
+Una de las características más importantes del formato de nuestro código es el
+sangrado. Cualquier editor moderno puede ahorrarnos gran parte del trabajo
+de mantener el sangrado correcto.
+
+VIM: dw para borrar espacios hasta la siguiente palabra. formatoptions.
+Emacs: (global-set-key "\r" 'newline-and-indent) y whitespace-mode
+
+[Formatear código ya escrito]
+VIM: = (posiblemente después de seleccionar una parte del texto)
+Emacs: M-x indent-region (después de seleccionar una parte del texto)
+
+[Hablar también de espacios y tabs]
+VIM: set et
+Emacs: (setq indent-tabs-mode nil)
+
+[Para textos más normales, y comentarios]
+VIM: gq
+Emacs: M-q
+
+
+Tipos de ficheros
+-----------------
+Es evidente que tratamos distintos tipos de ficheros de distinta forma:
+necesitan unas reglas distintas para el resaltado de sintaxis, para el sangrado
+automático; para detectar qué es un comentario; quizás para definir macros,
+atajos de teclado especiales o plantillas; etc. Cualquier editor moderno
+permite, hasta cierto punto, adaptar el entorno a los diferentes tipos de
+ficheros.
+
+Modos en Emacs, FileType en VIM.
+
+
+Macros y atajos de teclado
+--------------------------
+Abreviaturas, «abreviaturas» para corregir faltas de ortografía comunes, atajos
+para escribir marcas como «---8<---», etc. En Emacs, escribir funciones.
+
+[Grabar macros para el momento]
+VIM: q<a>
+Emacs: C-(, C-) TODO: ¿cómo grabarla como una función?
+
+
+[bibliography]
+Bibliografía
+------------
+- [[[introelisp]]] Christian Johansen 'An introduction to Emacs Lisp'.
+  http://cjohansen.no/an-introduction-to-elisp
+- [[[ejemplo]]] Autor 'Título' Editorial. ISBN 1234567890.
+  http://www.example.com/
