@@ -1,53 +1,101 @@
-Conocer las herramientas
-========================
+Aprende tu editor a fondo
+=========================
 Esteban Manchado_Velázquez <emanchado@demiurgo.org>
 
 Conocer las herramientas es importante. Este artículo se centrará en los
-editores de texto, dando ejemplos de configuración para los dos grandes
-«clásicos» de edición de texto para programadores: VIM y Emacs.
+aspectos más importantes de aprender a usar un editor de texto bien, dando
+ejemplos para los dos grandes «clásicos» de edición de texto para
+programadores: VIM y Emacs.
 
 
-«La mejor herramienta»
-----------------------
+«El mejor editor»
+-----------------
 Siempre ha habido y habrá discusiones sobre qué herramientas son mejores o
 peores. No hay respuesta única, cada persona tiene un estilo y unas necesidades
-diferentes. Lo importante no es escoger «la mejor», sino escoger una buena
+diferentes. Lo importante no es encontrar «la mejor», sino escoger una buena
 herramienta y aprenderla bien.
 
-VIM: pequeño, disponible en cualquier sitio, se puede aprender y usar en
-cualquier sitio.
+Dos editores populares, especialmente en el mundo Unix, son VIM y Emacs. El
+primero es pequeño y está disponible en cualquier instalación de Unix (si no
+VIM, al menos algún otro clon de vi). Su punto fuerte es ser un editor pequeño,
+rápido y ágil. Cuesta un poco aprenderlo y acostumbrarse a sus diferentes
+modos, pero una vez se aprende se puede usar en cualquier sitio.
 
-Emacs: grande, muy completo, lleno de extensiones, centrado en la
-programabilidad. No muy útil con la configuración de paquete, se aprender la
-configuración propia. Ver también Emacs Starter Kit.
+Por el contrario, Emacs es bastante grande, muy completo y lleno de
+extensiones. Tarda más en arrancar, pero es prácticamente un sistema operativo.
+Sus usuarios más devotos lo hacen prácticamente todo desde Emacs: editar texto
+(incluso ficheros en otras máquinas), leer el correo, navegar páginas web,
+escribir planes, mapas mentales, gestionar listas de tareas, etc. Todo esto se
+consigue mediante los llamados «modos» de Emacs, que implementan extensiones,
+adaptaciones y mejoras para diferentes actividades o tipos de fichero a editar.
+El punto fuerte de Emacs es, sin duda, la programabilidad y las extensiones que
+sus usuarios escriben y comparten. No es demasiado cómodo de usar con la
+configuración de paquete, por lo que los usuarios tienden a personalizarlo
+_mucho_. Esto hace que, una vez de aprende, uno sabe usar la propia
+configuración, pero no necesariamente el Emacs configurado por otra persona.
 
-No está mal adaptarse a las herramientas y cambiar la manera de trabajar para
-usarlas de manera más efectiva, pero conocer las opciones también es
-importante.
+Cuando empezamos a usar y aprender VIM o Emacs, lo más probable es que tengamos
+que cambiar ligeramente nuestras costumbres y adaptarnos a ellos. Esto no es
+necesariamente malo, pero conocer las diferentes opciones y posibilidades de
+personalización también es buena idea.
 
 VIM: scrolloff, wildmenu, wildignore, winheight, incsearch, showmatch.
 
 
-Movimiento, búsquedas y sustituciones
--------------------------------------
-Intentar mantener las manos en la posición relajada, no usar las flechas. Al
-menos en Emacs, reasignar la tecla «Bloq. Mayús» como una tercera tecla
-Control. En VIM, estar _siempre_ en el modo de órdenes; acostumbrarse a pulsar
-Esc cuando terminamos de escribir cualquier texto, por pequeño que sea.
-*Ninguna* orden de VIM empieza con Esc.
+Movimiento
+----------
+Como programadores, lo más probable es que pasemos una buena parte del día en
+nuestro editor. Por tanto, es importante que nuestras manos estén lo más
+relajadas posible. Evitar el uso constante del ratón y mantener las manos en
+posición de escribir (es decir, evitar el uso de las flechas de movimiento) nos
+ayudará a mantener las manos relajadas y a evitar problemas como el túnel
+carpiano. Afortunadamente, tanto VIM como Emacs nos permiten movernos sin
+necesidad de acudir a las flechas de movimiento.  En el caso de VIM, podemos
+movernos con las teclas +h+, +j+, +k+, +l+ (izquierda, abajo, arriba y derecha
+respectivamente); en el caso de Emacs, con +C-b+, +C-f+, +C-n+ y +C-p+ (por
+_backwards_, _forward_, _next_ y _previous_; nótese que, en Emacs, +Ctrl-X+ se
+representa como +C-x+, y +Alt-X+ como +M-x+).
 
-VIM: hjkl.
-Emacs: C-n, C-p, C-f, C-b. Búsquedas con C-s.
+Pero moverse línea a línea, o caracter a caracter, es bastante lento. Por
+tanto, aprender a moverse de manera más efectiva es una buena idea. Y de nuevo,
+tanto VIM como Emacs nos ofrecen varias posibilidades:
+
+.Órdenes comunes de movimiento de VIM
+[width="80%",options="header"]
+|======================
+|Orden de VIM            |Atajo de Emacs          |Significado
+|+w+ / +b+               |+M-f+ / +M-b+           |Palabra adelante / palabra atrás
+|+{+ / +}+               |+M-{+ / +M-}+           |Bloque anterior / bloque siguiente
+|+Ctrl-F+ / +Ctrl-B+     |+C-v+ / +M-v+           |Página siguiente / página anterior
+|+H+ / +M+ / +L+         |_No aplicable_          |Parte alta / media / baja de la pantalla
+|+f<letra>+ / +F<letra>+ |_No aplicable_          |Ir a la siguiente <letra> de la línea / ir a la anterior <letra> de la línea
+|======================
+
+Otro consejo, especialmente para Emacs pero aplicable en cualquier caso, es
+reasignar la tecla «Bloq. Mayús» como una tercera tecla Control. Esta
+configuración hará mucho más cómodo y rápido el usar atajos de teclado con la
+tecla «Control», lo cual notaremos a la larga en nuestras manos. Sobre todo con
+Emacs.
 
 
 Búsquedas y sustituciones
 -------------------------
-VIM: /, ?, *, #, n, N.
-Emacs: C-s, C-r.
+Las búsquedas y sustituciones son probablemente las características más usadas
+de un editor de texto, después de las órdenes de movimiento. De hecho, en Emacs
+la búsqueda se usa con frecuencia para moverse rápidamente por el texto. En VIM
+hay varias órdenes de búsqueda, incluyendo buscar la palabra debajo del cursor
+(con +*+ o +#+, dependiendo de si buscamos hacia abajo o hacia arriba). En
+Emacs tenemos las búsquedas normales en +C-s+ y +C-r+, y varias funciones de
+búsqueda y sustitución que podemos llamar con +M-x+ (incluyendo
++replace-regexp+ y +isearch-forward-at-point+).
 
-[Sustituciones]
-VIM: :s/.../.../
-Emacs: M-%, M-x replace-regexp
+A la hora de hacer sustituciones, asegúrate de aprender suficiente sobre
+expresiones regulares como para poder usarlas de manera efectiva. «De manera
+efectiva» significa poder hacer la gran mayoría de las sustituciones sin tener
+que buscar en el manual cómo hacer esto o lo otro.
+
+NOTAS SOBRE BUSCAR CON etags O ALGO PARECIDO, REFERENCIAS A FUNCIONES Y COSAS
+ASÍ.
 
 
 Sangrado automático
@@ -59,15 +107,15 @@ de mantener el sangrado correcto.
 VIM: dw para borrar espacios hasta la siguiente palabra. formatoptions.
 Emacs: (global-set-key "\r" 'newline-and-indent) y whitespace-mode
 
-[Formatear código ya escrito]
+Formatear código ya escrito
 VIM: = (posiblemente después de seleccionar una parte del texto)
 Emacs: M-x indent-region (después de seleccionar una parte del texto)
 
-[Hablar también de espacios y tabs]
+Hablar también de espacios y tabs
 VIM: set et
 Emacs: (setq indent-tabs-mode nil)
 
-[Para textos más normales, y comentarios]
+Para textos más normales, y comentarios
 VIM: gq
 Emacs: M-q
 
@@ -89,7 +137,7 @@ Macros y atajos de teclado
 Abreviaturas, «abreviaturas» para corregir faltas de ortografía comunes, atajos
 para escribir marcas como «---8<---», etc. En Emacs, escribir funciones.
 
-[Grabar macros para el momento]
+Grabar macros para el momento
 VIM: q<a>
 Emacs: C-(, C-) TODO: ¿cómo grabarla como una función?
 
@@ -99,5 +147,13 @@ Bibliografía
 ------------
 - [[[introelisp]]] Christian Johansen 'An introduction to Emacs Lisp'.
   http://cjohansen.no/an-introduction-to-elisp
+- [[[effectiveemacs]]] Steve Yegge 'Effective Emacs'
+  http://sites.google.com/site/steveyegge2/effective-emacs
+- [[[viunixworld]]] Walter Alan Zintz 'The Vi/Ex Editor'.
+  http://www.networkcomputing.com/unixworld/tutorial/009/009.html
+- [[[regularexpressions]]] Jeffrey E.F. Friedl 'Mastering Regular Expressions'
+  O'Reilly Media. ISBN 0-596-00289-0
+  http://shop.oreilly.com/product/9780596002893.do
+
 - [[[ejemplo]]] Autor 'Título' Editorial. ISBN 1234567890.
   http://www.example.com/
