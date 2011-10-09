@@ -4,3 +4,6 @@ all: funcionales.html \
 
 %.html: %.asciidoc
 	asciidoc $<
+
+clean:
+	rm *.html
