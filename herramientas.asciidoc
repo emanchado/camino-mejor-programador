@@ -31,15 +31,13 @@ adaptaciones y mejoras para diferentes actividades o tipos de fichero a editar.
 El punto fuerte de Emacs es, sin duda, la programabilidad y las extensiones que
 sus usuarios escriben y comparten. No es demasiado cómodo de usar con la
 configuración de paquete, por lo que los usuarios tienden a personalizarlo
-_mucho_. Esto hace que, una vez de aprende, uno sabe usar la propia
+_mucho_. Esto hace que, una vez se aprende, uno sabe usar la propia
 configuración, pero no necesariamente el Emacs configurado por otra persona.
 
 Cuando empezamos a usar y aprender VIM o Emacs, lo más probable es que tengamos
 que cambiar ligeramente nuestras costumbres y adaptarnos a ellos. Esto no es
 necesariamente malo, pero conocer las diferentes opciones y posibilidades de
 personalización también es buena idea.
-
-VIM: scrolloff, wildmenu, wildignore, winheight, incsearch, showmatch.
 
 
 Movimiento
@@ -57,8 +55,9 @@ _backwards_, _forward_, _next_ y _previous_; nótese que, en Emacs, +Ctrl-X+ se
 representa como +C-x+, y +Alt-X+ como +M-x+).
 
 Pero moverse línea a línea, o caracter a caracter, es bastante lento. Por
-tanto, aprender a moverse de manera más efectiva es una buena idea. Y de nuevo,
-tanto VIM como Emacs nos ofrecen varias posibilidades:
+tanto, aprender a moverse de manera más efectiva es algo de lo que nos podremos
+aprovechar todos los días. Y, de nuevo, tanto VIM como Emacs nos ofrecen varias
+posibilidades. Entre ellas:
 
 .Órdenes comunes de movimiento de VIM
 [width="80%",options="header"]
@@ -82,78 +81,139 @@ Búsquedas y sustituciones
 -------------------------
 Las búsquedas y sustituciones son probablemente las características más usadas
 de un editor de texto, después de las órdenes de movimiento. De hecho, en Emacs
-la búsqueda se usa con frecuencia para moverse rápidamente por el texto. En VIM
-hay varias órdenes de búsqueda, incluyendo buscar la palabra debajo del cursor
-(con +*+ o +#+, dependiendo de si buscamos hacia abajo o hacia arriba). En
-Emacs tenemos las búsquedas normales en +C-s+ y +C-r+, y varias funciones de
-búsqueda y sustitución que podemos llamar con +M-x+ (incluyendo
-+replace-regexp+ y +isearch-forward-at-point+).
+la búsqueda se usa con frecuencia para moverse por el texto. En VIM hay varias
+órdenes de búsqueda, incluyendo buscar la palabra debajo del cursor (con +*+ o
++#+, dependiendo de si buscamos hacia abajo o hacia arriba). Si preferimos
+búsqueda incremental, podemos activarla con la opción +incsearch+. En Emacs
+tenemos las búsquedas normales en +C-s+ y +C-r+, y varias funciones de búsqueda
+y sustitución, incluyendo +replace-regexp+ y +isearch-forward-at-point+. Por
+supuesto, podemos asignar un atajo de teclado a estas funciones si las usamos
+con frecuencia.
 
-A la hora de hacer sustituciones, asegúrate de aprender suficiente sobre
-expresiones regulares como para poder usarlas de manera efectiva. «De manera
-efectiva» significa poder hacer la gran mayoría de las sustituciones sin tener
-que buscar en el manual cómo hacer esto o lo otro.
+Mención aparte merecen las expresiones regulares, muy útiles a la hora de hacer
+tanto búsquedas como sustituciones. VIM, Emacs y muchos otros programas
+entienden expresiones regulares, lo que junto a su versatilidad las convierte
+en una de las herramientas básicas del programador. Por tanto, vale la pena
+aprenderlas suficientemente bien como para poder hacer la gran mayoría de las
+sustituciones sin tener que consultar el manual. Emacs en particular tiene una
+función muy útil para aprender y experimentar con expresiones regulares: la
+función +re-builder+.
 
-NOTAS SOBRE BUSCAR CON etags O ALGO PARECIDO, REFERENCIAS A FUNCIONES Y COSAS
-ASÍ.
+Por último, otra herramienta útil para navegar por el código, especialmente si
+no lo conocemos bien o es grande y complejo, son las «ctags». Éstas nos
+permiten saltar desde una llamada a una función o método a la definición de la
+misma.
 
 
 Sangrado automático
 -------------------
 Una de las características más importantes del formato de nuestro código es el
 sangrado. Cualquier editor moderno puede ahorrarnos gran parte del trabajo
-de mantener el sangrado correcto.
+de mantener el sangrado correcto. Incluyendo a VIM y Emacs, como podríamos
+esperar.
 
-VIM: dw para borrar espacios hasta la siguiente palabra. formatoptions.
-Emacs: (global-set-key "\r" 'newline-and-indent) y whitespace-mode
+Para sangrar el código que escribimos automáticamente, VIM ofrece, entre otras,
+las opciones +formatoptions+ y +smartindent+. Emacs ofrece diferentes «modos»
+para diferentes lenguajes, que se encargan de definir cómo se debería sangrar
+cada lenguaje.  Pero no todo el código con el que trabajamos lo hemos escrito
+nosotros, así que las herramientas para corregir el sangrado de código
+existente siempre son de agradecer.  Para ello, VIM nos ofrece la orden +=+ y
+Emacs nos ofrece la función +indent-region+.
 
-Formatear código ya escrito
-VIM: = (posiblemente después de seleccionar una parte del texto)
-Emacs: M-x indent-region (después de seleccionar una parte del texto)
+Cuando hablamos de sangrado, la mayoría de los programadores prefiere usar
+espacios. Naturalmente, tener que pulsar varias veces la tecla espaciadora es
+una pérdida de tiempo, así que tanto VIM como Emacs nos permiten pulsar la
+tecla Tab para sangrar (pero manteniendo espacios para el sangrado). En VIM,
+usamos la opción +expandtab+; en Emacs, +(setq indent-tabs-mode nil)+.
 
-Hablar también de espacios y tabs
-VIM: set et
-Emacs: (setq indent-tabs-mode nil)
-
-Para textos más normales, y comentarios
-VIM: gq
-Emacs: M-q
+Y para los casos en los que necesitemos formatear textos y comentarios, VIM nos
+ofrece la orden +gq+ y Emacs el atajo +M-q+.
 
 
 Tipos de ficheros
 -----------------
 Es evidente que tratamos distintos tipos de ficheros de distinta forma:
 necesitan unas reglas distintas para el resaltado de sintaxis, para el sangrado
-automático; para detectar qué es un comentario; quizás para definir macros,
-atajos de teclado especiales o plantillas; etc. Cualquier editor moderno
+automático, para detectar qué es un comentario, quizás para definir macros,
+atajos de teclado especiales o plantillas, etc. Cualquier editor moderno
 permite, hasta cierto punto, adaptar el entorno a los diferentes tipos de
 ficheros.
 
-Modos en Emacs, FileType en VIM.
+Éste es, posiblemente, uno de los puntos más fuertes de Emacs. En Emacs tenemos
+los modos, y en VIM tenemos los _filetypes_. La idea de los modos de Emacs
+es cambiar el editor para convertirlo en un editor especializado para el tipo
+de fichero actual: cada modo tiene su propia configuración, atajos de teclado y
+manual, y se aprende más o menos por separado. Una gran parte de la potencia de
+Emacs se basa en esto, y la red está llena de modos para todo tipo de tareas,
+como Org mode (para planificar, gestionar tareas y proyectos, etc), nXML mode
+(para editar y validar XML) o rainbow-mode (para colorear referencias a colores
+como #a00 con el color que representan).
+
+En VIM, la personalización es generalmente mucho menor, y se basa más en
+adaptar el sangrado y el resaltado de sintaxis. Sin embargo, nos permite añadir
+nuestra propia personalización para cada tipo de fichero, así que siempre
+podemos adaptar las opciones activas o cualquier otro aspecto de VIM que
+queramos.
 
 
 Macros y atajos de teclado
 --------------------------
-Abreviaturas, «abreviaturas» para corregir faltas de ortografía comunes, atajos
-para escribir marcas como «---8<---», etc. En Emacs, escribir funciones.
+La programabilidad de un editor es otro aspecto importante que resulta útil
+aprender. No necesariamente la programabilidad «pesada» de escribir o modificar
+extensiones para el editor, sino la programabilidad de pequeñas macros y atajos
+de teclado.
 
-Grabar macros para el momento
-VIM: q<a>
-Emacs: C-(, C-) TODO: ¿cómo grabarla como una función?
+En VIM, podemos grabar macros con la orden +q+. Esta orden necesita un
+parámetro, que será una letra donde guardaremos la macro. Así, si pulsamos
++qa+, empezaremos a grabar una macro en «a». Para terminar, pulsamos +q+, y
+para ejecutar una macro, pulsamos +@+ seguida de la letra que queramos, o +@@+
+para repetir la última macro _ejecutada_.
+
+En Emacs, lo normal es hacer una de dos cosas: grabar pequeñas macros en la
+sesión, o escribir funciones en Emacs Lisp para hacer pequeñas extensiones de
+nuestro editor. Además, las primeras se pueden convertir en las segundas con la
+ayuda de las funciones +kmacro-name-last-macro+ y +insert-kbd-macro+. Para
+grabar una macro en Emacs, pulsamos +F3+ (o +C-x (+) y para terminar de grabar
+pulsamos +F4+ (o +C-x )+). Para ejecutar la última macro grabada, pulsamos +C-x
+e+.
+
+Conclusiones
+------------
+Aunque pueda parecer exagerado, herramientas aparentemente simples como un
+editor de texto son suficientemente complicadas como para que haya muchas, muy
+diferentes y prácticamente imposibles de comparar. Por tanto, no se puede decir
+que haya un «mejor editor»: depende de para qué lo usemos, cómo lo usemos, lo
+que nos resulte personalmente más cómodo y cuánto hayamos aprendido sobre él.
+
+Pero la conclusión más importante es que un buen profesional conoce sus
+herramientas y las aprende a usar bien. Dedicar tiempo a aprender las
+herramientas de trabajo ahorra tiempo a la larga.
 
 
 [bibliography]
 Bibliografía
 ------------
-- [[[introelisp]]] Christian Johansen 'An introduction to Emacs Lisp'.
-  http://cjohansen.no/an-introduction-to-elisp
-- [[[effectiveemacs]]] Steve Yegge 'Effective Emacs'
-  http://sites.google.com/site/steveyegge2/effective-emacs
+- [[[emacswiki]]] El Wiki de Emacs http://emacswiki.org/
 - [[[viunixworld]]] Walter Alan Zintz 'The Vi/Ex Editor'.
   http://www.networkcomputing.com/unixworld/tutorial/009/009.html
+- [[[effectiveemacs]]] Steve Yegge 'Effective Emacs'
+  http://sites.google.com/site/steveyegge2/effective-emacs
+- [[[vimcasts]]] 'Vimcasts'
+  http://vimcasts.org/
+- [[[masteringemacs]]] 'Mastering Emacs'
+  http://www.masteringemacs.org
+- [[[emacsrocks]]] 'Emacs rocks'
+  http://emacsrocks.com/
 - [[[regularexpressions]]] Jeffrey E.F. Friedl 'Mastering Regular Expressions'
   O'Reilly Media. ISBN 0-596-00289-0
   http://shop.oreilly.com/product/9780596002893.do
-
-- [[[ejemplo]]] Autor 'Título' Editorial. ISBN 1234567890.
-  http://www.example.com/
+- [[[emacsrebuilder]]] 're-builder: the Interactive regexp builder'
+  http://www.masteringemacs.org/articles/2011/04/12/re-builder-interactive-regexp-builder/
+- [[[ctags]]] Wikipedia 'Ctags' http://en.wikipedia.org/wiki/Ctags
+- [[[emacsorgmode]]] Org mode para Emacs http://orgmode.org/
+- [[[emacsnxmlmode]]] nXML mode para Emacs
+  http://www.thaiopensource.com/nxml-mode/
+- [[[emacsrainbowmode]]] Rainbow mode para Emacs
+  http://julien.danjou.info/rainbow-mode.html
+- [[[introelisp]]] Christian Johansen 'An introduction to Emacs Lisp'.
+  http://cjohansen.no/an-introduction-to-elisp
