@@ -178,11 +178,86 @@ Mientras estamos dentro de los límites de nuestro código, podemos añadir test
 Cuando la potencia del código fuente sea insuficiente, podremos recurrir a los soportes externos pero con consciencia de las ventajas y los inconvenientes que suponen.
 
 
-----------------------------
-Cosas que me faltan:
-- rompiendo el principio de liskov
-- mezclando paradigmas: pasando funciones como argumentos
-- gestion de las excepciones --> esto da para un capitulo  
-- recomendar Clean Code al final del capitulo para más info
+- Abuso de la herencia
+Existe la creencia de que si todas las clases de un paquete pertenecen a una misma jerarquía, el código es más homogéneo. Que sea homogéneo o no, incluso sin entrar a definir qué consideramos por homogéneo, no aporta valor. Lo que importa es la mantenibilidad del código, la cual se favorece cuando aplicamos principios de diseño como SOLID. Es más probable que un buen diseño contenga composición que herencia. Por eso hay una frase célebre que dice, "favorece la composición sobre la herencia". Quiere decir que suele ser más conveniente componer una clase, inyectando clases colaboradoras, que crear una jerarquía que las contiene a todas.
+La decisión de que una clase hereda de otra no debe ser tomada cuando aún no existe. Usamos herencia cuando ambas existen y tienen código duplicado de tal forma que, para extraer factor común, lo mejor es jerarquizar. Hay muchas formas de duplicidad, la que nos lleva a aplicar herencia es la duplicidad de comportamiento, o sea, cuando queda claro que ambas clases se están comportando casi igual, salvo algún matiz diferenciador.
+Por regla general la clase hija redefine algún método de los que hereda para expresar tal matiz. Hay varias formas de implementar una jerarquía y la menos común es la que requiere de clases abstractas. En general se abusa de las clases abstractas. Una clase abstracta sólo se necesita cuando es la única manera de sacar factor común. Al poner en una clase el código común, si se ve que dicha clase no tiene una implementación por defecto suficiente como para ser consumida por otras, entonces se decide que es abstracta, para que no puedan haber instancias de una clase que está a medias. Pasa sobre todo con algoritmos. La clase abstracta incluye el grueso del algoritmo pero delega una o más partes en sus clases hijas. Es decir, el algoritmo contiene alguna llamada a un método protegido de la clase que está sin implementar y que debe ser implementado por quienes heredan. El patrón de diseño "Template method" suele implementarse con clases abstractas. Si resulta que hay una implementación por defecto de ese método protegido, que nos vale, entonces la clase no tiene por qué ser abstracta, simplemente define el método como protegido para que pueda ser redefinido en clases hijas. En algunos lenguajes como C# debemos indicar que el método es "virtual" en la clase base y que es "override" en la clase hija. 
+Diseñar jerarquías a priori es tremendamente difícil y muy propenso al sobrediseño, a un exceso de complejidad que termina por introducir problemas de mantenimiento.
+El hecho de que dos clases tengan el mismo prefijo en el nombre no significa que tengan el mismo comportamiento. No es el argumento que justifica la jerarquía. Puede que el prefijo quede muy bien en el espacio de nombres ("namespace") del paquete y no en las clases.
+Los objetos no se inventaron para modelar una estructura de directorios o de paquetes sino para modelar un comportamiento mucho más humano. 
+Cuando dos clases trabajan conjuntamente pero su comportamiento es diferente (y disjunto) la manera de conectarlas es componer una con la otra mediante inyección de la dependencia.
+El código de calidad está escrito para que otras personas lo entiendan e incluso para que entiendan cómo pensaba la persona que lo escribió cuando lo hizo.
+
+
+- La sutileza de Liskov
+
+El principio de sustitución de Liskov viene a decir de manera sutíl, que debemos considerar los objetos como cajas negras, sin conocer más que su interfaz pública. La forma en que típicamente incumplimos el principio es preguntando si el objeto que estamos manejando es, presuntamente, de un tipo concreto. Una vez que asumimos que es la implementación concreta X de la interfaz Y, le damos un trato exclusivo en función de las propiedades de X que no están en Y.
+
+     def render(menu):
+         if typeOf(menu) is AdminActionsMenu:
+            ...
+         else if typeOf(menu) is GuestActionsMenu:
+            ...
+
+Cuando digo interfaz Y, me refiero indistintamente a una clase y a una "interface" típica de Java o C#. Toda clase es en sí misma una interfaz.
+El problema con este enfoque es que quien consume el método "render" tiene que saber cómo funciona por dentro. Si le invoca pensando que funcionará con cualquier implementación de menú, se llevará una decepción, a pesar de que es lo que su firma dice. Nótese que este es un ejemplo de código sacado de contexto, tal vez en otro contexto el método "render" pertenece al menú en sí mismo.
+Otra forma de romper el principio es usando conversión de tipos ("typecasts") porque de la misma manera preparan el terreno para consumir el objeto según sus detalles concretos. Una solución para poder generalizar tipos en clases que tienen dependencias, es el uso de genéricos (Java y C#). La generalización, al igual que la jerarquización, debe producirse como consecuencia de la eliminación de duplicidad:
+
+        public abstract class FruitsController<Service>{
+            Service service;
+
+            public abstract string ServiceInvocation(string validInput);
+
+	    public string FindByFarmer(string input){
+                 input = input.ToLower(); // logica compleja y común ;-)                   
+                 return ServiceInvocation(input);
+            }
+        }
+
+        public class ApplesController<ApplesService>{
+            public string ServiceInvocation(string validInput){
+                 return service.FindApples(validInput);
+            }
+        }
+
+        public class BananasController<BananasService>{
+            public string ServiceInvocation(string validInput){
+                 return service.FindBananas(validInput);
+            }
+        }
+
+En lenguajes dinámicos como Python, Ruby o Javascript, prefiero el 
+"ducktyping" a preguntar por tipos concretos. Ducktyping quiere decir
+que si un objeto tiene la API que necesito consumir, me da igual el tipo
+que sea. Me basta con preguntar si tiene tal o cual método. Algunos
+de los problemas que existen en Javascript con los tipos, podrían evitarse
+si el diseño cumple con el principio de Liskov (si es que estamos usando Javascript con orientación a objetos, ya que este lenguaje también puede usarse con el paradigma funcional).
+
+
+- Mezcla de paradigmas
+
+Los paradigmas de programación son una forma de pensar. Una forma de afrontar la solución a un problema. Hay problemas cuya solución es más elegante con el paradigma orientado a objetos que con el funcional y viceversa. Además hay otros paradigmas. Los lenguajes y plataformas que soportan ambos paradigmas son muy interesantes porque nos permiten conectar soluciones parciales para ofrecer un mejor producto global. Sin embargo, mezclar distintos paradigmas en la misma solución supone un nivel de complejidad demasiado caro. Esto se ve frecuentemente cuando se intenta programar orientado a objetos y sin embargo hay un punto en el que se pasa como argumento de un método, una función. En lenguajes como C# es posible gracias a los delegados y a las funciones anónimas. En lenguajes dinámicos como Python, Ruby o Javascript, es tremendamente fácil hacerlo. Pero posible no significa adecuado. Si los parámetros de nuestras funciones son otras funciones, no hay encapsulación ni objetos por ninguna parte. Lo que hay es un código dificil de entender y de mantener. Se puede implementar el mismo algoritmo con orientación a objetos, si pasamos por parámetro todo el objeto el cual puede ser parte de una jerarquía, donde cada implementación tiene un comportamiento particular. Algunos patrones de diseño como el "Command" se basan en esta técnica. 
+Recuerdo que para aprender a programar en Lisp tuve que entrenar mi cerebro hasta que consiguió pensar de manera diferente y llevó su tiempo. Luego me costaba volver a los ojetos y no usar la recursividad antes que el bucle. Claramente son dos enfoques complementarios pero su mezcla puede resultar explosiva.
+
+- Conclusión
+El olfato para los olores del código es desde mi punto de vista una cualidad del artesano de software. Hablamos de artesanía porque desconocemos todas las variables que lo convertirían en ingeniería.
+El reto de descubrir mejores formas de diseñar software cada día, hace nuestra profesión apasionante. Nadie debe desanimarse por no poder ver la mejora o por descubrir que el código que escribió hace tiempo es mejorable. Debe alegrarse de reconocerlo y si se anima, ayudar a otros a mejorar.
+El software nunca es perfecto, es una expresión del conocimiento humano y como tal, muta.
+
+Este capítulo no puede terminarse sin que recomiende el estudio del libro "Clean Code" de Robert C. Martin, que es una de las guías más completas que se han escrito sobre código limpio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
