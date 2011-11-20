@@ -25,19 +25,19 @@ ____________________________________________________________________
 
 -¡Ah!, ¿quieres una aplicación que te permita almacenar enlaces a artículos? La aplicación mantendría una lista con los artículos almacenados, a la que luego podrías acceder cuando tengas tiempo y leer los artículos...
 
--No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre.
+-No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre. Estaría bien que tuviese una lista de artículos por leer siempre vacía, me daría una sensación genial de tenerlo todo bajo control.
 
 -Er... vale.
 ____________________________________________________________________
 
 De la conversación hemos conseguido extraer un criterio de aceptación:
 ____
-Por mucho que añadamos artículos, la lista deberá permanecer vacía.
+Por mucho que añadamos artículos, estos no se añadirán a una lista de artículos por leer.
 ____
 
 La prueba funcional correspondiente, verificará que la aplicación cumple el criterio para un ejemplo concreto:
 ____
-Cuando añadimos el artículo ```art.culo/interesante.html`'', la lista permanece vacía.
+Cuando añadimos el artículo ```art.culo/interesante.html`'', la lista de artículos por leer permanece vacía.
 ____
 
 Las pruebas funcionales si bien no tienen necesariamente que serlo, se llevan a cabo con frecuencia como pruebas de punta a punta _(end to end)_ (<<goos>> pág 10), es decir, pruebas en las que se ejercita la aplicación en su conjunto y desde afuera, simulando las acciones del usuario y de los sistemas colaboradores, y evaluando la corrección según la perciben usuario y colaboradores.
