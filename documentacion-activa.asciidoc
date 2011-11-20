@@ -12,7 +12,7 @@ Para tener una cierta confianza en que la aplicación resuelve un cierto problem
 
 La pruebas funcionales han de mantenerse al día y evolucionar con los cambios de la aplicación y sus requisitos. Otro de los retos es que sean correctas, es decir, que el comportamiento que esten verificando sea realmente el que se requiere de la aplicación.
 
-Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de posibles regresiones.
+Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de que algo que funcionaba deje de hacerlo, es decir, de posibles _regresiones_.
 
 
 neverread
@@ -20,16 +20,24 @@ neverread
 
 Supongamos que tenemos un cliente con falta de tiempo para leer artículos de Internet. 
 
+____________________________________________________________________
 -Tantos artículos interesantes, no tengo tiempo para leerlos, pero tampoco puedo ignorarlos. Me gustaría tener una aplicación en la que copiar la dirección del artículo que me interese.
 
-La conversación continúa, y de esta conseguimos extraer un criterio de aceptación concreto:
+-¡Ah!, ¿quieres una aplicación que te permita almacenar enlaces a artículos? La aplicación mantendría una lista con los artículos almacenados, a la que luego podrías acceder cuando tengas tiempo y leer los artículos...
+
+-No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre. Estaría bien que tuviese una lista de artículos por leer siempre vacía, me daría una sensación genial de tenerlo todo bajo control.
+
+-Er... vale.
+____________________________________________________________________
+
+De la conversación hemos conseguido extraer un criterio de aceptación:
 ____
-Por mucho que añadamos artículos, la lista deberá permanecer vacía.
+Por mucho que añadamos artículos, estos no se añadirán a una lista de artículos por leer.
 ____
 
 La prueba funcional correspondiente, verificará que la aplicación cumple el criterio para un ejemplo concreto:
 ____
-Cuando añadimos el artículo ```art.culo/interesante.html`'', la lista permanece vacía.
+Cuando añadimos el artículo ```art.culo/interesante.html`'', la lista de artículos por leer permanece vacía.
 ____
 
 Las pruebas funcionales si bien no tienen necesariamente que serlo, se llevan a cabo con frecuencia como pruebas de punta a punta _(end to end)_ (<<goos>> pág 10), es decir, pruebas en las que se ejercita la aplicación en su conjunto y desde afuera, simulando las acciones del usuario y de los sistemas colaboradores, y evaluando la corrección según la perciben usuario y colaboradores.
@@ -107,15 +115,53 @@ Vemos que hemos expresado el ejemplo en forma de condición y consecuencia que s
 .https://github.com/jcaraballo/neverread/blob/master/src/test-acceptance/concordion/v1/ListaPermaneceVaciaTest.java[concordion/v1/ListaPermaneceVaciaTest.java]
 [source,java]
 ----------------------------------------------------------------------------------------
-public String articleListAfterAdding(String url) throws InterruptedException {
-    webDriver.findElement(By.name("url")).sendKeys(url, Keys.ENTER);
-    List<WebElement> pendingArticles = webDriver.findElements(By.cssSelector("li"));
+public class ListaPermaneceVaciaTest extends ConcordionTestCase {
+    public String articleListAfterAdding(String url) throws InterruptedException {
+        webDriver.findElement(By.name("url")).sendKeys(url, Keys.ENTER);
+        List<WebElement> pendingArticles = webDriver.findElements(By.cssSelector("li"));
 
-    return convertListOfArticlesToString(pendingArticles);
+        return convertListOfArticlesToString(pendingArticles);
+    }
+
+    private static String convertListOfArticlesToString(List<WebElement> pendingArticles) {
+        if (pendingArticles.isEmpty()) {
+            return "vacía";
+        } else {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(pendingArticles.get(0).getText());
+
+            for (int i = 1; i < pendingArticles.size(); i++) {
+                stringBuilder.append(", ").append(pendingArticles.get(i).getText());
+            }
+            return stringBuilder.toString();
+        }
+    }
+
+  // [...]
 }
 ----------------------------------------------------------------------------------------
 
-Al ejecutar esta prueba, Concordion generará un documento html con el texto anterior en el que se indicará si se cumple la aserción resaltándola en verde o rojo.
+Al ejecutar `ListaPermaneceVaciaTest`, Concordion generará un documento html con el texto anterior en el que se indicará si se cumple la aserción resaltándola en verde o rojo.
+
+
+Paso a paso
+~~~~~~~~~~~
+
+Veamos qué es lo que está pasando aquí. Hemos escrito el criterio de aceptación en `ListaPermaneceVacia.html`.  Acompañando al html hemos escrito una clase en Java que extiende una clase de infrastructura de Concordion: `class ListaPermaneceVaciaTest extends ConcordionTestCase`.
+
+Cuando ejecutamos `ListaPermaneceVaciaTest`:
+
+. Concordion procesa el html.
+. Concordion detecta la marca `concordion:set="#url"` y guarda el contenido de esa marca html ``art.culo/interesante.html'' en la variable de Concordion `#url`
+. Concordion detecta la marca `concordion:assertEquals="articleListAfterAdding(#url)"`, por lo que busca en la clase de acompañamiento un método denominado `articleListAfterAdding` y lo ejecuta, pasándole el contenido de `#url` como parámetro.
+. El método `articleListAfterAdding` simula la acción de un usuario que introduce `url` y obtiene la lista de artículos resultante.
+. Mediante `convertListOfArticlesToString`, transformamos la lista producida por WebDriver en una representación textual que pueda ser comparada con el texto del html. Hemos decidido que la representación textual de una lista vacía sea ``vacía''.
+. El método `articleListAfterAdding` retorna, devolviendo una cadena (en este caso ``vacía'') que es comparada con el contenido de la marca html en el que se encontró `concordion:assertEquals`
+. Concordion termina de procesar el documento html y genera otro html en el que el texto que tiene la marca `concordion:assertEquals` está resaltado en verde, para indicar que la aserción se cumple.
+
+
+Manteniendo el nivel de abstracción apropiado
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Es importante esforzarse en describir el funcionamiento de la aplicación en términos del dominio. Por ejemplo, podríamos haber caído en la tentación de escribir el ejemplo como _Cuando el usuario entra una cadena en la caja de texto y pulsa enter, la lista de artículos está vacía_. Sin embargo, eso sería perjudicial porque nos alejaría de la persona que define lo que debe hacer la aplicación y resultaría más _frágil_, es decir, en cuanto decidiéramos cambiar la implementación, por ejemplo, supongamos que las direcciones se introducen arrastrándolas a una zona de la aplicación, tendríamos que reescribir el documento.
 
