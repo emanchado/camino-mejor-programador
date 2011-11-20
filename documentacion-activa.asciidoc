@@ -12,7 +12,7 @@ Para tener una cierta confianza en que la aplicación resuelve un cierto problem
 
 La pruebas funcionales han de mantenerse al día y evolucionar con los cambios de la aplicación y sus requisitos. Otro de los retos es que sean correctas, es decir, que el comportamiento que esten verificando sea realmente el que se requiere de la aplicación.
 
-Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de posibles regresiones.
+Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de que algo que funcionaba deje de hacerlo, es decir, de posibles _regresiones_.
 
 
 neverread
@@ -20,9 +20,17 @@ neverread
 
 Supongamos que tenemos un cliente con falta de tiempo para leer artículos de Internet. 
 
+____________________________________________________________________
 -Tantos artículos interesantes, no tengo tiempo para leerlos, pero tampoco puedo ignorarlos. Me gustaría tener una aplicación en la que copiar la dirección del artículo que me interese.
 
-La conversación continúa, y de esta conseguimos extraer un criterio de aceptación concreto:
+-¡Ah!, ¿quieres una aplicación que te permita almacenar enlaces a artículos? La aplicación mantendría una lista con los artículos almacenados, a la que luego podrías acceder cuando tengas tiempo y leer los artículos...
+
+-No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre.
+
+-Er... vale.
+____________________________________________________________________
+
+De la conversación hemos conseguido extraer un criterio de aceptación:
 ____
 Por mucho que añadamos artículos, la lista deberá permanecer vacía.
 ____
