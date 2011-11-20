@@ -151,9 +151,9 @@ Veamos qué es lo que está pasando aquí. Hemos escrito el criterio de aceptaci
 
 Cuando ejecutamos `ListaPermaneceVaciaTest`:
 
-. Concordion procesa el html
-. Concordion detecta la marca `concordion:set="#url"` y guarda el contenido de esa marca html ``art.culo/interesante.html'' en una variable `#url`
-. Concordion detecta la marca `concordion:assertEquals="articleListAfterAdding(#url)"`, por lo busca en la clase de acompañamiento un método denominado `articleListAfterAdding` y lo ejecuta, pasándole el contenido de `#url` como parámetro
+. Concordion procesa el html.
+. Concordion detecta la marca `concordion:set="#url"` y guarda el contenido de esa marca html ``art.culo/interesante.html'' en la variable de Concordion `#url`
+. Concordion detecta la marca `concordion:assertEquals="articleListAfterAdding(#url)"`, por lo que busca en la clase de acompañamiento un método denominado `articleListAfterAdding` y lo ejecuta, pasándole el contenido de `#url` como parámetro.
 . El método `articleListAfterAdding` simula la acción de un usuario que introduce `url` y obtiene la lista de artículos resultante.
 . Mediante `convertListOfArticlesToString`, transformamos la lista producida por WebDriver en una representación textual que pueda ser comparada con el texto del html. Hemos decidido que la representación textual de una lista vacía sea ``vacía''.
 . El método `articleListAfterAdding` retorna, devolviendo una cadena (en este caso ``vacía'') que es comparada con el contenido de la marca html en el que se encontró `concordion:assertEquals`
