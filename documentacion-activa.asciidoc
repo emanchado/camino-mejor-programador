@@ -197,7 +197,7 @@ La capa de abstracción en términos de lenguaje del dominio es la opción más 
 Pruebas asíncronas
 ------------------
 
-En las secciones anteriores nos hemos permitido hacer un poco _trampas_ que deberíamos descubrir antes de cerrar el artículo. Supongamos que el desarrollador, al escribir el código de la aplicación comete una equivocación por no entender debidamente lo que necesita el cliente; decide hacer una aplicación que _añade_ los artículos a una lista de artículos a leer.  Nuestras pruebas funcionales deberían deberían detectar este error marcando la aserción en rojo. Sin embargo, nos encontramos con que la pruebas pasan.
+En las secciones anteriores nos hemos permitido hacer un poco _trampas_ que deberíamos descubrir antes de cerrar el artículo. Supongamos que el desarrollador, al escribir el código de la aplicación comete una equivocación por no entender debidamente lo que necesita el cliente; decide hacer una aplicación que _añade_ los artículos a una lista de artículos a leer.  Nuestras pruebas funcionales deberían detectar este error marcando la aserción en rojo. Sin embargo, nos encontramos con que la pruebas pasan.
 
 Evidentemente, nuestras pruebas funcionales no son correctas, esto se debe a que estamos verificando que el estado de la lista de artículos es el mismo después de entrar el nuevo artículo que antes de entrarlo, y la prueba verifica la condición antes de que la aplicación tenga tiempo de añadir erróneamente artículos a la lista.
 
