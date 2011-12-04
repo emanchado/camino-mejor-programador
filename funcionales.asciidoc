@@ -11,22 +11,22 @@ patrones, buenas costumbres y lecciones que podemos aplicar a muchos otros
 lenguajes.
 
 Es difícil trazar una línea clara entre los lenguajes funcionales y los
-lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang, Scala y Clojure como
-los lenguajes funcionales más populares actualmente. Muchos lenguajes de
-programación populares tienen algunos rasgos funcionales, como Javascript, Ruby
-y Python. Los lenguajes funcionales (o, en general, de cualquier paradigma al
-que no estemos acostumbrados) nos puede dar ideas que podemos publicar no
-solamente en estos lenguajes que tienen rasgos funcionales, sino en casi
-cualquier lenguaje.
+lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang, Scala y
+Clojure como los lenguajes funcionales más populares actualmente. Muchos
+lenguajes de programación populares tienen algunos rasgos funcionales, como
+Javascript, Ruby y Python. Los lenguajes funcionales (o, en general, de
+cualquier paradigma al que no estemos acostumbrados) nos puede dar ideas que
+podemos publicar no solamente en estos lenguajes que tienen rasgos funcionales,
+sino en casi cualquier lenguaje.
 
-Aprender un lenguaje funcional lo suficiente como para tener unas nociones e inspirarse, no
-tiene por qué llevar mucho tiempo. Además, no sólo disponemos de internet, sino
-de excelentes libros que están pensados precisamente para programadores que
-vienen de otros lenguajes. El resto de este artículo explora algunas técnicas,
-buenas costumbres e ideas comunes en lenguajes funcionales, que podemos aplicar
-fácilmente en otros lenguajes. Por supuesto, algunas de estas lecciones se
-pueden aprender simplemente por experiencia, y no son necesariamente exclusivas
-de los lenguajes funcionales.
+Aprender un lenguaje funcional lo suficiente como para tener unas nociones e
+inspirarse, no tiene por qué llevar mucho tiempo. Además, no sólo disponemos de
+internet, sino de excelentes libros que están pensados precisamente para
+programadores que vienen de otros lenguajes. El resto de este artículo explora
+algunas técnicas, buenas costumbres e ideas comunes en lenguajes funcionales,
+que podemos aplicar fácilmente en otros lenguajes. Por supuesto, algunas de
+estas lecciones se pueden aprender simplemente por experiencia, y no son
+necesariamente exclusivas de los lenguajes funcionales.
 
 Los lenguajes son diferentes
 ----------------------------
@@ -40,13 +40,14 @@ Así, cuando aprendemos un lenguaje nuevo es un error verlo como «una nueva
 sintaxis»: aprender un lenguaje bien, nos hace cambiar cómo pensamos y cómo
 resolvemos los problemas. Por ejemplo, digamos que empezamos a aprender Lisp y
 que sólo conocemos lenguajes imperativos «clásicos» como C o Java. Como parte
-de un programa que estamos escribiendo, tenemos una función que calcula el valor
-total a pagar por unos artículos. Dado el importe de cada artículo, el número
-de artículos, el porcentaje de impuesto, y el límite pasado el cual hay que
-aplicar el impuesto (p.ej.: tenemos 2 artículos a 5 euros cada uno, un
-impuesto del 10% y un límite de 8 euros; el precio final será 11. Si el límite fuese 15,
-el precio final sería 10 porque no se aplicaría el impuesto). Una forma de
-escribirla en Lisp sería la siguiente:
+de un programa que estamos escribiendo, tenemos una función que calcula el
+valor total a pagar por unos artículos. Los parámetros de entrada son el
+importe de cada artículo, el número de artículos, el porcentaje de impuesto, y
+el límite pasado el cual hay que aplicar el impuesto (p.ej.: tenemos 2
+artículos a 5 euros cada uno, un impuesto del 10% y un límite de 8 euros; el
+precio final será 11. Si el límite fuese 15 euros, el precio final sería 10
+porque no se aplicaría el impuesto). Una forma de escribirla en Lisp sería la
+siguiente:
 
 [source,lisp]
 ._Mal_ ejemplo de cómo resolverlo en Lisp
@@ -306,7 +307,32 @@ Cuando se vuelve a llamar a la función con los mismos parámetros, en vez de
 ejecutar el cuerpo de la función, se devuelve el valor recordado. Si la función
 no produce ningún efecto colateral, esta técnica es perfectamente segura porque
 está garantizado que los mismos parámetros de entrada siempre producen el mismo
-resultado.
+resultado. Un ejemplo muy sencillo de memorización en Javascript es la
+siguiente implementación de la serie de Fibonacci:
+
+[source,javascript]
+.Implementación de la serie de Fibonacci con memorización
+----------------------------------
+fibonacciCache = {0: 1, 1: 1};
+
+function fibonacci(pos) {
+  if (pos < 0) {
+    throw "La serie de Fibonacci sólo está definida para números naturales";
+  }
+
+  if (! fibonacciCache.hasOwnProperty(pos)) {
+    console.log("Calculo el resultado para la posición " + pos);
+    fibonacciCache[pos] = fibonacci(pos - 1) + fibonacci(pos - 2);
+  }
+
+  return fibonacciCache[pos];
+}
+----------------------------------
+
+Si se copia este código en una consola Javascript (digamos, Node) y se hacen
+distintas llamadas a la función +fibonacci+, se podrá comprobar (gracias a los
+mensajes impresos por +console.log+) que cada posición de la serie sólo se
+calcula una vez.
 
 En lenguajes dinámicos como Python, Ruby o Javascript, es relativamente
 sencillo escribir una función que reciba otra función como parámetro y le
@@ -493,7 +519,7 @@ Bibliografía
   http://www.paulgraham.com/onlisp.html
 - [[[landoflisp]]] Conrad Barski 'Land of Lisp' No Starch Press. ISBN
   978-1-59327-281-4. http://landoflisp.com/
-- [[[learnhaskell]]] Miran Lipova?a 'Learn You a Haskell for Great Good!' No
+- [[[learnhaskell]]] Miran Lipovača 'Learn You a Haskell for Great Good!' No
   Starch Press. ISBN 978-1-59327-283-8. http://learnyouahaskell.com/
 - [[[progscala]]] Dean Wampler and Alex Payne 'Programming Scala' O'Reilly
   Media.  ISBN 978-0-596-15595-7. http://ofps.oreilly.com/titles/9780596155957/
