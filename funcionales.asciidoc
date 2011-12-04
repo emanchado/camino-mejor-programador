@@ -11,7 +11,7 @@ patrones, buenas costumbres y lecciones que podemos aplicar a muchos otros
 lenguajes.
 
 Es difícil trazar una línea clara entre los lenguajes funcionales y los
-lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang y Scala como
+lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang, Scala y Clojure como
 los lenguajes funcionales más populares actualmente. Muchos lenguajes de
 programación populares tienen algunos rasgos funcionales, como Javascript, Ruby
 y Python. Los lenguajes funcionales (o, en general, de cualquier paradigma al
@@ -19,8 +19,8 @@ que no estemos acostumbrados) nos puede dar ideas que podemos publicar no
 solamente en estos lenguajes que tienen rasgos funcionales, sino en casi
 cualquier lenguaje.
 
-Aprender un lenguaje funcional lo suficiente como para aprender e inspirarse no
-tiene por qué llevar mucho tiempo. Además, disponemos no sólo de internet, sino
+Aprender un lenguaje funcional lo suficiente como para tener unas nociones e inspirarse, no
+tiene por qué llevar mucho tiempo. Además, no sólo disponemos de internet, sino
 de excelentes libros que están pensados precisamente para programadores que
 vienen de otros lenguajes. El resto de este artículo explora algunas técnicas,
 buenas costumbres e ideas comunes en lenguajes funcionales, que podemos aplicar
@@ -37,15 +37,15 @@ se puede decir que sus «hablantes» tienen una cierta «cultura» diferente de 
 «hablantes» de otros lenguajes.
 
 Así, cuando aprendemos un lenguaje nuevo es un error verlo como «una nueva
-sintaxis»: aprender un lenguaje bien nos hace cambiar cómo pensamos y cómo
+sintaxis»: aprender un lenguaje bien, nos hace cambiar cómo pensamos y cómo
 resolvemos los problemas. Por ejemplo, digamos que empezamos a aprender Lisp y
 que sólo conocemos lenguajes imperativos «clásicos» como C o Java. Como parte
-de un programa que estamos escribiendo tenemos una función que calcula el valor
-total a pagar por unos artículos, dado el importe de cada artículo, el número
+de un programa que estamos escribiendo, tenemos una función que calcula el valor
+total a pagar por unos artículos. Dado el importe de cada artículo, el número
 de artículos, el porcentaje de impuesto, y el límite pasado el cual hay que
 aplicar el impuesto (p.ej.: tenemos 2 artículos a 5 euros cada uno, un
-impuesto del 10% y un límite de 8, el precio final será 11; si el límite es 15,
-el precio final será 10 porque no se aplica el impuesto). Una forma de
+impuesto del 10% y un límite de 8 euros; el precio final será 11. Si el límite fuese 15,
+el precio final sería 10 porque no se aplicaría el impuesto). Una forma de
 escribirla en Lisp sería la siguiente:
 
 [source,lisp]
@@ -61,7 +61,7 @@ escribirla en Lisp sería la siguiente:
 Sin embargo, si escribimos la función así no aprendemos nada nuevo y mostramos
 nuestro «acento extranjero» al escribir Lisp. Este código no es legible ni para
 programadores de Java ni para programadores de Lisp, y además no aprovechamos
-las ventajas del lenguaje, mientras que no evitamos sus desventajas.
+las ventajas del lenguaje, mientras que sufrimos sus desventajas.
 Simplemente usamos Lisp como «un mal Java». Compárese el anterior código con el
 siguiente:
 
@@ -189,7 +189,7 @@ Otra ventaja de abstraer funciones de esta manera es que estas funciones
 normalmente son bastante fáciles de probar, porque tienden a tener interfaces
 sencillas y responsabilidades claras. En el caso de lenguajes que tienen una
 consola interactiva (como Lisp, Python, Ruby y otros) es fácil experimentar con
-la función y ver lo que hace, y facilita escribir pruebas unitarias en
+la función y ver lo que hace, facilitando la escritura de pruebas unitarias en
 cualquier lenguaje. Especialmente si evitamos los efectos colaterales, como
 veremos en el siguiente apartado.
 
@@ -419,8 +419,8 @@ eficiencia. En otros casos, legibilidad. Cuando no tenemos que preocuparnos por
 la memoria o ciclos de CPU usados por nuestra función, podemos hacer que
 devuelvan (teóricamente) listas o estructuras infinitas, las cuales pueden ser
 más fáciles de leer o implementar en algunos casos.  Aunque no es el ejemplo
-más claro de legibilidad de la evaluación perezosa, entender la siguiente
-implementación de la serie de Fibonacci aclarará la diferencia con la
+más claro de legibilidad de evaluación perezosa, entender la siguiente
+implementación de la serie de Fibonacci, aclarará la diferencia con la
 evaluación estricta. Nótese que la función calcula la serie _entera_, es decir,
 una lista _infinita_:
 
@@ -493,7 +493,7 @@ Bibliografía
   http://www.paulgraham.com/onlisp.html
 - [[[landoflisp]]] Conrad Barski 'Land of Lisp' No Starch Press. ISBN
   978-1-59327-281-4. http://landoflisp.com/
-- [[[learnhaskell]]] Miran Lipovača 'Learn You a Haskell for Great Good!' No
+- [[[learnhaskell]]] Miran Lipova?a 'Learn You a Haskell for Great Good!' No
   Starch Press. ISBN 978-1-59327-283-8. http://learnyouahaskell.com/
 - [[[progscala]]] Dean Wampler and Alex Payne 'Programming Scala' O'Reilly
   Media.  ISBN 978-0-596-15595-7. http://ofps.oreilly.com/titles/9780596155957/
