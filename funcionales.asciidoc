@@ -438,7 +438,10 @@ ejecutará la primera hasta que el cuarto elemento sea calculado.  Es decir:
 Haskell no ejecutará, como la mayoría de los lenguajes, la primera función
 hasta que _devuelva_ su valor (una lista de 10 elementos); sólo ejecutará la
 función hasta que se _genere_ el cuarto elemento de la lista, que es lo único
-que necesita para continuar la ejecución del programa principal.
+que necesita para continuar la ejecución del programa principal. En este
+sentido, la primera función es como una expresión matemática: inicialmente
+Haskell no conoce el valor de la expresión, y sólo calculará la parte de ésta
+que necesite. En este caso, los cuatro primeros elementos.
 
 ¿Cuál es la ventaja de la evaluación perezosa? En la mayoría de los casos,
 eficiencia. En otros casos, legibilidad. Cuando no tenemos que preocuparnos por
@@ -463,36 +466,39 @@ decir, si +lista+ es +(1 2 3)+, +tail lista+ es +(2 3)+.
 2. +zipWith+ calcula, dada una operación y dos listas, una lista que tiene:
 como primer elemento, el resultado de aplicar la operación dada al primer
 elemento de las dos listas; como segundo el resultado de aplicar la operación
-al segundo elemento de las dos listas; etc. Así, +zipWith+ llamado con la suma
-y las listas +(1 2 3)+ y +(0 1 5)+ resultaría en +(1 3 8)+.
+al segundo elemento de las dos listas; etc. Así, +zipWith+ llamado con la
+función suma y las listas +(1 2 3)+ y +(0 1 5)+ resultaría en +(1 3 8)+.
 3. Cada elemento de la lista devuelta por +fibs+ se calculará individualmente,
 y estará disponible en memoria sin necesidad de volver a ejecutar el código de
 la función.
 
 Así, lo que ocurre es:
 
-1. Haskell empieza a construir una lista con los elementos +0+ y +1+.
-2. El tercer elemento será el primer elemento de la expresión +zipWith ...+.
+1. Haskell empieza a construir una lista con los elementos +0+ y +1+. En este
+punto, +fibs = (0 1)+.
+2. El tercer elemento será el primer elemento de la subexpresión +zipWith ...+.
 Para calcularlo, necesitamos la lista +fibs+ (por ahora +(0 1)+, ya que sólo
 conocemos dos elementos) y +tail fibs+ (por ahora +(1)+). Al sumar el primer
-elemento de cada una de esas listas (+0+ y +1+), el resultado es +1+.
-3. Para el cuarto elemento (el segundo elemento de +zipWidth ...+),
-necesitaremos el segundo elemento de +fibs+ y el segundo elemento de +tail
-fibs+. El segundo elemento de +tail fibs+ es el tercer elemento de +fibs+, que
-ya conocemos porque lo calculamos en el paso anterior. Nótese que _no_ hay
-ninguna llamada recursiva, los valores que necesitamos ya están disponibles en
-memoria. La evaluación perezosa funciona como una función matemática: no hace
-falta que volvamos a calcular un valor si ya sabemos el resultado.
+elemento de cada una de esas listas (+0+ y +1+), el resultado es +1+. En este
+punto, +fibs = (0 1 1)+ y la subexpresión +zipWith ... = (1)+.
+3. El cuarto elemento de +fibs+ es el segundo elemento de +zipWidth ...+. Para
+calcularlo necesitaremos el segundo elemento de +fibs+ y el segundo elemento de
++tail fibs+. El segundo elemento de +tail fibs+ es el tercer elemento de
++fibs+, que ya conocemos porque lo calculamos en el paso anterior. Nótese que
+_no_ hace falta ninguna llamada recursiva porque los valores que necesitamos ya
+están calculados. La evaluación perezosa funciona como una función matemática:
+no hace falta que volvamos a calcular un valor si ya sabemos el resultado. En
+este punto, +fibs = (0 1 1 2)+ y la subexpresión +zipWith ... = (1 2)+.
 4. Para el quinto elemento (el tercero de +zipWidth+), necesitaremos el tercer
 y cuarto elementos de +fibs+, que llegados a este punto ya conocemos porque
 los hemos calculado en los pasos anteriores. Y así sucesivamente.
 
-Estos pasos se irán ejecutando hasta que se obtenga el elemento de +fibs+ que
-se necesite. Es decir, si asignamos +fibs+ a una variable pero nunca la usamos,
-el código no se ejecutará en absoluto; si usamos el valor del tercer elemento
-de la serie en algún cálculo, sólo se ejecutarán los dos primeros pasos
-descritos arriba; etc. En ningún caso se intenta ejecutar +fibs+ hasta que
-devuelva «el valor completo».
+Estos pasos no se ejecutan indefinidamente: se irán ejecutando hasta que se
+obtenga el elemento de +fibs+ que se necesite. Es decir, si asignamos +fibs+ a
+una variable pero nunca la usamos, el código no se ejecutará en absoluto; si
+usamos el valor del tercer elemento de la serie en algún cálculo, sólo se
+ejecutarán los dos primeros pasos descritos arriba; etc. En ningún caso se
+intenta ejecutar +fibs+ hasta que devuelva «el valor completo».
 
 La evaluación perezosa se puede ver como aplicar la técnica de «memorización»
 automáticamente a todo el lenguaje. Un posible uso es calcular tablas de
