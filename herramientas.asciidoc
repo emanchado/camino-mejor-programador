@@ -193,23 +193,26 @@ herramientas de trabajo ahorra tiempo a la larga.
 [bibliography]
 Bibliografía
 ------------
-- [[[emacswiki]]] El Wiki de Emacs http://emacswiki.org/
 - [[[viunixworld]]] Walter Alan Zintz 'The Vi/Ex Editor'.
   http://www.networkcomputing.com/unixworld/tutorial/009/009.html
+- [[[emacswiki]]] El Wiki de Emacs http://emacswiki.org/
+- [[[boostvim]]] Vincent Driessen 'How I boosted my Vim'
+  http://nvie.com/posts/how-i-boosted-my-vim/
 - [[[effectiveemacs]]] Steve Yegge 'Effective Emacs'
   http://sites.google.com/site/steveyegge2/effective-emacs
 - [[[vimcasts]]] 'Vimcasts'
   http://vimcasts.org/
-- [[[masteringemacs]]] 'Mastering Emacs'
-  http://www.masteringemacs.org
 - [[[emacsrocks]]] 'Emacs rocks'
   http://emacsrocks.com/
+- [[[masteringemacs]]] 'Mastering Emacs'
+  http://www.masteringemacs.org
 - [[[regularexpressions]]] Jeffrey E.F. Friedl 'Mastering Regular Expressions'
   O'Reilly Media. ISBN 0-596-00289-0
   http://shop.oreilly.com/product/9780596002893.do
 - [[[emacsrebuilder]]] 're-builder: the Interactive regexp builder'
   http://www.masteringemacs.org/articles/2011/04/12/re-builder-interactive-regexp-builder/
 - [[[ctags]]] Wikipedia 'Ctags' http://en.wikipedia.org/wiki/Ctags
+- [[[vimscripts]] Vim Scripts http://www.vim.org/scripts/
 - [[[emacsorgmode]]] Org mode para Emacs http://orgmode.org/
 - [[[emacsnxmlmode]]] nXML mode para Emacs
   http://www.thaiopensource.com/nxml-mode/
