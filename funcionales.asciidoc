@@ -417,8 +417,8 @@ function soloConPermiso(permiso, usuario, f) {
 }
 ----------------------------------
 
-A partir de Ecmascript 5, la clase +Array+ dispone de varios métodos de orden
-superior que facilitan mucho usar un estilo funcional para resolver problemas.
+A partir de Ecmascript 5, la clase +Array+ añade varios métodos de orden
+superior que son comunes en la programación funcional.
 
 
 Evaluación perezosa
