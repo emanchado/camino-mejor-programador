@@ -397,22 +397,26 @@ casos muy especiales. Pueden ser usos tan comunes y sencillos como el siguiente
 ejemplo en Javascript:
 
 [source,javascript]
-.Escribir funciones de orden superior en Javascript
+.Funciones de orden superior en Javascript
 ----------------------------------
 // Queremos poder escribir el siguiente código
-soloConPermiso('lectura', usuario, function() {
-    // ...
-    mostrarDatos();
-    // ...
+var coleccionComics = new BaseDatos('comics');
+coleccionComics.alAgregar(function(comic) {
+    console.log("Nuevo cómic añadido: " + comic.titulo);
 });
+// La siguiente línea debería imprimir «Nuevo cómic...» en la consola
+coleccionComics.agregar({titulo: "Batman: The Dark Knight Returns",
+                         autor:  "Frank Miller"});
 
-// La implementación es muy sencilla
-function soloConPermiso(permiso, usuario, f) {
-    if (usuario.tienePermiso(permiso))) {
-        // Sólo llamamos a la función f si los permisos son correctos
-        f();
-    } else {
-        alert("Acceso denegado, necesitas el permiso '" + permiso + "'");
+// La implementación de alAgregar puede ser muy sencilla
+function alAgregar(funcion) {
+    this.funcionAgregar = funcion;
+}
+// La implementación de agregar también
+function agregar(objeto) {
+    this.datos.push(objeto);
+    if (typeof(this.funcionAgregar) === 'function') {
+        this.funcionAgregar(objeto);
     }
 }
 ----------------------------------
