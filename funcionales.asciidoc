@@ -51,13 +51,13 @@ siguiente:
 
 [source,lisp]
 ._Mal_ ejemplo de cómo resolverlo en Lisp
-(defun calcularprecioMAL (importe narticulos limite impuestoporciento)
-  (setq preciototal (* importe narticulos))
-  (if (> preciototal limite)
+(defun calculate-price-BAD (cost nitems limit percent-tax)
+  (setq total-price (* cost nitems))
+  (if (> total-price limit)
       (progn
-        (setq impuesto (* preciototal (/ impuestoporciento 100)))
-        (setq preciototal (+ preciototal impuesto))))
-  preciototal)
+        (setq tax (* total-price (/ percent-tax 100)))
+        (setq total-price (+ total-price tax))))
+  total-price)
 
 Sin embargo, si escribimos la función así no aprendemos nada nuevo y mostramos
 nuestro «acento extranjero» al escribir Lisp. Este código no es legible ni para
@@ -68,12 +68,12 @@ siguiente:
 
 [source,lisp]
 .Solución usando Lisp de una forma más convencional
-(defun calcularprecio (importe narticulos limite impuestoporciento)
-  (let* ((preciototal (* importe narticulos))
-         (impuesto    (* preciototal (/ impuestoporciento 100))))
-    (if (> preciototal limite)
-      (+ preciototal impuesto)
-      preciototal)))
+(defun calculate-price (cost nitems limit percent-tax)
+  (let* ((total-price (* cost nitems))
+         (tax         (* total-price (/ percent-tax 100))))
+    (if (> total-price limit)
+      (+ total-price tax)
+      total-price)))
 
 Este código se parece más a lo que muchos programadores de Lisp esperarían o
 escribirían ellos mismos, y a la mayoría de las personas que sepan un poco de
@@ -86,7 +86,7 @@ Lisp que no son tan comunes en lenguajes no funcionales:
 
 1. No usar variables, sino «valores con nombre». O, dicho de otra manera,
 evitar asignar más de una vez a cada variable. Esto se puede ver en el bloque
-+let*+: las dos «variables» del bloque, +preciototal+ e +impuesto+, nunca
++let*+: las dos «variables» del bloque, +total-price+ y +tax+, nunca
 reciben otros valores. Así, el contenido del bloque +let*+ contiene una lista
 de valores con nombres simbólicos, lo que hace el código más claro y
 mantenible.
@@ -112,21 +112,20 @@ significado de las operaciones.
 Si lo pensamos en castellano, el primer ejemplo sería algo así:
 
 [quote]
-Primero multiplicamos el +importe+ por +narticulos+ para calcular el precio
-base, y lo guardamos en +preciototal+. Si éste está por encima del +limite+,
-entonces primero calculamos el +impuesto+ a base de multiplicar el
-+preciototal+ por +impuestoporciento+ dividido por 100, y luego guardamos en
-+preciototal+ la suma del antiguo +preciototal+ más +impuesto+. El resultado es
-el valor guardado en +preciototal+ al final del proceso.
+Primero multiplicamos +cost+ por +nitems+ para calcular el precio base, y lo
+guardamos en +total-price+. Si éste está por encima del +limit+, entonces
+primero calculamos el +tax+ a base de multiplicar el +total-price+ por
++percent-tax+ dividido por 100, y luego guardamos en +total-price+ la suma del
+antiguo +total-price+ más +tax+. El resultado es el valor guardado en
++total-price+ al final del proceso.
 
 El segundo ejemplo, en cambio, sería algo así:
 
 [quote]
-El resultado es la suma de +preciototal+ e +impuesto+ si +preciototal+ está por
-encima de +limite+, o +preciototal+ en caso contrario. En la frase anterior,
-+preciototal+ es la multiplicación de +importe+ por +narticulos+, e +impuesto+
-es la multiplicación de +preciototal+ por +impuestoporciento+ dividido entre
-100.
+El resultado es la suma de +total-price+ y +tax+ si +total-price+ está por
+encima de +limit+, o +total-price+ en caso contrario. Definimos
++total-price+ como la multiplicación de +cost+ por +nitems+, y +tax+
+como la multiplicación de +total-price+ por +percent-tax+ dividido por 100.
 
 Nótese cómo en la segunda explicación podemos dejar para el final la
 explicación de los valores declarados en el bloque +let*+. En muchos casos, y
@@ -167,19 +166,19 @@ ejemplo en castellano, tal y como hicimos en el anterior apartado):
 .Solución abstrayendo el cálculo de porcentajes
 ----------------------------------
 ; En el caso de Lisp, podríamos haber llamado a esta función '%', de modo que
-; la llamada de abajo quedaría '(% impuestoporciento preciototal)'
-(defun porciento (tantoporciento cantidad)
-  (* cantidad (/ tantoporciento 100)))
+; la llamada de abajo quedaría '(% percent-tax total-price)'
+(defun percentage (tantoporciento amount)
+  (* amount (/ tantoporciento 100)))
 
-(defun calcularprecio (importe narticulos limite impuestoporciento)
-  (let* ((preciototal (* importe narticulos))
-         (impuesto    (porciento impuestoporciento preciototal)))
-    (if (> preciototal limite)
-      (+ preciototal impuesto)
-      preciototal)))
+(defun calculate-price (cost nitems limit percent-tax)
+  (let* ((total-price (* cost nitems))
+         (tax         (percentage percent-tax total-price)))
+    (if (> total-price limit)
+      (+ total-price tax)
+      total-price)))
 ----------------------------------
 
-Calcular un tanto por ciento es trivial, y por escribir la función +porciento+
+Calcular un tanto por ciento es trivial, y por escribir la función +percentage+
 no estamos ahorrando líneas de código, pero cada segundo que ahorramos en
 entender trivialidades al leer la fuente es un segundo más que podemos dedicar
 a asuntos más importantes. Y el tiempo que necesitamos para entender código sin
@@ -229,22 +228,22 @@ Veamos un ejemplo de efectos colaterales en Python. El método +sort+,
 desgraciadamente, modifica la lista sobre la que se llama. Esto puede
 producir sorpresas desagradables, como veremos en el primer ejemplo. Digamos
 que estamos escribiendo un programa para gestionar competiciones de carreras y
-escribimos una función +mejortiempo+ que recibe una lista de números y devuelve
+escribimos una función +best_time+ que recibe una lista de números y devuelve
 el menor (obviamos la existencia de la función +min+ para hacer el ejemplo más
 ilustrativo):
 
 [source,python]
 .Sorpresa desagradable debida a un efecto colateral
 ----------------------------------
-def mejor_tiempo_MAL(lista):
-  if len(lista) == 0:     
+def best_time_BAD(list):
+  if len(list) == 0:
     return None
-  lista.sort()
-  return lista[0]
+  list.sort()
+  return list[0]
 
-tiempos = [5, 9, 4, 6, 10, 8]
-mejor_tiempo_MAL(tiempos)  # Devuelve 4
-print tiempos              # ¡Esto imprime "[4, 5, 6, 8, 9, 10]"!
+times = [5, 9, 4, 6, 10, 8]
+best_time_BAD(times)  # Devuelve 4
+print times           # ¡Esto imprime "[4, 5, 6, 8, 9, 10]"!
 ----------------------------------
 
 Una forma de resolver este problema es usar la función +sorted+ en vez del
@@ -253,14 +252,14 @@ método +sort+:
 [source,python]
 .Mejor implementación, sin efectos colaterales
 ----------------------------------
-def mejor_tiempo(lista):
-  if len(lista) == 0:
+def best_time(list):
+  if len(list) == 0:
     return None
-  return sorted(lista)[0]
+  return sorted(list)[0]
 
-tiempos = [5, 9, 4, 6, 10, 8]
-mejor_tiempo(tiempos)  # Devuelve 4
-print tiempos          # Imprime "[5, 9, 4, 6, 10, 8]"
+times = [5, 9, 4, 6, 10, 8]
+best_time(times)  # Devuelve 4
+print times       # Imprime "[5, 9, 4, 6, 10, 8]"
 ----------------------------------
 
 En Ruby normalmente se usa la convención de añadir un «!» al final del nombre
@@ -274,41 +273,41 @@ siguiente manera:
 ----------------------------------
 require 'pp'             # Pretty printer
 
-def mejor_tiempo_MAL(lista)
-  if lista.empty?
+def best_time_BAD(list)
+  if list.empty?
     nil
   else
-    lista.sort!          # «sort!», ¡con efectos colaterales!
-    lista[0]
+    list.sort!          # «sort!», ¡con efectos colaterales!
+    list[0]
   end
 end
 
-tiempos = [5, 9, 4, 6, 10, 8]
-mejor_tiempo_MAL(tiempos)  # Devuelve 4
-pp tiempos                 # Imprime "[4, 5, 6, 8, 9, 10]"
+times = [5, 9, 4, 6, 10, 8]
+best_time_BAD(times)  # Devuelve 4
+pp times              # Imprime "[4, 5, 6, 8, 9, 10]"
 
-def mejor_tiempo(lista)
-  if lista.empty?
+def best_time(list)
+  if list.empty?
     nil
   else
-    lista.sort[0]       # «sort», sin «!»
+    list.sort[0]       # «sort», sin «!»
   end
 end
 
-tiempos2 = [5, 9, 4, 6, 10, 8]
-mejor_tiempo(tiempos2)  # Devuelve 4
-pp tiempos2             # Imprime "[5, 9, 4, 6, 10, 8]"
+times2 = [5, 9, 4, 6, 10, 8]
+best_time(times2)  # Devuelve 4
+pp times2          # Imprime "[5, 9, 4, 6, 10, 8]"
 ----------------------------------
 
 Por último, evitar efectos colaterales permite a las funciones usar una técnica
-de optimización llamada «memorización» («memoization» en inglés). Esta técnica
-consiste en recordar el valor retornado por la función cada vez que se llama.
-Cuando se vuelve a llamar a la función con los mismos parámetros, en vez de
-ejecutar el cuerpo de la función, se devuelve el valor recordado. Si la función
-no produce ningún efecto colateral, esta técnica es perfectamente segura porque
-está garantizado que los mismos parámetros de entrada siempre producen el mismo
-resultado. Un ejemplo muy sencillo de memorización en Javascript es la
-siguiente implementación de la serie de Fibonacci:
+de optimización llamada «memorización» (_memoization_ en inglés). Esta
+técnica consiste en recordar el valor retornado por la función cada vez que se
+llama.  Cuando se vuelve a llamar a la función con los mismos parámetros, en
+vez de ejecutar el cuerpo de la función, se devuelve el valor recordado. Si la
+función no produce ningún efecto colateral, esta técnica es perfectamente
+segura porque está garantizado que los mismos parámetros de entrada siempre
+producen el mismo resultado. Un ejemplo muy sencillo de memorización en
+Javascript es la siguiente implementación de la serie de Fibonacci:
 
 [source,javascript]
 .Implementación de la serie de Fibonacci con memorización
@@ -365,23 +364,23 @@ que permite escribir código bastante compacto y expresivo:
 .Métodos de orden superior en Ruby
 ----------------------------------
 # Comprobar si todas las palabras tienen menos de 5 letras
-if palabras.all? {|pal| pal.length < 5 }
+if words.all? {|w| w.length < 5 }
    # ...
 end
 
 # Comprobar si el cliente tiene algún envío pendiente
-if cliente.pedidos.any? {|p| not p.enviado? }
+if customer.orders.any? {|o| not o.sent? }
    # ...
 end
 
-# Obtener los suspensos del alumno
-asignaturas_suspendidas = alumno.asignaturas.find_all {|asig| asig.nota < 5 }
+# Obtener las asignaturas suspendidas por un alumno
+failed_subjects = student.subjects.find_all {|s| s.mark < 5 }
 
 # Dividir los candidatos entre los que saben más de dos idiomas y los demás
-poliglotas, otros = candidatos.partition {|c| c.idiomas.length > 2 }
+polyglots, others = candidates.partition {|c| c.languages.length > 2 }
 
 # Obtener una versión en mayúsculas de las palabras de la lista
-gritos = ["hoygan", "kiero", "hanime", "gratix"].map {|p| p.upcase}
+shouts = ["hoygan", "kiero", "hanime", "gratix"].map {|w| w.upcase}
 ----------------------------------
 
 El código equivalente que habría que escribir para conseguir el mismo resultado
@@ -400,23 +399,23 @@ ejemplo en Javascript:
 .Funciones de orden superior en Javascript
 ----------------------------------
 // Queremos poder escribir el siguiente código
-var coleccionComics = new BaseDatos('comics');
-coleccionComics.alAgregar(function(comic) {
-    console.log("Nuevo cómic añadido: " + comic.titulo);
+var comicCollection = new Database('comics');
+comicCollection.onAdd(function(comic) {
+    console.log("Nuevo cómic añadido: " + comic.title);
 });
 // La siguiente línea debería imprimir «Nuevo cómic...» en la consola
-coleccionComics.agregar({titulo: "Batman: The Dark Knight Returns",
-                         autor:  "Frank Miller"});
+comicCollection.add({title:  "Batman: The Dark Knight Returns",
+                     author: "Frank Miller"});
 
-// La implementación de alAgregar puede ser muy sencilla
-function alAgregar(funcion) {
-    this.funcionAgregar = funcion;
+// La implementación de onAdd puede ser muy sencilla
+Database.prototype.onAdd = function(f) {
+    this.onAddFunction = f;
 }
-// La implementación de agregar también
-function agregar(objeto) {
-    this.datos.push(objeto);
-    if (typeof(this.funcionAgregar) === 'function') {
-        this.funcionAgregar(objeto);
+// La implementación de add también
+Database.prototype.add = function(obj) {
+    this.data.push(obj);
+    if (typeof(this.onAddFunction) === 'function') {
+        this.onAddFunction(obj);
     }
 }
 ----------------------------------
