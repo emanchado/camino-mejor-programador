@@ -3,7 +3,7 @@ Siete problemas al probar programas
 Esteban Manchado_Velázquez <emanchado@demiurgo.org>
 
 La mayoría de los profesionales de la informática coincidirán en que probar es
-una de las tareas fundamentales del desarrollo, pero si ya es díficil aprender
+una de las tareas fundamentales del desarrollo, pero si ya es difícil aprender
 técnicas de programación, mucho más difícil es aprender técnicas de pruebas,
 tanto manuales como automáticas. Primero, porque desgraciadamente es un
 conocimiento menos extendido. Segundo, porque es aún más abstracto que la
@@ -23,7 +23,7 @@ situaciones.
 
 Dejar las pruebas para el final
 -------------------------------
-Aunque es normal que al acercarse al final de cada ciclo de desarrollo se
+Aunque es normal que al acercarse el final de cada ciclo de desarrollo se
 intensifique el esfuerzo de pruebas (especialmente las manuales), es un error
 mayúsculo no haber probado desde el principio del desarrollo. Esto no es un
 tópico o una consideración teórica o académica: no probar desde el principio
@@ -53,8 +53,8 @@ dedicados a las pruebas, claro.
 
 4. Probar desde el principio significa que estaremos probando durante más
 tiempo, por lo que habremos encontrado más casos que puedan ser problemáticos,
-y por tanto más fallos (y las soluciones a éstos, antes de que sea demasiado
-tarde).
+y por tanto más fallos (y las soluciones a éstos), antes de que sea demasiado
+tarde.
 
 5. Todas las pruebas que hagamos pronto ayudarán a aumentar la calidad del
 código, lo que no sólo afecta a la calidad final del producto, sino a lo fácil
@@ -70,7 +70,7 @@ diseño de mayor calidad. Pero si no probamos desde el principio, perdemos esta
 ventaja.
 
 7. Al no probar desde el principio, desarrollaremos código que no es
-especialmente fácil de probar, y cuando más tarde empecemos a adaptar el código
+especialmente fácil de probar, y cuanto más tarde empecemos a adaptar el código
 para que lo sea, más esfuerzo costará. Una vez hayamos escrito una gran
 cantidad de código sin tener en cuenta si es fácil de probar o no, la tentación
 de dejar muchas partes sin pruebas será irresistible. Y, por supuesto, si no
@@ -91,7 +91,7 @@ Ser demasiado específico en las comprobaciones
 Esto es un problema bastante común, sobre todo cuando se empiezan a hacer
 pruebas. Las pruebas automáticas son, de alguna manera, una descripción de lo
 que se espera que el programa haga. Una especificación en código, por así
-decir. Como tal, sólo debe describir el comportamiento que esperamos que no
+decirlo. Como tal, sólo debe describir el comportamiento que esperamos que no
 cambie. Si somos demasiado específicos o exigentes en las comprobaciones de
 nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código,
 sino también que podamos hacer otro tipo de cambios.
@@ -350,7 +350,7 @@ fácil de crear esos bancos de datos para cada prueba, tendremos la tentación d
 tener un solo conjunto de datos iniciales que usaremos en _todas_ las pruebas
 de nuestro proyecto. Aunque en algunos casos pueda resultar práctico compartir
 datos de prueba entre _algunas_ pruebas, esta costumbre puede traer un problema
-consigo, descrito a continuación.
+añadido.
 
 A medida que escribimos nuevas pruebas, éstas necesitarán más datos de prueba.
 Si añadimos los nuevos datos de prueba a nuestro único conjunto de datos
@@ -458,7 +458,7 @@ Las mejoras de la segunda versión son las siguientes:
   detalles de cómo iniciamos sesión, podemos simplemente cambiar la
   implementación de este método.
 * Crear una nueva tarea es tan fácil como llamar a un nuevo método
-  +createBrown+, y comprobar que está ahí se lleva a cabo llamando al método
+  +createBrown+, y comprobar que se ha creado correctamente se lleva a cabo llamando al método
   +assertBrownExists+. Dependiendo del caso, podríamos incluso haber creado un
   método +assertCreateBrown+, pero por ahora parece mejor dejar ambas
   operaciones separadas.
