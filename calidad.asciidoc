@@ -1,0 +1,107 @@
+Calidad en software
+===================
+Esteban Manchado_Velázquez <emanchado@demiurgo.org>
+
+Una palabra muy usada pero bastante escurridiza, al menos a la hora de
+encontrar maneras fiables de mejorarla o simplemente mantenerla cuando hemos
+llegado a un nivel aceptable.
+
+Definición
+----------
+El primer problema de la calidad es definirla. Mi definición preferida en el
+contexto de ingeniería de software es «adecuación al uso». Uno de los problemas
+de la definición es que es muy vaga pero, paradójicamente, el propio hecho de
+ser tan vaga la hace útil. La calidad es un asunto muy complejo y difícil de
+obtener, por lo que simplificarlo no nos ayudará a entender, sólo a la ilusión
+de que entendemos. Y la ilusión de entendimiento es muy peligrosa porque nos
+hace resistir el aprendizaje real.
+
+El segundo problema es encontrar un entendimiento compartido por todos los
+interesados. Siempre tenemos que tener en cuenta cuál es nuestro objetivo. Si
+pensamos demasiado en código rápido o diseño simple, podemos perdernos otros
+objetivos mucho más importantes como resolver los problemas reales de nuestro
+cliente o adaptarnos a nuestros usuarios. En la mayoría de los casos, aunque
+estos atributos son importantes e incluso necesarios hasta cierto punto (el
+cliente no los pide, pero esperará que el programa no vaya lento y que cuando
+haya fallos, no se tarde en arreglarlos y no haya otras áreas que dejen de
+funcionar de repente).
+
+Cómo mejorar la calidad
+-----------------------
+Tal y como se ha expuesto, es imposible dar una serie de pasos para mejorar la
+calidad. Se pueden describir técnicas, costumbres y herramientas que nos
+ayudarán en según qué contextos, según qué proyectos, según qué equipos y según
+qué clientes. Los otros artículos de este libro describen algunas de estas
+técnicas y herramientas, uno de los mensajes principales de este artículo es
+que aprender y adaptarse al contexto es más importante que conocer cualquiera
+de estas técnicas o herramientas.
+
+Nuestra única vía para alcanzar la definición mostrada al principio es usar
+nuestra experiencia y conocimiento del contexto para poder aplicar la
+definición y decidir qué es lo que nos ayudará en cada momento. Intentar
+mejorar la calidad simplemente siguiendo una lista de pasos es una receta casi
+segura para el fracaso. No importa qué pasos sigamos, qué hayamos oído de ellos
+o quién los haya recomendado. Tenemos que ser conscientes de los que hacemos y
+tomar control de nuestras decisiones.
+
+Mantener siempre el qué, no el cómo, como la guía de todo lo que hacemos.
+Mantener el escepticismo y cuestionar cómo hacemos las cosas y por qué. Estar
+preparado para cambiar cómo trabajamos, luchar contra la «programación de culto
+de cargo». No creer en la tecnología. Tu trabajo no es hacer código bonito o
+fácil de entender, tu objetivo es resolver problemas.
+
+Trabajo en equipo, pensar siempre en el contexto. Nada tiene una solución mejor
+ni única.
+
+Al hacer pruebas, asegurarse de que tenemos toda la información que
+necesitamos. Adaptar el trabajo para que sea más fácil de probar puede ayudar
+en los objetivos finales.
+
+Ejemplos
+--------
+Para intentar ilustrar algunas de las ideas de este artículo, y como
+inspiración para ayudar a pensar fuera de los cánones habituales, este apartado
+muestra una serie de ejemplos de situaciones, y posibles soluciones. Obviamente
+no puede haber solución correcta, entre otras razones porque estas
+descripciones con palabras no pueden dar toda la información necesaria para
+tomar una buena decisión.
+
+Ejemplo: reglas que son útiles cuando tenemos uno o dos miembros del equipo que
+prestan menos atención a los cambios pueden convertirse en peso muerto cuando
+esas personas abandonen el equipo, o simplemente cuando cambien su actitud.
+
+Ejemplo: nos encontramos con muchos problemas en cierta parte del código, y las
+pruebas manuales no están encontrando suficientes fallos, o no lo
+suficientemente pronto. Aunque automatizar las pruebas es probablemente la
+mejor idea a largo plazo, puede que el equipo no tenga suficiente experiencia
+como para que esto de verdad mejore la situación, al menos suficientemente
+pronto (digamos, antes de la fecha de publicación de la primera versión). En
+este caso puede ser una mejor idea analizar la situación y ver por qué está
+ocurriendo esto: quizás esa parte del programa no da suficiente información, y
+eso hace difícil hacer pruebas manuales. En ese caso, quizás añadir una opción
+«escondida» que dé más información a los miembros del equipo que hagan más
+pruebas manuales puede ser suficiente hasta la fecha clave. O simplemente
+mejorar la comunicación entre todos los miembros del equipo. Mientras tanto,
+podemos ir enseñando poco a poco al equipo a automatizar las pruebas para ir
+cambiando a un modelo más escalable.
+
+Conclusiones
+------------
+Una conclusión a la que podemos llegar es que la calidad es difícil de
+conseguir y de medir, y se necesita experiencia y mucho trabajo para obtenerla.
+Pero la conclusión más importante es que _es imposible mejorar la calidad de un
+proyecto informático aplicando reglas o metodologías_.  Da igual cuánta
+experiencia o cuánto conocimiento tenga la persona que las haya formulado,
+ningún conjunto de reglas o metodologías puede resolver nuestros problemas si
+las aplicamos sin entender lo que hacemos y en qué contexto son útiles.
+
+
+[bibliography]
+Bibliografía
+------------
+- [[[technopoly]]] Neil Postman 'Technopoly' Random House USA Inc.  ISBN
+  9780679745402.
+- [[[theletter]]] Uncle Bob 'The Letter'.
+  http://blog.8thlight.com/uncle-bob/2012/01/12/The-Letter.html
+- [[[obliquestrategies]]] Brian Eno and Peter Schmidt 'Oblique Strategies'.
+  http://en.wikipedia.org/wiki/Oblique_Strategies
