@@ -4,6 +4,7 @@ Carlos Blé_Jurado <carlos@iexpertos.com>
 
 
 ¿Cómo podemos saber si el código que estamos escribiendo es bueno o malo? Todavía no existe ningún método preciso que determine si un software es de buena calidad. Sólo el paso del tiempo puede confirmarlo, baśandose en cuatro parámetros fundamentales:
+
 - Nivel de aceptación del usuario: El software se comporta como desea quien lo necesita.
 - Cantidad de defectos (bugs) que llegan al usuario
 - Legibilidad: Cuánto cuesta entender el código.
