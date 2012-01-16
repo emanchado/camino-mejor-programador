@@ -38,9 +38,9 @@ análisis estático de código, pruebas de integración de alto nivel o pruebas de
 carga, entre otras. Pero hay otros pasos que consideraría obligatorios como por
 ejemplo la ejecución de los tests unitarios automatizados.
 
-(Bloque de ejemplo con una ejecución de construcción automatizada con Maven)
-
-(Mostrar pantalla de configuración de Jenkins de un proyecto basado en Maven)
+(Introducir en este bloque una referencia a la construcción de forma 
+continua, lo antes posible y la necesidad de hacer commits atómicos y 
+frecuentes)
 
 Pruebas automatizadas
 ---------------------
@@ -52,9 +52,6 @@ algunos casos, que funciona.
 
 En capítulos anteriores del libro se ha hablado de las pruebas unitarias y del
 desarrollo dirigido por tests, si incluimos estos tests
-
-(Mostrar pantalla de tests de un proyecto en Jenkins o la salida de los tests
-lanzados automáticamente por Maven)
 
 Un paso más allá
 ----------------
@@ -73,4 +70,6 @@ Bibliografía
 ------------
 - [[[continuosdelivery]]] Jez Humble and David Farley 'Continuos Delivery'  
   Addison-Wesley Professional ISBN 978-0321601919
+- [[[cifowler]]] Martin Fowler 'Continuous Integration' 
+  http://www.martinfowler.com/articles/continuousIntegration.html
 - [[[]]] Carlos Blé Jurado 'Diseño Ágil con TDD' ISBN 978-1445264714
