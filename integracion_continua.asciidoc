@@ -11,36 +11,62 @@ producción.
 Generalmente este suele ser un momento muy tenso porque es muy raro que todo
 funcione a la primera. Si sigues una metodología en la que predomine el 
 desarrollo iterativo, en el que las funcionalidades se van entregando poco a 
-poco, se minimiza ligeramente el impacto, pero sigue siendo un momento incomodo.
-Se suelen producir errores porque las máquinas de desarrollo tienen 
-configuraciones diferentes a las máquina de producción, el rendimiento no es 
-tan bueno porque la base de datos de producción tiene una cantidad mucho mayor
-de información, o cualquier otro detalle que no tuvimos en cuenta durante el
-desarrollo.
+poco, se minimiza ligeramente el impacto (siempre y cuando al final de cada
+iteración se haya desplegado en el sistema de producción real), pero sigue
+siendo un momento incomodo. Se suelen producir errores porque las máquinas de
+desarrollo tienen configuraciones diferentes a las máquina de producción, el
+rendimiento no es tan bueno porque la base de datos de producción tiene una
+cantidad mucho mayor de información, o cualquier otro detalle que no tuvimos en
+cuenta durante el desarrollo.
 
-Para resolver este problema aparece una nueva "filosofía" o forma de ver el
-desarrollo de software denominada Integración Continua. Para muchas personas
-la integración continua es tener un servidor Jenkins o Cruise Control 
-construyendo nuestra aplicación continuamente. Nada más lejos de la realidad,
-cuando he utilizada la palabra filosofía lo he hecho porque la Integración 
-Continua es un modo de desarrollar un poco diferente al habitual, y que requiere
-de una serie de buenas prácticas y la aceptación de las mismas por el equipo de
-desarrollo.
+Para resolver este problema aparece una nueva "filosofía" o forma de desarrollo
+denominada Integración Continua. Para muchas personas la integración continua es
+tener un servidor Jenkins o Cruise Control construyendo nuestra aplicación
+continuamente. Nada más lejos de la realidad, cuando he utilizada la palabra
+filosofía lo he hecho porque la Integración Continua es un modo de desarrollar
+un poco diferente al habitual, y que requiere de una serie de buenas prácticas y
+la aceptación de las mismas por el equipo de desarrollo. Se ha de convertir en
+un hábito que se realice casi sin darnos cuentas.
 
 Construcción automatizada y servidor de Integración Continua
 ------------------------------------------------------------
+La base principal de la Integración Continua es la automatización de todo
+proceso repetitivo que conlleve la construcción de nuestro sistema, desde la 
+compilación del código, hasta el despliegue en el servidor de desarrollo o de 
+producción. En medio se pueden dar más o menos pasos, como por ejemplo realizar
+análisis estático de código, pruebas de integración de alto nivel o pruebas de
+carga, entre otras. Pero hay otros pasos que consideraría obligatorios como por
+ejemplo la ejecución de los tests unitarios automatizados.
 
-La primera pieza indispensable para poder llevar a cabo
+(Bloque de ejemplo con una ejecución de construcción automatizada con Maven)
 
-[Mostrar pantalla de configuración de Jenkins de un proyecto basado en Maven]
+(Mostrar pantalla de configuración de Jenkins de un proyecto basado en Maven)
 
 Pruebas automatizadas
 ---------------------
+Aunque lográramos crear nuestro servidor de Integración Continua y 
+automatizáramos todo el proceso de construcción, no es muy útil si tenemos en
+cuenta que un sistema que compila y se instala correctamente en el servidor, no 
+es necesariamente un sistema que funciona como el cliente desea o incluso, en 
+algunos casos, que funciona.
 
-Aunque lográramos 
+En capítulos anteriores del libro se ha hablado de las pruebas unitarias y del
+desarrollo dirigido por tests, si incluimos estos tests
 
-Propiedad colectiva del código
-------------------------------
+(Mostrar pantalla de tests de un proyecto en Jenkins o la salida de los tests
+lanzados automáticamente por Maven)
+
+Un paso más allá
+----------------
+(Análisis estático de código)
+
+(Prueba de integración de alto nivel)
+
+Comunicación del proceso y propiedad colectiva del código
+---------------------------------------------------------
+(Buscar la forma de enlazar el artículo con la propiedad colectiva del código,
+recalcando que la responsabilidad de que el servidor de integración continua
+esté continuamente en verde es de todo el equipo)
 
 [bibliography]
 Bibliografía
