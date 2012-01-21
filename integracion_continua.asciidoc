@@ -26,7 +26,7 @@ continuamente. Nada más lejos de la realidad, cuando he utilizada la palabra
 filosofía lo he hecho porque la Integración Continua es un modo de desarrollar
 un poco diferente al habitual, y que requiere de una serie de buenas prácticas y
 la aceptación de las mismas por el equipo de desarrollo. Se ha de convertir en
-un hábito que se realice casi sin darnos cuentas.
+un hábito que se realice casi sin darnos cuenta.
 
 Construcción automatizada y servidor de Integración Continua
 ------------------------------------------------------------
@@ -64,6 +64,16 @@ Comunicación del proceso y propiedad colectiva del código
 (Buscar la forma de enlazar el artículo con la propiedad colectiva del código,
 recalcando que la responsabilidad de que el servidor de integración continua
 esté continuamente en verde es de todo el equipo)
+
+...
+
+Para acabar me gustaría utilizar algunos comentarios escuchados por Martin
+Fowler cuando habla de Integración Continua con otros desarrolladores. La
+primera reacción suele ser algo como "eso no puede funcionar (aquí)" o "haciendo
+eso no cambiará mucho las cosas", pero hay otra muy distinta que es "sí,
+nosotros lo hacemos - ¿cómo puedes vivir sin eso?". Ahora es tu elección si 
+decides probarlo o no, pero antes de hacerlo piensa en lo poco que tienes que 
+perder y lo mucho que puedes ganar.
 
 [bibliography]
 Bibliografía
