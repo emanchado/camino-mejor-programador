@@ -32,8 +32,22 @@ Desarrollo en un equipo que utiliza Integración continua
 --------------------------------------------------------
 
 Para que se entienda mejor el proceso completo voy a explicar como es un día
-de trabajo en mi equipo de desarrollo. Así se puede entender mejor el proceso
-completo y algunas de las prácticas que le desarrollador debe tener en mente.
+de trabajo en mi equipo de desarrollo. Así se puede entender claramente el
+proceso completo y algunas de las prácticas que le desarrollador debe tener en
+mente.
+
+[Elección de la próxima tarea más importante]
+
+[Descarga del código fuente o actualización del mismo desde el repositorio]
+
+[Implementación de la nueva funcionalidad, incluyendo tests]
+
+[Actualización del código y corrección de posibles problemas, asegurándome 
+de pasar los tests y revisando que se construye correctamente]
+
+[Commit de los cambios]
+
+[Proceso interno del servidor de IC]
 
 Construcción automatizada y servidor de Integración Continua
 ------------------------------------------------------------
