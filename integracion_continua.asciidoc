@@ -19,14 +19,21 @@ rendimiento no es tan bueno porque la base de datos de producción tiene una
 cantidad mucho mayor de información, o cualquier otro detalle que no tuvimos en
 cuenta durante el desarrollo.
 
-Para resolver este problema aparece una nueva "filosofía" o forma de desarrollo
-denominada Integración Continua. Para muchas personas la integración continua es
+Para resolver este problema aparece una nueva "filosofía", o práctica,
+denominada Integración Continua. Para muchas personas la Integración Continua es
 tener un servidor Jenkins o Cruise Control construyendo nuestra aplicación
-continuamente. Nada más lejos de la realidad, cuando he utilizada la palabra
+continuamente. Nada más lejos de la realidad, cuando he utilizado la palabra
 filosofía lo he hecho porque la Integración Continua es un modo de desarrollar
 un poco diferente al habitual, y que requiere de una serie de buenas prácticas y
 la aceptación de las mismas por el equipo de desarrollo. Se ha de convertir en
 un hábito que se realice casi sin darnos cuenta.
+
+Desarrollo en un equipo que utiliza Integración continua
+--------------------------------------------------------
+
+Para que se entienda mejor el proceso completo voy a explicar como es un día
+de trabajo en mi equipo de desarrollo. Así se puede entender mejor el proceso
+completo y algunas de las prácticas que le desarrollador debe tener en mente.
 
 Construcción automatizada y servidor de Integración Continua
 ------------------------------------------------------------
@@ -78,8 +85,12 @@ perder y lo mucho que puedes ganar.
 [bibliography]
 Bibliografía
 ------------
+- [[[continuosintegration]]] Paul M Duvall 'Continuos Integration: Improving
+  Software Quality and Reducing Risk' ISBN 978-0321336385
 - [[[continuosdelivery]]] Jez Humble and David Farley 'Continuos Delivery'  
   Addison-Wesley Professional ISBN 978-0321601919
 - [[[cifowler]]] Martin Fowler 'Continuous Integration' 
   http://www.martinfowler.com/articles/continuousIntegration.html
+- [[[xpexplained]]] Kent Beck and Cynthia Andres 'Extreme Programming Explained:
+  Embrace Change (2nd Edition)' ISBN 978-0321278654
 - [[[]]] Carlos Blé Jurado 'Diseño Ágil con TDD' ISBN 978-1445264714
