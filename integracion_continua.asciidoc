@@ -1,103 +1,135 @@
-IntegraciÛn Continua
+Integraci√≥n Continua
 ====================
 Yeray Darias Camacho <ydarias@gmail.com>
 
-Independientemente de si el equipo de desarrollo sigue una metodologÌa 
-cl·sica en cascada o alg˙n tipo de metodologÌa ·gil, hay un momento decisivo
-que determina el Èxito del proyecto. Este momento es el despliegue de la 
-aplicaciÛn en los sistemas del cliente, lo que conocemos como sistema de
-producciÛn.
+Independientemente de si el equipo de desarrollo sigue una metodolog√≠a 
+cl√°sica en cascada o alg√∫n tipo de metodolog√≠a √°gil, hay un momento decisivo
+que determina el √©xito del proyecto. Este momento es el despliegue de la 
+aplicaci√≥n en los sistemas del cliente, lo que conocemos como sistema de
+producci√≥n.
 
 Generalmente este suele ser un momento muy tenso porque es muy raro que todo
-funcione a la primera. Si sigues una metodologÌa en la que predomine el 
+funcione a la primera. Si sigues una metodolog√≠a en la que predomine el 
 desarrollo iterativo, en el que las funcionalidades se van entregando poco a 
 poco, se minimiza ligeramente el impacto (siempre y cuando al final de cada
-iteraciÛn se haya desplegado en el sistema de producciÛn real), pero sigue
-siendo un momento incomodo. Se suelen producir errores porque las m·quinas de
-desarrollo tienen configuraciones diferentes a las m·quina de producciÛn, el
-rendimiento no es tan bueno porque la base de datos de producciÛn tiene una
-cantidad mucho mayor de informaciÛn, o cualquier otro detalle que no tuvimos en
+iteraci√≥n se haya desplegado en el sistema de producci√≥n real). Pero sigue
+siendo un momento incomodo, se suelen producir errores porque las m√°quinas de
+desarrollo tienen configuraciones diferentes a las m√°quina de producci√≥n, el
+rendimiento no es tan bueno porque la base de datos de producci√≥n tiene una
+cantidad mucho mayor de informaci√≥n, o cualquier otro detalle que no tuvimos en
 cuenta durante el desarrollo.
 
-Para resolver este problema aparece una nueva "filosofÌa", o pr·ctica,
-denominada IntegraciÛn Continua. Para muchas personas la IntegraciÛn Continua es
-tener un servidor Jenkins o Cruise Control construyendo nuestra aplicaciÛn
-continuamente. Nada m·s lejos de la realidad, cuando he utilizado la palabra
-filosofÌa lo he hecho porque la IntegraciÛn Continua es un modo de desarrollar
-un poco diferente al habitual, y que requiere de una serie de buenas pr·cticas y
-la aceptaciÛn de las mismas por el equipo de desarrollo. Se ha de convertir en
-un h·bito que se realice casi sin darnos cuenta.
+Para resolver este problema aparece una nueva "filosof√≠a", o pr√°ctica,
+denominada Integraci√≥n Continua. Para muchas personas la Integraci√≥n Continua es
+tener un servidor Jenkins o Cruise Control construyendo nuestra aplicaci√≥n
+continuamente. Nada m√°s lejos de la realidad, cuando he utilizado la palabra
+filosof√≠a lo he hecho porque la Integraci√≥n Continua es un modo de desarrollar
+un poco diferente al habitual, y que requiere de una serie de buenas pr√°cticas y
+la aceptaci√≥n de las mismas por el equipo de desarrollo. Se ha de convertir en
+un h√°bito que se realice casi sin darnos cuenta. 
 
-Desarrollo en un equipo que utiliza IntegraciÛn continua
+Desarrollo en un equipo que utiliza Integraci√≥n continua
 --------------------------------------------------------
 
-Para que se entienda mejor el proceso completo voy a explicar como es un dÌa
-de trabajo en mi equipo de desarrollo. AsÌ se puede entender claramente el
-proceso completo y algunas de las pr·cticas que le desarrollador debe tener en
+Para que se entienda mejor el proceso completo voy a explicar como es un d√≠a
+de trabajo en mi equipo de desarrollo. As√≠ se puede comprender claramente el
+proceso completo y algunas de las pr√°cticas que el desarrollador debe tener en
 mente.
 
-[ElecciÛn de la prÛxima tarea m·s importante]
+Al principio del d√≠a lo normal es seleccionar la siguiente tarea m√°s importante
+a realizar. En base a la reuni√≥n de sprint y al stand-up meeting siempre existe
+una lista de tareas priorizadas a disposici√≥n del equipo de desarrollo, por lo 
+que es muy sencillo saber en que tengo que trabajar. Vamos a suponer en este
+caso que es una nueva funcionalidad de alguna de las aplicaciones en las que
+trabajamos, como en el 90% de las ocasiones.
 
-[Descarga del cÛdigo fuente o actualizaciÛn del mismo desde el repositorio]
+Una vez que he vuelto a mi mesa de trabajo, actualizo el c√≥digo fuente del
+proyecto con la copia existente en el repositorio de c√≥digo, esto me permite
+estar seguro que tengo todos los cambios realizados por mis compa√±eros. A veces
+se trata de un proyecto que no tengo en mi m√°quina, no hay problema, solo tengo
+que descargar la versi√≥n actual del repositorio de c√≥digo y ya puedo empezar a
+trabajar. Cuando se utiliza un repositorio de c√≥digo estas tareas son tan
+transparentes que se vuelven autom√°ticas, y en realidad es una herramienta 
+indispensable para poder realizar Integraci√≥n Continua.
 
-[ImplementaciÛn de la nueva funcionalidad, incluyendo tests]
+Durante unas horas estar√© trabajando en la nueva funcionalidad, aunque no
+entraremos en detalle ya que no es tan relevante de cara a la Integraci√≥n
+Continua. En mi caso personal suelo utilizar TDD lo que me ayuda a dise√±ar 
+un c√≥digo fuente m√°s limpio, y como resultado a√±adido tengo algo que es 
+fundamental en la Integraci√≥n Continua, una bater√≠a de tests automatizados que 
+puedo ejecutar en cualquier momento para verificar que la implementaci√≥n
+realizada funciona correctamente. Aunque los tests no sean infalibles al 100% 
+son una herramienta fant√°stica para reducir los errores inherentes al proceso
+de desarrollo. Adem√°s estos tests permiten a mis compa√±eros saber si alguno de
+sus cambios ha afectado a la funcionalidad que yo he implementado.
 
-[ActualizaciÛn del cÛdigo y correcciÛn de posibles problemas, asegur·ndome 
-de pasar los tests y revisando que se construye correctamente]
+[*]
+Cuando la funcionalidad est√° terminada algunas horas m√°s tarde, actualizo el
+c√≥digo fuente con los cambios de mis compa√±eros y me aseguro que la aplicaci√≥n
+sigue construy√©ndose correctamente, y que los tests del proyecto est√°n en verde.
+Si por el contrario aparece alg√∫n error, lo arreglo inmediatamente. Nunca, bajo
+ning√∫n concepto se debe subir c√≥digo al repositorio sin revisar que los tests
+pasan correctamente y la aplicaci√≥n se puede construir sin problemas. Adem√°s yo
+accedo a la aplicaci√≥n y reviso r√°pidamente que todo sigue funcionando
+adecuadamente. Por lo general los tests unitarios no tienen una cobertura del
+100% o simplemente no pueden probar detalles de infraestructura que son m√°s 
+sencillos de probar a mano. Hecho esto puedo hacer un commit y guardar mis
+cambios en el repositorio de c√≥digo, lo que permite que mis compa√±eros se 
+actualicen y los tengan disponibles en cuesti√≥n de segundos.
 
-[Commit de los cambios]
+Es el momento en el que hago el commit cuando el servidor de Integraci√≥n
+Continua comienza a trabajar, aunque en realidad el proceso de Integraci√≥n
+Continua ya ha empezado desde el primer paso.
 
-[Proceso interno del servidor de IC]
-
-ConstrucciÛn automatizada y servidor de IntegraciÛn Continua
+Construcci√≥n automatizada y servidor de Integraci√≥n Continua
 ------------------------------------------------------------
-La base principal de la IntegraciÛn Continua es la automatizaciÛn de todo
-proceso repetitivo que conlleve la construcciÛn de nuestro sistema, desde la 
-compilaciÛn del cÛdigo, hasta el despliegue en el servidor de desarrollo o de 
-producciÛn. En medio se pueden dar m·s o menos pasos, como por ejemplo realizar
-an·lisis est·tico de cÛdigo, pruebas de integraciÛn de alto nivel o pruebas de
-carga, entre otras. Pero hay otros pasos que considerarÌa obligatorios como por
-ejemplo la ejecuciÛn de los tests unitarios automatizados.
+La base principal de la Integraci√≥n Continua es la automatizaci√≥n de todo
+proceso repetitivo que conlleve la construcci√≥n de nuestro sistema, desde la 
+compilaci√≥n del c√≥digo, hasta el despliegue en el servidor de desarrollo o de 
+producci√≥n. En medio se pueden dar m√°s o menos pasos, como por ejemplo realizar
+an√°lisis est√°tico de c√≥digo, pruebas de integraci√≥n de alto nivel o pruebas de
+carga, entre otras. Pero hay otros pasos que considerar√≠a obligatorios como por
+ejemplo la ejecuci√≥n de los tests unitarios automatizados.
 
-(Introducir en este bloque una referencia a la construcciÛn de forma 
-continua, lo antes posible y la necesidad de hacer commits atÛmicos y 
+(Introducir en este bloque una referencia a la construcci√≥n de forma 
+continua, lo antes posible y la necesidad de hacer commits at√≥micos y 
 frecuentes)
 
 Pruebas automatizadas
 ---------------------
-Aunque logr·ramos crear nuestro servidor de IntegraciÛn Continua y 
-automatiz·ramos todo el proceso de construcciÛn, no es muy ˙til si tenemos en
+Aunque logr√°ramos crear nuestro servidor de Integraci√≥n Continua y 
+automatiz√°ramos todo el proceso de construcci√≥n, no es muy √∫til si tenemos en
 cuenta que un sistema que compila y se instala correctamente en el servidor, no 
 es necesariamente un sistema que funciona como el cliente desea o incluso, en 
 algunos casos, que funciona.
 
-En capÌtulos anteriores del libro se ha hablado de las pruebas unitarias y del
+En cap√≠tulos anteriores del libro se ha hablado de las pruebas unitarias y del
 desarrollo dirigido por tests, si incluimos estos tests
 
-Un paso m·s all·
+Un paso m√°s all√°
 ----------------
-(An·lisis est·tico de cÛdigo)
+(An√°lisis est√°tico de c√≥digo)
 
-(Prueba de integraciÛn de alto nivel)
+(Prueba de integraci√≥n de alto nivel)
 
-ComunicaciÛn del proceso y propiedad colectiva del cÛdigo
+Comunicaci√≥n del proceso y propiedad colectiva del c√≥digo
 ---------------------------------------------------------
-(Buscar la forma de enlazar el artÌculo con la propiedad colectiva del cÛdigo,
-recalcando que la responsabilidad de que el servidor de integraciÛn continua
-estÈ continuamente en verde es de todo el equipo)
+(Buscar la forma de enlazar el art√≠culo con la propiedad colectiva del c√≥digo,
+recalcando que la responsabilidad de que el servidor de integraci√≥n continua
+est√© continuamente en verde es de todo el equipo)
 
 ...
 
-Para acabar me gustarÌa utilizar algunos comentarios escuchados por Martin
-Fowler cuando habla de IntegraciÛn Continua con otros desarrolladores. La
-primera reacciÛn suele ser algo como "eso no puede funcionar (aquÌ)" o "haciendo
-eso no cambiar· mucho las cosas", pero hay otra muy distinta que es "sÌ,
-nosotros lo hacemos - øcÛmo puedes vivir sin eso?". Ahora es tu elecciÛn si 
+Para acabar me gustar√≠a utilizar algunos comentarios escuchados por Martin
+Fowler cuando habla de Integraci√≥n Continua con otros desarrolladores. La
+primera reacci√≥n suele ser algo como "eso no puede funcionar (aqu√≠)" o "haciendo
+eso no cambiar√° mucho las cosas", pero hay otra muy distinta que es "s√≠,
+nosotros lo hacemos - ¬øc√≥mo puedes vivir sin eso?". Ahora es tu elecci√≥n si 
 decides probarlo o no, pero antes de hacerlo piensa en lo poco que tienes que 
 perder y lo mucho que puedes ganar.
 
 [bibliography]
-BibliografÌa
+Bibliograf√≠a
 ------------
 - [[[continuosintegration]]] Paul M Duvall 'Continuos Integration: Improving
   Software Quality and Reducing Risk' ISBN 978-0321336385
@@ -107,4 +139,4 @@ BibliografÌa
   http://www.martinfowler.com/articles/continuousIntegration.html
 - [[[xpexplained]]] Kent Beck and Cynthia Andres 'Extreme Programming Explained:
   Embrace Change (2nd Edition)' ISBN 978-0321278654
-- [[[]]] Carlos BlÈ Jurado 'DiseÒo ¡gil con TDD' ISBN 978-1445264714
+- [[[]]] Carlos Bl√© Jurado 'Dise√±o √Ågil con TDD' ISBN 978-1445264714
