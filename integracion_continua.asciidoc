@@ -63,62 +63,54 @@ son una herramienta fantástica para reducir los errores inherentes al proceso
 de desarrollo. Además estos tests permiten a mis compañeros saber si alguno de
 sus cambios ha afectado a la funcionalidad que yo he implementado.
 
-[*]
-Cuando la funcionalidad está terminada algunas horas más tarde, actualizo el
-código fuente con los cambios de mis compañeros y me aseguro que la aplicación
-sigue construyéndose correctamente, y que los tests del proyecto están en verde.
-Si por el contrario aparece algún error, lo arreglo inmediatamente. Nunca, bajo
-ningún concepto se debe subir código al repositorio sin revisar que los tests
-pasan correctamente y la aplicación se puede construir sin problemas. Además yo
-accedo a la aplicación y reviso rápidamente que todo sigue funcionando
-adecuadamente. Por lo general los tests unitarios no tienen una cobertura del
-100% o simplemente no pueden probar detalles de infraestructura que son más 
-sencillos de probar a mano. Hecho esto puedo hacer un commit y guardar mis
-cambios en el repositorio de código, lo que permite que mis compañeros se 
-actualicen y los tengan disponibles en cuestión de segundos.
+Cuando la funcionalidad está terminada, actualizo el código fuente con los
+cambios de mis compañeros y me aseguro que la aplicación sigue construyéndose
+correctamente, y que los tests del proyecto están en verde, es decir que pasan
+todos sin ningún problema. Si por el contrario aparece algún error, lo arreglo
+inmediatamente. Nunca, bajo ningún concepto se debe subir código al repositorio
+sin revisar que los tests pasan correctamente y la aplicación se puede construir
+sin incidencias. Además es recomendable acceder a la aplicación y revisar 
+rápidamente que todo sigue funcionando adecuadamente. Por lo general los tests
+unitarios no tienen una cobertura del 100% o simplemente no pueden probar
+detalles de infraestructura que son más sencillos de probar a mano. Hecho esto
+puedo hacer un commit y guardar mis cambios en el repositorio de código, lo que
+permite que mis compañeros se actualicen y los tengan disponibles en cuestión de
+segundos.
 
 Es el momento en el que hago el commit cuando el servidor de Integración
 Continua comienza a trabajar, aunque en realidad el proceso de Integración
-Continua ya ha empezado desde el primer paso.
+Continua ya ha empezado desde el primer paso. El servidor de Integración se 
+descargará una versión nueva del código fuente, con los todos los cambios
+llevados a cabo por el equipo de desarrollo, pasará los tests y tras hacer
+la construcción el proyecto lo desplegará en una "réplica" de la máquina de
+producción. Todo de forma totalmente automatizada. El propio de servidor de
+Integración Continua podría pasar algunas pruebas extras, como por ejemplo
+análisis estático de código, análisis de cobertura, o cualquier otro detalle que
+sería muy tedioso pasar en el proceso de desarrollo porque requiere demasiado
+tiempo.
 
-Construcción automatizada y servidor de Integración Continua
-------------------------------------------------------------
-La base principal de la Integración Continua es la automatización de todo
-proceso repetitivo que conlleve la construcción de nuestro sistema, desde la 
-compilación del código, hasta el despliegue en el servidor de desarrollo o de 
-producción. En medio se pueden dar más o menos pasos, como por ejemplo realizar
-análisis estático de código, pruebas de integración de alto nivel o pruebas de
-carga, entre otras. Pero hay otros pasos que consideraría obligatorios como por
-ejemplo la ejecución de los tests unitarios automatizados.
+Ventajas de la Integración Continua
+-----------------------------------
 
-(Introducir en este bloque una referencia a la construcción de forma 
-continua, lo antes posible y la necesidad de hacer commits atómicos y 
-frecuentes)
+(Reducción del número de bugs en producción, incluyendo el poco tiempo que pasa
+entre que se comete el error y la detección del mismo)
 
-Pruebas automatizadas
----------------------
-Aunque lográramos crear nuestro servidor de Integración Continua y 
-automatizáramos todo el proceso de construcción, no es muy útil si tenemos en
-cuenta que un sistema que compila y se instala correctamente en el servidor, no 
-es necesariamente un sistema que funciona como el cliente desea o incluso, en 
-algunos casos, que funciona.
+(Transparencia y propiedad colectiva del código)
 
-En capítulos anteriores del libro se ha hablado de las pruebas unitarias y del
-desarrollo dirigido por tests, si incluimos estos tests
+Elementos indispensables de la Integración Continua
+---------------------------------------------------
+
+(Repositorio de código)
+
+(Automatización del proceso)
+
+(Existencia de una batería de pruebas unitarias)
 
 Un paso más allá
 ----------------
 (Análisis estático de código)
 
 (Prueba de integración de alto nivel)
-
-Comunicación del proceso y propiedad colectiva del código
----------------------------------------------------------
-(Buscar la forma de enlazar el artículo con la propiedad colectiva del código,
-recalcando que la responsabilidad de que el servidor de integración continua
-esté continuamente en verde es de todo el equipo)
-
-...
 
 Para acabar me gustaría utilizar algunos comentarios escuchados por Martin
 Fowler cuando habla de Integración Continua con otros desarrolladores. La
