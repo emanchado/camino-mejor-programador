@@ -2,90 +2,96 @@ Calidad en software
 ===================
 Esteban Manchado_Velázquez <emanchado@demiurgo.org>
 
-Una palabra muy usada pero un concepto bastante escurridizo, al menos a la hora
-de encontrar maneras fiables de mejorarla o simplemente mantenerla una vez
-hemos llegado a un nivel aceptable.
+«Calidad» es una palabra muy usada pero un concepto bastante escurridizo, al
+menos a la hora de encontrar maneras fiables de mejorarla o simplemente
+mantenerla una vez hemos llegado a un nivel aceptable. Este artículo explorará
+qué es la calidad y cómo mejorar la calidad de nuestros proyectos.
 
 Significado
 -----------
-El primer problema de la calidad es definirla. Mi definición preferida en el
-contexto de ingeniería de software es «adecuación al uso». Uno de los problemas
-de la definición es que es muy vaga pero, paradójicamente, el propio hecho de
-ser tan vaga la hace útil. La calidad es un asunto muy complejo, por lo que
-simplificarlo, lejos de ayudarnos a entender, sólo nos dará la ilusión de que
-lo entendemos. Y la ilusión de entendimiento es muy peligrosa porque nos hace
-resistir el aprendizaje real.
+El primer problema de la calidad es definirla. Hay muchas definiciones, pero mi
+preferida en el contexto de la ingeniería de software es «adecuación al uso».
+Uno de los problemas de la definición es que es muy vaga pero, paradójicamente,
+el propio hecho de ser tan vaga es lo que la hace útil. La calidad es un asunto
+muy complejo, por lo que simplificarlo, lejos de ayudarnos a entender, sólo nos
+dará la ilusión de que lo entendemos. Y la ilusión de entendimiento es muy
+peligrosa porque nos hace resistir el aprendizaje real.
 
-El segundo problema es encontrar un entendimiento compartido por todos los
-interesados. Este entendimiento compartido nos ayudará a centrarnos en los
-objetivos importantes, que son las necesidades del cliente del proyecto. Lo
-cual no significa que sólo sean importantes los aspectos que el cliente
-_menciona_: con frecuencia, los clientes dan por sentadas una serie de
-propiedades (eficiencia razonable, fiabilidad, que no haya muchas regresiones,
-etc), y es nuestro trabajo asegurarnos de que éstas se cumplen. Sin embargo, la
-calidad no puede estar centrada en aspectos técnicos como código rápido o
-diseño simple, sino que éstos deben estar supeditados a las necesidades y los
-deseos del cliente, implícitos y explícitos.
+El segundo problema de la calidad es hacer que todos los interesados compartan
+lo que entienden por ésta. Este entendimiento compartido nos ayudará a
+centrarnos en los objetivos importantes, que son las necesidades del cliente
+del proyecto. Esto no significa que sólo sean importantes los aspectos que el
+cliente _menciona_: con frecuencia, los clientes dan por sentadas una serie de
+propiedades (eficiencia, fiabilidad, falta de regresiones, etc), y nuestro
+trabajo es asegurarnos de que éstas se cumplen tanto como los requisitos
+explícitos. Esto es, la calidad necesita de aspectos técnicos como código
+rápido o diseño simple, pero éstos deben estar supeditados a las necesidades y
+los deseos del cliente, implícitos y explícitos.
 
 Cómo mejorar la calidad
 -----------------------
-Siguiendo la lógica de lo expuesto hasta ahora, es imposible dar una serie de
-pasos para mejorar la calidad. Intentar mejorar la calidad simplemente
-siguiendo una lista de pasos es una receta casi segura para el fracaso. No
-importa qué pasos sigamos, qué hayamos oído de ellos o quién los haya
-recomendado: nuestra única vía para alcanzar la definición mostrada al
-principio es usar nuestra experiencia y conocimiento del contexto para decidir
-qué es lo que nos ayudará en cada momento. Tenemos que ser conscientes de los
-que hacemos y tomar control de nuestras decisiones.
+Como ya expone el apartado anterior, es imposible dar una serie de pasos para
+mejorar la calidad. De hecho, intentar mejorar la calidad simplemente siguiendo
+una lista de pasos es una receta casi segura para el fracaso. No importa qué
+pasos sigamos, qué hayamos oído de ellos o quién los haya recomendado: nuestra
+única vía para alcanzar un buen nivel de calidad es usar nuestra experiencia y
+conocimiento del contexto para decidir qué es lo que nos ayudará en cada
+momento. Tenemos que ser conscientes de lo que hacemos y tomar el control de
+nuestras decisiones.
 
-Algunas _guías_ para mejorar la calidad son: mantener siempre el qué, no el
-cómo, como la guía de todo lo que hacemos; mantener el escepticismo y
-cuestionar cómo hacemos las cosas y por qué; estar preparado para cambiar cómo
-trabajamos, luchar contra la «programación de culto de cargo»; no creer en la
-tecnología como el centro de lo que hacemos; darse cuenta de que lo principal
-no es hacer código bonito o fácil de entender, sino resolver problemas
-footnote:[Los buenos profesionales hacen las dos cosas, pero es más profesional
-tener más de lo segundo que más de lo primero]; no creer que los problemas
-tengan una solución única o mejor.
+Sin embargo, sí se pueden dar _guías_ para mejorar la calidad. Por ejemplo:
+mantener siempre el qué, no el cómo, como la guía de todo lo que hacemos;
+mantener el escepticismo y cuestionar cómo hacemos las cosas y por qué; estar
+preparado para cambiar cómo trabajamos y luchar contra la «programación de
+culto de cargo»; no creer en la tecnología como el centro de lo que hacemos;
+darse cuenta de que lo principal no es hacer código bonito o fácil de entender,
+sino resolver problemas footnote:[Los buenos profesionales hacen las dos cosas,
+pero es más profesional tener más de lo segundo que más de lo primero]; no
+creer que los problemas tengan una solución única o mejor.
 
 Esto no quiere decir que las herramientas, técnicas y costumbres no sean
-útiles. En absoluto. Sólo que éstas nos ayudarán según qué contextos, según qué
-proyectos, según qué equipos y según qué clientes, pero nunca en todos los
-casos. Los otros artículos de este libro describen algunas de estas técnicas y
-herramientas, que son muy útiles y todo buen profesional debe conocer y
-dominar, pero uno de los mensajes principales de este artículo es que conocer y
-adaptarse al contexto es importante, y que aplicar ciegamente cualquiera de
-estas técnicas o herramientas es un error.
+útiles. En absoluto. Lo que sí significa es que éstas nos ayudarán según qué
+contextos, según qué proyectos, según qué equipos y según qué clientes, pero
+nunca en todos los casos. Los otros artículos de este libro describen algunas
+de estas técnicas y herramientas, que son muy útiles y todo buen profesional
+debe conocer y dominar, pero uno de los mensajes principales de este artículo
+es que conocer y adaptarse al contexto es importante, y que aplicar ciegamente
+cualquiera de estas técnicas o herramientas es un error.
 
 Para ilustrar las ideas de este artículo, y como inspiración para ayudar a
-pensar fuera de los cánones habituales, los siguientes apartados muestran una
+pensar fuera de cánones más académicos, los siguientes apartados muestran una
 serie de ejemplos de situaciones junto con sugerencias de posibles soluciones.
 Obviamente no puede haber solución única o «correcta» en estos ejemplos, entre
-otras razones porque estas descripciones con palabras no pueden dar toda la
+otras razones porque ninguna descripción literaria puede dar toda la
 información necesaria para tomar una buena decisión.
 
 Ejemplo 1: procesos
 -------------------
-Como regla general, la homogeneidad es buena en los procesos de desarrollo. Por
-una parte, facilita que nos concentremos en lo que estamos haciendo y no en el
-cómo. Por otra, facilita la automatización. En muchas ocasiones, la manera más
-rápida, o incluso la única, de conseguir homogeneidad es haciendo que el equipo
-siga reglas.
+Como regla general, tener procesos y reglas ayuda a los equipos de desarrollo a
+trabajar más eficientemente. Por una parte, facilita que nos concentremos en lo
+que estamos haciendo y no en el cómo footnote:[Si siempre hacemos ciertas cosas
+de la misma manera y ésta funciona razonablemente bien, no tenemos que gastar
+tiempo ni energía decidiendo cómo hacerlas].  Por otra, facilita la
+automatización.
 
-Sin embargo, estas reglas pueden quedarse obsoletas. Por ejemplo, digamos que
-uno o dos miembros del equipo causan problemas con la integración continua: con
-frecuencia hacen cambios que hacen fallar la batería de pruebas y no tienen
-disciplina para escribir pruebas. En cierto momento decidimos que vamos a
-comprobar automáticamente cada cambio enviado al repositorio y sólo dejar
-pasar los que tengan alguna modificación a ficheros de pruebas. Digamos que la
-medida funciona más o menos bien, y aumentamos la productividad del equipo con
-ella. Si en algún momento esos miembros del equipo se marchan, o simplemente
+Sin embargo, los procesos y las reglas pueden quedarse obsoletos. Por ejemplo,
+digamos que uno o dos miembros del equipo causan problemas con la integración
+continua: con frecuencia hacen cambios que hacen fallar a la batería de pruebas
+y no tienen disciplina para escribir pruebas. Ante esta situación, decidimos
+que cada cambio enviado al repositorio debe contener alguna modificación a
+algún fichero de pruebas. La medida funciona más o menos bien, esos miembros
+del equipo empiezan a tomarse las pruebas más en serio, y así aumentamos la
+productividad del equipo con ella.
+
+Ahora bien, todas las reglas tienen partes buenas y partes malas, como todo.
+Esta medida concreta puede ser molesta cuando simplemente queramos arreglar una
+falta de ortografía en un comentario, actualizar la documentación, o
+reformatear el código (ya que nuestro cambio no modificaría ningún fichero de
+pruebas). Por tanto, si en algún momento esos miembros del equipo se marchan o
 llegan al punto de escribir buenas pruebas y no necesitar la anterior medida,
-puede que llegue el momento de deshacernos de la comprobación de cada cambio en
-el repositorio, que al no ser necesaria puede hacernos perder tiempo en los
-falsos positivos (digamos, alguna vez que queramos reindentar código o hacer
-pequeños arreglos a los comentarios o la documentación), y caer en la tentación
-de seguir el «culto cargo».
+puede que llegue el momento de esta regla. Mantener y seguir reglas simplemente
+porque «siempre han funcionado» es caer en la tentación de seguir el «culto
+cargo».
 
 Ejemplo 2: automatización de pruebas
 ------------------------------------
@@ -104,16 +110,16 @@ footnote:[Aunque uno podría decir que «no hay ninguna regla exenta de
 excepciones» también tiene excepciones...]. Puede que el equipo no tenga
 suficiente experiencia en pruebas automáticas como para que introducirlas
 mejore la situación _antes de la entrega_. Puede que las partes críticas del
-proyecto en el que trabajamos no sea fácil de probar de manera fiable con
+proyecto en el que trabajamos no sean fáciles de probar de manera fiable con
 pruebas automáticas, y empeñarnos en poner énfasis en éstas a toda costa no
 ayude al equipo en el contexto de esta entrega. Puede que la tensión de ir
 retrasados haga al equipo ser «optimistas» al escribir pruebas, y las pruebas
 den un falso sentido de seguridad. Puede que los que toman las decisiones no
 estén convencidos, y que a corto plazo no valga la pena gastar tiempo y energía
-en convencerlos. Y puede que hayamos convencidos a los que toman las
-decisiones, pero _el equipo_ no esté convencido, e intentar forzarlos a
-escribir pruebas sólo vaya a provocar un bajón de moral y un conjunto de
-pruebas automáticas de muy mala calidad.
+en convencerlos. Y puede que hayamos convencido a los que toman las decisiones,
+pero _el equipo_ no esté convencido, e intentar forzarlos a escribir pruebas
+sólo vaya a provocar un bajón de moral y un conjunto de pruebas automáticas de
+muy mala calidad.
 
 Y si por la razón que sea llegamos a la conclusión de que intentar implantar
 pruebas automáticas para la próxima entrega no es una buena idea, ¿qué podemos
@@ -122,14 +128,14 @@ cambiar radicalmente su filosofía de trabajo. Por ejemplo, puede que tras
 analizar la situación descubramos que esa parte del programa es más difícil de
 probar de manera manual porque no da suficiente información.  Quizás añadir una
 opción «escondida» que haga esa parte menos opaca puede ser suficiente hasta la
-fecha clave. O simplemente mejorar la comunicación entre todos los miembros del
+fecha clave. O simplemente mejorar la comunicación entre los miembros del
 equipo. Porque, entre otras cosas, siempre es positivo respetar la manera de
 trabajar de un equipo («que siempre ha funcionado»): no sólo mejora las
 relaciones entre sus miembros, sino que ayuda a ganarse su respeto y atención,
-que serán necesarios para poder implementar cambios grandes como desarrollo
-dirigido por pruebas o simplemente escribir pruebas automáticas. Y mientras
-tanto, podemos ir enseñando poco a poco al equipo a automatizar las pruebas
-para ir cambiando a un modelo (posiblemente) más escalable.
+que serán necesarios más tarde para poder implementar cambios grandes como
+desarrollo dirigido por pruebas o simplemente escribir pruebas automáticas. Y
+mientras tanto, podemos ir enseñando poco a poco al equipo a automatizar las
+pruebas para ir cambiando a un modelo (posiblemente) más escalable.
 
 Ejemplo 3: especificaciones
 ---------------------------
@@ -145,19 +151,18 @@ calidad del proyecto una vez completado.
 Digamos que estamos desarrollando el software que conduce un coche automático.
 Uno de los requisitos del coche es que pare en los pasos de peatones cuando
 están activados (cuando éstos detectan que una persona está cruzando, envían
-una señal que el coche recibe). Sin embargo, mucha gente no cruza por los pasos
-de peatones, así que el coche sería mucho más seguro si no dependiera de los
-pasos de peatones, sino que pudiera detectar por sí mismo si tiene algo delante
-que podría llegar a atropellar. Es decir, las especificaciones son una
-herramienta muy útil, pero nunca son el objetivo final del desarrollo de
-software. Las personas que escriben las especificaciones cometen errores, las
-condiciones del proyecto cambian, etc.  Mantener siempre el especticismo y una
-visión más completa de nuestros objetivos, y no dejarnos llevar por el «no es
-mi trabajo», el «no me pagan por esto» o el «yo sólo hago lo que me dicen», es
-mucho más importante que cumplir la especificación diligentemente. Dicho de
-otra manera, nuestro trabajo no es escribir software que cumple a rajatabla una
-descripción textual de un problema. Es hacer software útil y resolver
-problemas.
+una señal al coche). Sin embargo, mucha gente no cruza por los pasos de
+peatones, así que el coche sería mucho más seguro si no dependiera de los pasos
+de peatones, sino que pudiera detectar por sí mismo si tiene algo delante que
+podría llegar a atropellar. Es decir, las especificaciones son una herramienta
+muy útil, pero nunca son el objetivo final del desarrollo de software. Las
+personas que escriben las especificaciones cometen errores, las condiciones del
+proyecto cambian, etc.  Mantener siempre el escepticismo y una visión más
+completa de nuestros objetivos, y no dejarnos llevar por el «no es mi trabajo»,
+el «no me pagan por esto» o el «yo sólo hago lo que me dicen», es mucho más
+importante que cumplir la especificación diligentemente. Dicho de otra manera,
+nuestro trabajo no es escribir software que cumple a rajatabla una descripción
+textual de un problema. Es hacer software útil y resolver problemas.
 
 Ejemplo 4: diseño simple
 ------------------------
