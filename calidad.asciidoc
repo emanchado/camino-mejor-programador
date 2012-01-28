@@ -22,17 +22,17 @@ lo que entienden por ésta. Este entendimiento compartido nos ayudará a
 centrarnos en los objetivos importantes, que son las necesidades del cliente
 del proyecto. Esto no significa que sólo sean importantes los aspectos que el
 cliente _menciona_: con frecuencia, los clientes dan por sentadas una serie de
-propiedades (eficiencia, fiabilidad, falta de regresiones, etc), y nuestro
-trabajo es asegurarnos de que éstas se cumplen tanto como los requisitos
-explícitos. Esto es, la calidad necesita de aspectos técnicos como código
-rápido o diseño simple, pero éstos deben estar supeditados a las necesidades y
-los deseos del cliente, implícitos y explícitos.
+propiedades (eficiencia, fiabilidad, etc), y nuestro trabajo es asegurarnos de
+que éstas se cumplen tanto como los requisitos explícitos. Esto es, la calidad
+necesita de aspectos técnicos como código rápido o diseño simple, pero éstos
+deben estar supeditados a las necesidades y los deseos del cliente, implícitos
+y explícitos.
 
 Cómo mejorar la calidad
 -----------------------
-Como ya expone el apartado anterior, es imposible dar una serie de pasos para
+Como ya expone el apartado anterior, es imposible dar una «receta mágica» para
 mejorar la calidad. De hecho, intentar mejorar la calidad simplemente siguiendo
-una lista de pasos es una receta casi segura para el fracaso. No importa qué
+una lista de pasos es un camino casi seguro hacia el fracaso. No importa qué
 pasos sigamos, qué hayamos oído de ellos o quién los haya recomendado: nuestra
 única vía para alcanzar un buen nivel de calidad es usar nuestra experiencia y
 conocimiento del contexto para decidir qué es lo que nos ayudará en cada
@@ -43,10 +43,13 @@ Sin embargo, sí se pueden dar _guías_ para mejorar la calidad. Por ejemplo:
 mantener siempre el qué, no el cómo, como la guía de todo lo que hacemos;
 mantener el escepticismo y cuestionar cómo hacemos las cosas y por qué; estar
 preparado para cambiar cómo trabajamos y luchar contra la «programación de
-culto de cargo»; no creer en la tecnología como el centro de lo que hacemos;
+culto cargo» footnote:[Hacer las cosas de cierta manera simplemente porque lo
+hemos hecho o visto antes, sin entender por qué son así o qué utilidad tienen.
+Ver http://en.wikipedia.org/wiki/Cargo_cult_programming[Cargo Cult Programming]
+en Wikipedia.]; no creer en la tecnología como el centro de lo que hacemos;
 darse cuenta de que lo principal no es hacer código bonito o fácil de entender,
 sino resolver problemas footnote:[Los buenos profesionales hacen las dos cosas,
-pero es más profesional tener más de lo segundo que más de lo primero]; no
+pero es más profesional tener más de lo segundo que más de lo primero.]; no
 creer que los problemas tengan una solución única o mejor.
 
 Esto no quiere decir que las herramientas, técnicas y costumbres no sean
@@ -71,7 +74,7 @@ Como regla general, tener procesos y reglas ayuda a los equipos de desarrollo a
 trabajar más eficientemente. Por una parte, facilita que nos concentremos en lo
 que estamos haciendo y no en el cómo footnote:[Si siempre hacemos ciertas cosas
 de la misma manera y ésta funciona razonablemente bien, no tenemos que gastar
-tiempo ni energía decidiendo cómo hacerlas].  Por otra, facilita la
+tiempo ni energía decidiendo cómo hacerlas.].  Por otra, facilita la
 automatización.
 
 Sin embargo, los procesos y las reglas pueden quedarse obsoletos. Por ejemplo,
@@ -89,9 +92,9 @@ falta de ortografía en un comentario, actualizar la documentación, o
 reformatear el código (ya que nuestro cambio no modificaría ningún fichero de
 pruebas). Por tanto, si en algún momento esos miembros del equipo se marchan o
 llegan al punto de escribir buenas pruebas y no necesitar la anterior medida,
-puede que llegue el momento de esta regla. Mantener y seguir reglas simplemente
-porque «siempre han funcionado» es caer en la tentación de seguir el «culto
-cargo».
+puede que llegue el momento de eliminar esta regla. Mantener y seguir reglas
+simplemente porque «siempre han funcionado» es caer en la tentación de seguir
+el «culto cargo».
 
 Ejemplo 2: automatización de pruebas
 ------------------------------------
@@ -150,10 +153,9 @@ calidad del proyecto una vez completado.
 
 Digamos que estamos desarrollando el software que conduce un coche automático.
 Uno de los requisitos del coche es que pare en los pasos de peatones cuando
-están activados (cuando éstos detectan que una persona está cruzando, envían
-una señal al coche). Sin embargo, mucha gente no cruza por los pasos de
-peatones, así que el coche sería mucho más seguro si no dependiera de los pasos
-de peatones, sino que pudiera detectar por sí mismo si tiene algo delante que
+detecte que una persona está cruzando. Sin embargo, mucha gente no cruza por
+los pasos de peatones, así que el coche sería mucho más seguro si no dependiera
+de éstos, sino que pudiera detectar por sí mismo si tiene algo delante que
 podría llegar a atropellar. Es decir, las especificaciones son una herramienta
 muy útil, pero nunca son el objetivo final del desarrollo de software. Las
 personas que escriben las especificaciones cometen errores, las condiciones del
