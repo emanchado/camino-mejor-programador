@@ -5,7 +5,7 @@ Esteban Manchado_Velázquez <emanchado@demiurgo.org>
 «Calidad» es una palabra muy usada pero un concepto bastante escurridizo, al
 menos a la hora de encontrar maneras fiables de mejorarla o simplemente
 mantenerla una vez hemos llegado a un nivel aceptable. Este artículo explorará
-qué es la calidad y cómo mejorar la calidad de nuestros proyectos.
+qué es la calidad y cómo mejorarla en nuestros proyectos.
 
 Significado
 -----------
@@ -15,7 +15,7 @@ Uno de los problemas de la definición es que es muy vaga pero, paradójicamente
 el propio hecho de ser tan vaga es lo que la hace útil. La calidad es un asunto
 muy complejo, por lo que simplificarlo, lejos de ayudarnos a entender, sólo nos
 dará la ilusión de que lo entendemos. Y la ilusión de entendimiento es muy
-peligrosa porque nos hace resistir el aprendizaje real.
+peligrosa porque hace que nos resistamos al aprendizaje real.
 
 El segundo problema de la calidad es hacer que todos los interesados compartan
 lo que entienden por ésta. Este entendimiento compartido nos ayudará a
