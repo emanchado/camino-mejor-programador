@@ -3,8 +3,9 @@ all: funcionales.html \
     herramientas.html \
     malos_olores.html \
     documentacion-activa.html \
-    calidad.html\
-	integracion_continua.html
+    calidad.html \
+    integracion_continua.html \
+    rest.html
 
 %.html: %.asciidoc
 	asciidoc $<
