@@ -91,12 +91,10 @@ han pasado días ni meses, es muy fácil encontrar donde esta el problema.
 
 Ventajas de la Integración Continua
 -----------------------------------
-No conozco ningún estudio empírico que lo pueda demostrar, pero si hablas con 
-personas que hayan utilizado Integración Continua, todos te dirán que reduce 
-de manera increíble el número de errores en el producto final. Para mi también
-es la mayor ventaja que aporta, porque un producto final con pocos o incluso
-ningún error es a fin de cuentas el objetivo que todos deseamos como
-desarrolladores.
+La experiencia demuestra que reduce de manera increíble el número de errores en
+el producto final. Esta es probablemente la mayor ventaja que aporta, porque
+un producto final con pocos o incluso ningún error es a fin de cuentas el 
+objetivo que todos deseamos como desarrolladores.
 
 Pero no hay que olvidarse de la otra gran ventaja que aporta esta práctica, la 
 transparencia del proceso. Como todos trabajamos utilizando el mismo repositorio
@@ -126,9 +124,9 @@ otros desarrolladores tengan que esperar por estos y viceversa.
 Desgraciadamente, todavía hay muchas empresas que aún no poseen una herramienta
 de este tipo. Para aquellos que aún no utilicen un repositorio de código cabe
 destacar que actualmente existen una gran cantidad de soluciones gratuitas de
-calidad, como pueden ser Subversion, Git o Mercurial por mencionar algunas. Por
-lo tanto empecemos por tener nuestro sistema de control de versiones corporativo
-antes de continuar con otros pasos más avanzados.
+calidad, como pueden ser Subversion, Git o Mercurial por mencionar algunas. Esta
+es una pieza fundamental y será prácticamente imposible realizar Integración
+Continua si no se dispone de ella.
 
 Este tipo de herramientas marcan un antes y un después en el trabajo cotidiano
 de un equipo de desarrollo de software. Pero además es el pivote fundamental de 
@@ -136,13 +134,12 @@ la Integración Continua, que no es posible sin un repositorio de código.
 
 Sistema de construcción automatizado
 
-Hace "mucho" tiempo la compilación de los proyectos era bastante compleja, 
-porque requería la referencia a múltiples ficheros, recursos, etc. Actualmente
-los IDE's han eliminado esa complejidad, lo cual no es malo, pero debemos poder
-construir el proyecto en cualquier máquina sin necesidad de un IDE. No todas 
-las máquinas en las que vayamos a instalar nuestro proyecto tendrán el IDE con
-el que trabajamos, incluso en algunos casos estos IDE's pueden tener licencias
-relativamente caras, por lo que no sería una opción viable.
+Muchos equipos utilizan IDEs para compilar los proyectos. Esto en sí mismo no
+es malo, pero debemos poder construir el proyecto en cualquier máquina sin 
+necesidad de un IDE. No todas las máquinas en las que vayamos a instalar nuestro
+proyecto tendrán el IDE con el que trabajamos, incluso en algunos casos estos
+pueden tener licencias relativamente caras, por lo que no sería una opción 
+viable.
 
 Hay muchas soluciones de construcción diferentes en función de los lenguajes
 de programación, en Java están Ant o Maven, en Ruby está Rake, solo por 
@@ -202,11 +199,11 @@ para que haga ciertas tareas relativamente complejas por nosotros.
 
 Por ejemplo podríamos configurar el servidor para que haga análisis estático de
 código, de forma que podría buscar en todo el código bloques sospechosos, 
-bloques duplicados, referencias que no se utilizan, entre otras cosas. A simple
-vista puede parecer algo irrelevante, pero hay que recordar que la complejidad 
-es lo que más ralentiza el proceso de desarrollo, por lo que un código con 
-menor número de líneas y referencias inútiles será más sencillo de leer y 
-entender.
+bloques duplicados, referencias que no se utilizan, entre otras cosas. Existen
+gran cantidad de opciones como pueden ser FindBugs o PDM. A simple vista puede
+parecer algo irrelevante, pero hay que recordar que la complejidad es lo que más
+ralentiza el proceso de desarrollo, por lo que un código con menor número de
+líneas y referencias inútiles será más sencillo de leer y entender.
 
 También podríamos incluir tareas que permitan desplegar la aplicación en un 
 servidor, de forma que tendríamos siempre un servidor de demostración con la
@@ -217,7 +214,7 @@ feedback al equipo.
 Otra operación que podemos automatizar, y que el servidor de integración podría
 hacer por nosotros, es la realización de pruebas end-to-end sobre la aplicación.
 Imaginemos que estamos desarrollando una aplicación web, podríamos crear tests
-con alguna herramienta de grabación de la navegación, como por ejemplo Selenium 
+con alguna herramienta de grabación de la navegación, como por ejemplo Selenium, 
 y lanzarlos con cada construcción que haga el servidor. Es un tipo de prueba que 
 requiere mucho tiempo y no sería viable que se lancen con cada compilación del
 desarrollador, pero para el servidor de integración no habría ningún problema.
@@ -228,10 +225,11 @@ estable y testeado de manera totalmente automática.
 Para acabar me gustaría utilizar algunos comentarios escuchados por Martin
 Fowler cuando habla de Integración Continua con otros desarrolladores. La
 primera reacción suele ser algo como "eso no puede funcionar (aquí)" o "haciendo
-eso no cambiará mucho las cosas", pero hay otra muy distinta que es "sí,
-nosotros lo hacemos - ¿cómo puedes vivir sin eso?". Ahora es tu elección si 
-decides probarlo o no, pero antes de hacerlo piensa en lo poco que tienes que 
-perder y lo mucho que puedes ganar.
+eso no cambiará mucho las cosas", pero muchos equipos se dan cuenta de que es
+más fácil de implementar de lo que parece, y pasado un tiempo su reacción 
+cambia a - ¿cómo puedes vivir sin eso?". Ahora es tu elección si decides
+probarlo o no, pero antes de hacerlo piensa en lo poco que tienes que perder y
+lo mucho que puedes ganar.
 
 [bibliography]
 Bibliografía
