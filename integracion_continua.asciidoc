@@ -13,14 +13,14 @@ funcione a la primera. Si se sigue una metodología en la que predomine el
 desarrollo iterativo, donde las funcionalidades se van entregando poco a poco,
 se minimiza ligeramente el impacto, siempre y cuando al final de cada iteración
 se haya desplegado en el sistema de producción real. Pero generalmente, sigue
-siendo un momento incomodo, se suelen producir errores porque las máquinas
+siendo un momento incómodo, se suelen producir errores porque las máquinas
 de desarrollo tienen configuraciones diferentes a las máquina de producción, el
 rendimiento no es tan bueno porque la base de datos de producción tiene una
 cantidad mucho mayor de información, o cualquier otro detalle que no se tuvo en
 cuenta durante el desarrollo.
 
 Para resolver este problema aparece una nueva "filosofía", o práctica,
-denominada Integración Continua.Es un modo de desarrollar un poco diferente al
+denominada Integración Continua. Es un modo de desarrollar un poco diferente al
 habitual, y que requiere de una serie de buenas prácticas y la aceptación de las
 mismas por el equipo de desarrollo. Se ha de convertir en un hábito que se
 realice de forma automática, casi sin darnos cuenta. 
