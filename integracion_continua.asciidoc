@@ -20,15 +20,15 @@ cantidad mucho mayor de información, o cualquier otro detalle que no se tuvo en
 cuenta durante el desarrollo.
 
 Para resolver este problema aparece una nueva "filosofía", o práctica,
-denominada Integración Continua. Es un modo de desarrollar un poco diferente al
+denominada integración continua. Es un modo de desarrollar un poco diferente al
 habitual, y que requiere de una serie de buenas prácticas y la aceptación de las
 mismas por el equipo de desarrollo. Se ha de convertir en un hábito que se
 realice de forma automática, casi sin darnos cuenta. 
 
-La Integración Continua desde el punto de vista del desarrollador
+La integración continua desde el punto de vista del desarrollador
 -----------------------------------------------------------------
 La siguiente descripción de un día de trabajo, en un equipo que realiza 
-Integración Continua, ayudará a ilustrar el proceso y comprender los elementos
+integración continua, ayudará a ilustrar el proceso y a comprender los elementos
 necesarios para llevarla a cabo.
 
 Al principio del día lo normal es seleccionar la siguiente tarea más importante
@@ -62,34 +62,33 @@ arreglaremos inmediatamente. Nunca, bajo ningún concepto, se debe subir código
 al repositorio sin revisar que los tests pasan correctamente y la aplicación se
 puede construir sin incidencias. Además, es recomendable acceder a la aplicación
 y revisar rápidamente que todo sigue funcionando adecuadamente, ya que por lo
-general los tests unitarios no tienen una cobertura del 100%, o simplemente no
-pueden probar detalles de infraestructura que son más sencillos de probar a
-mano. 
+general los tests unitarios no tienen una cobertura del 100%, puesto que ciertos 
+detalles de infraestructura son más sencillos de probar a mano.
 
 Una vez hemos realizado todos los pasos anteriores, podemos hacer un commit y
 guardar nuestros cambios en el repositorio de código, lo que permite que el
 resto del equipo se actualice y los tengan disponibles en cuestión de segundos.
 
-Aunque el proceso de Integración Continua comenzó desde el momento en el que
-empezamos a trabajar en la nueva funcionalidad, es el momento en el que hacemos
-el commit cuando el servidor de Integración Continua comienza a trabajar. Dicho
-sistema se descargará una versión nueva del código fuente con todos los cambios
-realizados (los nuestros y los de nuestros compañeros), pasará los tests y tras
-hacer la construcción el proyecto lo desplegará en una "réplica" de la máquina
-de producción. Todo de forma totalmente automatizada. El propio servidor de
-Integración Continua podría pasar algunas pruebas extras, como por ejemplo
+Aunque el proceso de integración continua comenzó desde el momento en el que
+empezamos a trabajar en la nueva funcionalidad, el servidor de integración
+continua comienza a trabajar cuando hacemos commit. Dicho sistema se descargará
+una versión nueva del código fuente con todos los cambios realizados (los
+nuestros y los de nuestros compañeros), ejecutará los tests y tras hacer la
+construcción el proyecto lo desplegará en una "réplica" de la máquina de
+producción. Todo de forma totalmente automatizada. El propio servidor de
+integración continua podría pasar algunas pruebas extras, como por ejemplo
 análisis estático de código, análisis de cobertura, o cualquier otro detalle que
 sería muy tedioso pasar en el proceso de desarrollo porque requiere demasiado
 tiempo.
 
-También podría haber ocurrido un error. En ese caso el servidor de Integración
-Continua nos avisaría con algún mensaje en la consola del mismo o simplemente
+También podría haber ocurrido un error. En ese caso el servidor de integración
+continua nos avisaría con algún mensaje en la consola del mismo o simplemente
 con el envío de un correo electrónico, que es la opción más común. En ese
-caso tendremos que inspeccionar cual ha sido el error y resolverlo para subir
+caso tendremos que inspeccionar cuál ha sido el error y resolverlo para subir
 una nueva versión corregida. Como el error se genera a los pocos minutos y no
-han pasado días ni meses, es muy fácil encontrar donde esta el problema.
+han pasado días ni meses, es muy fácil encontrar dónde está el problema.
 
-Ventajas de la Integración Continua
+Ventajas de la integración continua
 -----------------------------------
 La experiencia demuestra que reduce de manera increíble el número de errores en
 el producto final. Esta es probablemente la mayor ventaja que aporta, porque
@@ -108,13 +107,14 @@ demostración, en el que siempre se posee la última versión de la aplicación.
 esta manera los clientes pueden probar los últimos cambios día a día y ofrecer
 feedback al equipo de desarrollo sin tener que esperar meses.
 
-Requisitos de la Integración Continua
+Requisitos de la integración continua
 -------------------------------------
-Ahora ya disponemos de una visión más concreta acerca de que es la Integración
-Continua, pero nos vendrá bien repasar cuáles son los elementos indispensables 
+Ahora ya disponemos de una visión más concreta de lo que es la integración
+continua, pero nos vendrá bien repasar cuáles son los elementos indispensables 
 para hacerlo correctamente.
 
 Repositorio de código
+~~~~~~~~~~~~~~~~~~~~~
 
 El repositorio de código es fundamental porque es la herramienta que permite 
 que el equipo trabaje de forma totalmente sincronizada, pero a la vez sencilla.
@@ -125,14 +125,15 @@ Desgraciadamente, todavía hay muchas empresas que aún no poseen una herramient
 de este tipo. Para aquellos que aún no utilicen un repositorio de código cabe
 destacar que actualmente existen una gran cantidad de soluciones gratuitas de
 calidad, como pueden ser Subversion, Git o Mercurial por mencionar algunas. Esta
-es una pieza fundamental y será prácticamente imposible realizar Integración
-Continua si no se dispone de ella.
+es una pieza fundamental y será prácticamente imposible realizar integración
+continua si no se dispone de ella.
 
 Este tipo de herramientas marcan un antes y un después en el trabajo cotidiano
 de un equipo de desarrollo de software. Pero además es el pivote fundamental de 
-la Integración Continua, que no es posible sin un repositorio de código.
+la integración continua, que no es posible sin un repositorio de código.
 
 Sistema de construcción automatizado
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Muchos equipos utilizan IDEs para compilar los proyectos. Esto en sí mismo no
 es malo, pero debemos poder construir el proyecto en cualquier máquina sin 
@@ -149,6 +150,7 @@ proceso de compilación, sino la ejecución de los tests de nuestra aplicación 
 incluso el despliegue en el servidor de aplicaciones llegado el caso.
 
 Commits diarios
+~~~~~~~~~~~~~~~
 
 No todos los requisitos se basan en tener un determinado tipo de herramienta, 
 algunos se basan en saber cómo utilizar una determinada herramienta. Una vez que
@@ -158,18 +160,19 @@ diarios, idealmente un desarrollador debe hacer incluso varios commits al día.
 Si tenemos un repositorio de código pero cada desarrollador sube sus cambios
 cada dos semanas, seguimos en el mismo problema de antes, la integración del 
 proyecto se retrasa durante todo ese tiempo, perdiendo toda opción de feedback
-inmediato. Además retrasar la integración tanto tiempo genera más conflictos
+inmediato. Además, retrasar la integración tanto tiempo genera más conflictos
 entre los ficheros editados por los desarrolladores. Debido a que con cada
 commit se hace una integración del proyecto completo, cada mínimo cambio que no
 desestabiliza el proyecto debe ser subido para que se compruebe que todo sigue
 funcionando correctamente.
 
 Tests unitarios
+~~~~~~~~~~~~~~~
 
 Hemos hablado todo el tiempo de comprobar que el proyecto funciona correctamente
 y al mismo tiempo de automatizar todo el proceso lo mejor posible. Para poder
-comprobar que el proyecto funciona de forma automática necesitamos 
-necesariamente de tests unitarios (muchas veces incluso tests de integración).
+comprobar que el proyecto funciona de forma automática necesitamos tests
+unitarios (muchas veces incluso tests de integración).
 
 Existen muchas maneras diferentes de incluir tests en el proyecto, personalmente
 creo que TDD es la manera más adecuada, pero si el equipo no tiene experiencia y 
@@ -177,13 +180,14 @@ crea los tests después de haber realizado la implementación, tampoco es un
 método inválido. La premisa fundamental es que toda nueva funcionalidad debe 
 tener una batería de tests que verifique que su comportamiento es correcto.
 
-Servidor de Integración
+Servidor de integración
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Esta es la pieza más polémica, mucha gente cree que no es absolutamente 
-necesaria para hacer Integración Continua correctamente, algunos equipos hacen
+necesaria para hacer integración continua correctamente, algunos equipos hacen
 la integración de forma manual con cada commit, por ejemplo. En mi opinión es
 un paso tan sencillo y barato de automatizar, que no merece la pena ahorrárselo.
-Montar algún servidor de Integración como por ejemplo Jenkins o Cruise Control
+Montar algún servidor de integración como por ejemplo Jenkins o Cruise Control
 es gratuito, y tan sencillo como desplegar un fichero en un servidor. Por contra
 las ventajas son grandísimas. Para empezar, el proceso está totalmente 
 automatizado, lo que evita el error humano. Y por otro lado reduce la cantidad
@@ -197,9 +201,9 @@ completo y que a buen seguro mejorará enormemente la calidad de nuestro
 producto. Pero podemos ir un poco más allá y utilizar el servidor de integración
 para que haga ciertas tareas relativamente complejas por nosotros.
 
-Por ejemplo podríamos configurar el servidor para que haga análisis estático de
-código, de forma que podría buscar en todo el código bloques sospechosos, 
-bloques duplicados, referencias que no se utilizan, entre otras cosas. Existen
+Por ejemplo, podríamos configurar el servidor para que haga análisis estático de
+código, de forma que pueda buscar en todo el código bloques sospechosos, 
+bloques duplicados o referencias que no se utilizan, entre otras cosas. Existen
 gran cantidad de opciones como pueden ser FindBugs o PDM. A simple vista puede
 parecer algo irrelevante, pero hay que recordar que la complejidad es lo que más
 ralentiza el proceso de desarrollo, por lo que un código con menor número de
@@ -223,7 +227,7 @@ de integración continua por nosotros, y que nos ayudará a mantener un producto
 estable y testeado de manera totalmente automática.
 
 Para acabar me gustaría utilizar algunos comentarios escuchados por Martin
-Fowler cuando habla de Integración Continua con otros desarrolladores. La
+Fowler cuando habla de integración continua con otros desarrolladores. La
 primera reacción suele ser algo como "eso no puede funcionar (aquí)" o "haciendo
 eso no cambiará mucho las cosas", pero muchos equipos se dan cuenta de que es
 más fácil de implementar de lo que parece, y pasado un tiempo su reacción 
