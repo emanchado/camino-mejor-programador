@@ -1,2 +1,8 @@
 *.html
 *.swp
+book.chunked
+book.pdf
+book.epub
+book.tex
+tex-tmp
+tmp
