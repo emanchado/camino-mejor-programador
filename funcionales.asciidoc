@@ -167,8 +167,8 @@ ejemplo en castellano, tal y como hicimos en el anterior apartado):
 ----------------------------------
 ; En el caso de Lisp, podríamos haber llamado a esta función '%', de modo que
 ; la llamada de abajo quedaría '(% percent-tax total-price)'
-(defun percentage (tantoporciento amount)
-  (* amount (/ tantoporciento 100)))
+(defun percentage (percent amount)
+  (* amount (/ percent 100)))
 
 (defun calculate-price (cost nitems limit percent-tax)
   (let* ((total-price (* cost nitems))
@@ -457,7 +457,7 @@ evaluación estricta. Nótese que la función calcula la serie _entera_, es deci
 una lista _infinita_:
 
 [source,haskell]
-.Implemetación de la serie de Fibonacci, en Haskell
+.Implementación de la serie de Fibonacci, en Haskell
 fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 
 Normalmente la función es imposible de entender de un primer vistazo si no
