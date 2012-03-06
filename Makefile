@@ -53,3 +53,10 @@ book.pdf: book.tex
 
 book.tex: $(SOURCE_FILES)
 	a2x $(XSLT_OPTS) -f tex book.asc
+	# Make the table of contents only have the article names
+	sed 's/^\\setcounter{tocdepth}{[0-9]\+}/\\setcounter{tocdepth}{0}/' book.tex >book.tex-tmp
+	# Add Javascript language definition rules for the "listings"
+	# package. Thanks to Lena Herrmann for the tip:
+	# http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package
+	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n&/' book.tex-tmp >book.tex
+	rm book.tex-tmp
