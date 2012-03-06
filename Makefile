@@ -31,7 +31,6 @@ book.epub: $(SOURCE_FILES)
 book.chunked/index.html: book.xml
 	a2x $(XSLT_OPTS) -f chunked book.xml
 	for i in book.chunked/ch*.html; do \
-		echo "Fixing $$i"; \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
 		rm $$i.tmp; \
