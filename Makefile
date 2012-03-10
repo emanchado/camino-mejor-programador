@@ -58,7 +58,7 @@ book.pdf: book.tex
 		mv tmp.tex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
-		mv book.pdf ..
+		pdftk book.pdf cat 3-end output ../book.pdf
 
 book.tex: $(SOURCE_FILES)
 	a2x $(XSLT_OPTS) -f tex book.asc
