@@ -54,7 +54,7 @@ book.pdf: book.tex
 	mkdir tex-tmp
 	cat $< >tex-tmp/book.tex
 	cd tex-tmp && \
-		sed -e 's/ñ/nn/g' book.tex >tmp.tex && \
+		sed -e 's/ñ/nn/g' -e 's/í/i/g' book.tex >tmp.tex && \
 		mv tmp.tex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
