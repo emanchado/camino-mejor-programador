@@ -12,8 +12,8 @@ all: funcionales.html \
 
 clean:
 	rm *.html
-	rm -rf tex-tmp
-	rm book.tex
+	rm -rf tex-tmp epub-tmp
+	rm book.tex book.xml
 	rm -rf book.chunked book.pdf book.html book.epub
 
 ARTICLE_SOURCE_FILES = funcionales.asc calidad.asc
@@ -25,8 +25,17 @@ libro: book.html book.epub book.chunked/index.html book.pdf
 book.html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc
 
-book.epub: $(SOURCE_FILES)
-	a2x $(XSLT_OPTS) -f epub book.asc
+book.epub: book.xml
+	a2x $(XSLT_OPTS) -f epub -k book.xml
+	rm -rf epub-tmp
+	mkdir epub-tmp && cd epub-tmp && unzip ../book.epub
+	for i in epub-tmp/OEBPS/ch*.html; do \
+		xmllint -format $$i >$$i.tmp; \
+		./fix-highlighting.py $$i.tmp >$$i; \
+		rm $$i.tmp; \
+	done
+	./fix-epub-toc.py epub-tmp/OEBPS/toc.ncx >epub-tmp/toc.ncx && mv epub-tmp/toc.ncx epub-tmp/OEBPS/toc.ncx
+	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
 
 book.chunked/index.html: book.xml
 	a2x $(XSLT_OPTS) -f chunked book.xml
