@@ -26,7 +26,7 @@ book.html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc
 
 book.epub: book.xml
-	a2x $(XSLT_OPTS) -f epub -k book.xml
+	a2x $(XSLT_OPTS) -f epub book.xml
 	rm -rf epub-tmp
 	mkdir epub-tmp && cd epub-tmp && unzip ../book.epub
 	for i in epub-tmp/OEBPS/ch*.html; do \
