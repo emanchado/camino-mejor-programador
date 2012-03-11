@@ -16,7 +16,7 @@ clean:
 	rm book.tex book.xml
 	rm -rf book.chunked book.pdf book.html book.epub
 
-ARTICLE_SOURCE_FILES = funcionales calidad integracion_continua
+ARTICLE_SOURCE_FILES = funcionales consejospruebas documentacion_activa calidad integracion_continua
 SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc $(article)-biblio.asc)
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
 
