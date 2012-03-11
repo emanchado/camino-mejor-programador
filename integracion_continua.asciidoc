@@ -10,7 +10,7 @@ producción.
 
 Generalmente este suele ser un momento muy tenso porque es muy raro que todo
 funcione a la primera. Si se sigue una metodología en la que predomine el 
-desarrollo iterativo, donde las funcionalidades se van entregando poco a poco,
+desarrollo incremental, donde las funcionalidades se van entregando poco a poco,
 se minimiza ligeramente el impacto, siempre y cuando al final de cada iteración
 se haya desplegado en el sistema de producción real. Pero generalmente, sigue
 siendo un momento incómodo, se suelen producir errores porque las máquinas
@@ -32,9 +32,8 @@ integración continua, ayudará a ilustrar el proceso y a comprender los element
 necesarios para llevarla a cabo.
 
 Al principio del día lo normal es seleccionar la siguiente tarea más importante
-a realizar. En base a la reunión de sprint footnote:[Reunión de aproximadamente
-una hora en la que se decide cuales serán las tareas a incluir en la siguiente
-versión de la aplicación.] y al stand-up meeting footnote:[Breve reunión de
+a realizar. En base a la reunión de planificación footnote:[Reunión de
+aproximadamente una hora en la que se decide cuales serán las tareas a incluir en la siguiente versión de la aplicación.] y a la reunión diaria footnote:[Breve reunión de
 seguimiento, diaria, que realiza todo el equipo, donde expone en que se trabajó
 el día anterior, en que se trabajará hoy y si existen impedimentos para llevar a
 cabo alguna de las tareas en ejecución.] siempre existe una lista de tareas
@@ -65,17 +64,17 @@ y revisar rápidamente que todo sigue funcionando adecuadamente, ya que por lo
 general los tests unitarios no tienen una cobertura del 100%, puesto que ciertos 
 detalles de infraestructura son más sencillos de probar a mano.
 
-Una vez hemos realizado todos los pasos anteriores, podemos hacer un commit y
-guardar nuestros cambios en el repositorio de código, lo que permite que el
-resto del equipo se actualice y los tengan disponibles en cuestión de segundos.
+Una vez hemos realizado todos los pasos anteriores, podemos guardar nuestros cambios
+en el repositorio de código central, lo que permite que el resto del equipo se
+actualice y los tengan disponibles en cuestión de segundos.
 
 Aunque el proceso de integración continua comenzó desde el momento en el que
 empezamos a trabajar en la nueva funcionalidad, el servidor de integración
-continua comienza a trabajar cuando hacemos commit. Dicho sistema se descargará
-una versión nueva del código fuente con todos los cambios realizados (los
-nuestros y los de nuestros compañeros), ejecutará los tests y tras hacer la
-construcción el proyecto lo desplegará en una "réplica" de la máquina de
-producción. Todo de forma totalmente automatizada. El propio servidor de
+continua comienza a trabajar cuando subimos nuestros cambios al repositorio de
+código. Dicho sistema se descargará una versión nueva del código fuente con todos los
+cambios realizados (los nuestros y los de nuestros compañeros), ejecutará los tests y
+tras hacer la construcción el proyecto lo desplegará en una "réplica" de la máquina
+de producción. Todo de forma totalmente automatizada. El propio servidor de
 integración continua podría pasar algunas pruebas extras, como por ejemplo
 análisis estático de código, análisis de cobertura, o cualquier otro detalle que
 sería muy tedioso pasar en el proceso de desarrollo porque requiere demasiado
@@ -105,7 +104,7 @@ las reuniones de seguimiento pueden ser cortas y precisas.
 Como ventaja añadida cabe destacar la posibilidad de disponer de un servidor de
 demostración, en el que siempre se posee la última versión de la aplicación. De
 esta manera los clientes pueden probar los últimos cambios día a día y ofrecer
-feedback al equipo de desarrollo sin tener que esperar meses.
+información al equipo de desarrollo sin tener que esperar meses.
 
 Requisitos de la integración continua
 -------------------------------------
@@ -135,12 +134,12 @@ la integración continua, que no es posible sin un repositorio de código.
 Sistema de construcción automatizado
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Muchos equipos utilizan IDEs para compilar los proyectos. Esto en sí mismo no
-es malo, pero debemos poder construir el proyecto en cualquier máquina sin 
-necesidad de un IDE. No todas las máquinas en las que vayamos a instalar nuestro
-proyecto tendrán el IDE con el que trabajamos, incluso en algunos casos estos
-pueden tener licencias relativamente caras, por lo que no sería una opción 
-viable.
+Muchos equipos utilizan complejos entornos de desarrollo para desarrollar y compilar
+los proyectos. Esto en sí mismo no es malo, pero debemos poder construir el proyecto
+en cualquier máquina sin necesidad de dichos entornos. No todas las máquinas en las
+que vayamos a instalar nuestro proyecto tendrán el entorno de desarrollo con el que
+trabajamos, incluso en algunos casos estos pueden tener licencias relativamente
+caras, por lo que no sería una opción viable.
 
 Hay muchas soluciones de construcción diferentes en función de los lenguajes
 de programación, en Java están Ant o Maven, en Ruby está Rake, solo por 
@@ -154,42 +153,43 @@ Commits diarios
 
 No todos los requisitos se basan en tener un determinado tipo de herramienta, 
 algunos se basan en saber cómo utilizar una determinada herramienta. Una vez que
-tenemos un control de versiones, hay que recordar que los commits deben ser 
-diarios, idealmente un desarrollador debe hacer incluso varios commits al día.
+tenemos un control de versiones, hay que recordar que el almacenamiento de los
+cambios debe ser diario, idealmente un desarrollador debe hacer incluso varias
+subidas al repositorio de código, al día.
 
 Si tenemos un repositorio de código pero cada desarrollador sube sus cambios
 cada dos semanas, seguimos en el mismo problema de antes, la integración del 
-proyecto se retrasa durante todo ese tiempo, perdiendo toda opción de feedback
-inmediato. Además, retrasar la integración tanto tiempo genera más conflictos
-entre los ficheros editados por los desarrolladores. Debido a que con cada
-commit se hace una integración del proyecto completo, cada mínimo cambio que no
-desestabiliza el proyecto debe ser subido para que se compruebe que todo sigue
-funcionando correctamente.
+proyecto se retrasa durante todo ese tiempo, perdiendo toda opción de obtener
+información inmediatamente. Además, retrasar la integración tanto tiempo genera más
+conflictos entre los ficheros editados por los desarrolladores. Debido a que con cada
+actualización del repositorio se hace una integración del proyecto completo, cada
+mínimo cambio que no desestabiliza el proyecto debe ser subido para que se compruebe
+que todo sigue funcionando correctamente.
 
-Tests unitarios
-~~~~~~~~~~~~~~~
+Pruebas unitarias
+~~~~~~~~~~~~~~~~~
 
 Hemos hablado todo el tiempo de comprobar que el proyecto funciona correctamente
 y al mismo tiempo de automatizar todo el proceso lo mejor posible. Para poder
-comprobar que el proyecto funciona de forma automática necesitamos tests
-unitarios (muchas veces incluso tests de integración).
+comprobar que el proyecto funciona de forma automática necesitamos pruebas
+unitarias (muchas veces incluso pruebas de integración).
 
 Existen muchas maneras diferentes de incluir tests en el proyecto, personalmente
 creo que TDD es la manera más adecuada, pero si el equipo no tiene experiencia y 
-crea los tests después de haber realizado la implementación, tampoco es un 
+crea las pruebas después de haber realizado la implementación, tampoco es un 
 método inválido. La premisa fundamental es que toda nueva funcionalidad debe 
-tener una batería de tests que verifique que su comportamiento es correcto.
+tener una batería de pruebas que verifique que su comportamiento es correcto.
 
 Servidor de integración
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 Esta es la pieza más polémica, mucha gente cree que no es absolutamente 
 necesaria para hacer integración continua correctamente, algunos equipos hacen
-la integración de forma manual con cada commit, por ejemplo. En mi opinión es
-un paso tan sencillo y barato de automatizar, que no merece la pena ahorrárselo.
-Montar algún servidor de integración como por ejemplo Jenkins o Cruise Control
-es gratuito, y tan sencillo como desplegar un fichero en un servidor. Por contra
-las ventajas son grandísimas. Para empezar, el proceso está totalmente 
+la integración de forma manual con cada subida al repositorio de código, por ejemplo.
+En mi opinión es un paso tan sencillo y barato de automatizar, que no merece la pena
+ahorrárselo. Montar algún servidor de integración como por ejemplo Jenkins o Cruise
+Control es gratuito, y tan sencillo como desplegar un fichero en un servidor. Por
+contra las ventajas son grandísimas. Para empezar, el proceso está totalmente 
 automatizado, lo que evita el error humano. Y por otro lado reduce la cantidad
 de trabajo, ya que tenemos una solución prefabricada sin necesidad de tener que
 crear nosotros mismos complejas soluciones caseras.
@@ -212,11 +212,11 @@ líneas y referencias inútiles será más sencillo de leer y entender.
 También podríamos incluir tareas que permitan desplegar la aplicación en un 
 servidor, de forma que tendríamos siempre un servidor de demostración con la
 última versión de nuestro proyecto. Esto es realmente útil cuando tenemos un 
-cliente comprometido, dispuesto a probar todos los nuevos cambios y a generar
-feedback al equipo.
+cliente comprometido, dispuesto a probar todos los nuevos cambios y a dar información
+al equipo.
 
 Otra operación que podemos automatizar, y que el servidor de integración podría
-hacer por nosotros, es la realización de pruebas end-to-end sobre la aplicación.
+hacer por nosotros, es la realización de pruebas de sistema sobre la aplicación.
 Imaginemos que estamos desarrollando una aplicación web, podríamos crear tests
 con alguna herramienta de grabación de la navegación, como por ejemplo Selenium, 
 y lanzarlos con cada construcción que haga el servidor. Es un tipo de prueba que 
