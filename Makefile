@@ -16,11 +16,22 @@ clean:
 	rm book.tex book.xml
 	rm -rf book.chunked book.pdf book.html book.epub
 
-ARTICLE_SOURCE_FILES = funcionales consejospruebas documentacion_activa calidad integracion_continua
+ARTICLE_SOURCE_FILES = funcionales documentacion_activa consejospruebas calidad integracion_continua
 SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc $(article)-biblio.asc)
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
 
 libro: book.html book.epub book.chunked/index.html book.pdf
+
+book.asc: book.asc.in Makefile
+	sed -n '/#ARTICLELIST#/,$$ !p' book.asc.in >book.asc
+	for i in $(ARTICLE_SOURCE_FILES); do \
+		echo "include::$$i.asc[]\n" >>book.asc; \
+	done
+	sed -e '1,/#ARTICLELIST#/d' -e '/#BIBLIOLIST#/d' book.asc.in >>book.asc
+	for i in $(ARTICLE_SOURCE_FILES); do \
+		echo "include::$$i-biblio.asc[]\n" >>book.asc; \
+	done
+	sed -e '1,/#BIBLIOLIST#/d' book.asc.in >>book.asc
 
 book.html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc

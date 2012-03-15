@@ -1,0 +1,13 @@
+Título final del libro
+======================
+Varios autores
+:doctype: book
+
+:leveloffset: 1
+
+#ARTICLELIST#
+
+[bibliography]
+Bibliografía
+============
+#BIBLIOLIST#
