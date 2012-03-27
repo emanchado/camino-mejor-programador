@@ -212,11 +212,11 @@ Bibliografía
 - [[[emacsrebuilder]]] 're-builder: the Interactive regexp builder'
   http://www.masteringemacs.org/articles/2011/04/12/re-builder-interactive-regexp-builder/
 - [[[ctags]]] Wikipedia 'Ctags' http://en.wikipedia.org/wiki/Ctags
-- [[[vimscripts]] Vim Scripts http://www.vim.org/scripts/
+- [[[vimscripts]]] Vim Scripts http://www.vim.org/scripts/
 - [[[emacsorgmode]]] Org mode para Emacs http://orgmode.org/
 - [[[emacsnxmlmode]]] nXML mode para Emacs
   http://www.thaiopensource.com/nxml-mode/
 - [[[emacsrainbowmode]]] Rainbow mode para Emacs
-  http://julien.danjou.info/rainbow-mode.html
+  http://julien.danjou.info/rainbow-mode
 - [[[introelisp]]] Christian Johansen 'An introduction to Emacs Lisp'.
   http://cjohansen.no/an-introduction-to-elisp
