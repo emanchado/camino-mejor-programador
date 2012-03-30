@@ -62,12 +62,12 @@ posibilidades. Entre ellas:
 .Órdenes comunes de movimiento de VIM
 [width="80%",options="header"]
 |======================
-|Orden de VIM            |Atajo de Emacs          |Significado
-|+w+ / +b+               |+M-f+ / +M-b+           |Palabra adelante / palabra atrás
-|+{+ / +}+               |+M-{+ / +M-}+           |Bloque anterior / bloque siguiente
-|+Ctrl-F+ / +Ctrl-B+     |+C-v+ / +M-v+           |Página siguiente / página anterior
-|+H+ / +M+ / +L+         |_No aplicable_          |Parte alta / media / baja de la pantalla
-|+f<letra>+ / +F<letra>+ |_No aplicable_          |Ir a la siguiente <letra> de la línea / ir a la anterior <letra> de la línea
+|Orden de VIM            |Atajo de Emacs                |Significado
+|+w+ / +b+               |+M-f+ / +M-b+                 |Palabra adelante / palabra atrás
+|+{+ / +}+               |+M-{+ / +M-}+                 |Bloque anterior / bloque siguiente
+|+Ctrl-F+ / +Ctrl-B+     |+C-v+ / +M-v+                 |Página siguiente / página anterior
+|+H+ / +M+ / +L+         |+M-r+ (cambia entre las tres) |Parte alta / media / baja de la pantalla
+|+f<letra>+ / +F<letra>+ |_No aplicable_                |Ir a la siguiente <letra> de la línea / ir a la anterior <letra> de la línea
 |======================
 
 Otro consejo, especialmente para Emacs pero aplicable en cualquier caso, es
@@ -83,12 +83,9 @@ Las búsquedas y sustituciones son probablemente las características más usada
 de un editor de texto, después de las órdenes de movimiento. De hecho, en Emacs
 la búsqueda se usa con frecuencia para moverse por el texto. En VIM hay varias
 órdenes de búsqueda, incluyendo buscar la palabra debajo del cursor (con +*+ o
-+#+, dependiendo de si buscamos hacia abajo o hacia arriba). Si preferimos
-búsqueda incremental, podemos activarla con la opción +incsearch+. En Emacs
-tenemos las búsquedas normales en +C-s+ y +C-r+, y varias funciones de búsqueda
-y sustitución, incluyendo +replace-regexp+ y +isearch-forward-at-point+. Por
-supuesto, podemos asignar un atajo de teclado a estas funciones si las usamos
-con frecuencia.
++#+, dependiendo de si buscamos hacia abajo o hacia arriba).  En Emacs tenemos
+las búsquedas normales en +C-s+ y +C-r+, y varias funciones de búsqueda y
+sustitución, incluyendo +replace-regexp+ y +isearch-forward-at-point+.
 
 Mención aparte merecen las expresiones regulares, muy útiles a la hora de hacer
 tanto búsquedas como sustituciones. VIM, Emacs y muchos otros programas
@@ -99,14 +96,15 @@ sustituciones sin tener que consultar el manual. Emacs en particular tiene una
 función muy útil para aprender y experimentar con expresiones regulares: la
 función +re-builder+.
 
-Por último, otra herramienta útil para navegar por el código, especialmente si
-no lo conocemos bien o es grande y complejo, son las «ctags». Éstas nos
-permiten saltar desde una llamada a una función o método a la definición de la
-misma.
+Por último, siempre es útil poder encontrar rápidamente la definición de cierta
+función, especialmente si no lo conocemos bien o es grande y complejo. Algunos
+editores tienen este tipo de navegación integrada. VIM y Emacs permiten este
+tipo de navegación con la ayuda de la herramienta externa «ctags».
 
 
-Sangrado automático
--------------------
+
+Sangrado
+--------
 Una de las características más importantes del formato de nuestro código es el
 sangrado. Cualquier editor moderno puede ahorrarnos gran parte del trabajo
 de mantener el sangrado correcto. Incluyendo a VIM y Emacs, como podríamos
@@ -115,19 +113,19 @@ esperar.
 Para sangrar el código que escribimos automáticamente, VIM ofrece, entre otras,
 las opciones +formatoptions+ y +smartindent+. Emacs ofrece diferentes «modos»
 para diferentes lenguajes, que se encargan de definir cómo se debería sangrar
-cada lenguaje.  Pero no todo el código con el que trabajamos lo hemos escrito
-nosotros, así que las herramientas para corregir el sangrado de código
-existente siempre son de agradecer.  Para ello, VIM nos ofrece la orden +=+ y
-Emacs nos ofrece la función +indent-region+.
+cada lenguaje. También es importante tener la posibilidad de reformatear código
+ya escrito, operación que podemos hacer con la orden +=+ en VIM y la función
++indent-region+ en Emacs.
 
 Cuando hablamos de sangrado, la mayoría de los programadores prefiere usar
-espacios. Naturalmente, tener que pulsar varias veces la tecla espaciadora es
-una pérdida de tiempo, así que tanto VIM como Emacs nos permiten pulsar la
-tecla Tab para sangrar (pero manteniendo espacios para el sangrado). En VIM,
-usamos la opción +expandtab+; en Emacs, +(setq indent-tabs-mode nil)+.
+espacios. Naturalmente, es más cómodo pulsar la tecla Tab que pulsar varias
+veces la tecla espaciadora, así que la mayoría de los editores nos permite
+pulsar la tecla Tab para sangrar (pero manteniendo espacios para el sangrado).
+En VIM usamos la opción +expandtab+; en Emacs, +(setq indent-tabs-mode nil)+.
 
-Y para los casos en los que necesitemos formatear textos y comentarios, VIM nos
-ofrece la orden +gq+ y Emacs el atajo +M-q+.
+Y para los casos en los que necesitemos formatear textos y comentarios (para
+que se adapten automáticamente a cierto número de caracteres por línea, digamos
+80), VIM nos ofrece la orden +gq+ y Emacs el atajo +M-q+.
 
 
 Tipos de ficheros
@@ -135,9 +133,9 @@ Tipos de ficheros
 Es evidente que tratamos distintos tipos de ficheros de distinta forma:
 necesitan unas reglas distintas para el resaltado de sintaxis, para el sangrado
 automático, para detectar qué es un comentario, quizás para definir macros,
-atajos de teclado especiales o plantillas, etc. Cualquier editor moderno
-permite, hasta cierto punto, adaptar el entorno a los diferentes tipos de
-ficheros.
+atajos de teclado especiales o plantillas, etc. La mayoría de los editores
+actuales permite, hasta cierto punto, adaptar el entorno a los diferentes tipos
+de ficheros.
 
 Éste es, posiblemente, uno de los puntos más fuertes de Emacs. En Emacs tenemos
 los modos, y en VIM tenemos los _filetypes_. La idea de los modos de Emacs
