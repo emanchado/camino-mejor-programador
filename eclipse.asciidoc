@@ -1,0 +1,80 @@
+Eclipse
+=======
+Yeray Darias Camacho <ydarias@gmail.com>
+
+Cuando se trabaja con Java, una de las herramientas más famosas y a tener muy en cuenta es Eclipse. Se trata de un entorno de desarrollo integrado (IDE) de código libre y gratuito, una de las razones por la que se ha hecho tan famoso.
+
+Como cualquier otro IDE tiene muchísimas funciones diferentes y soporta la edición de diferentes lenguajes de programación, aunque demuestra una madurez mucho mayor cuando se trabaja con Java. Debido a que utiliza un sistema de plug-ins para su extensión por terceras partes, siempre es conveniente que echemos un vistazo a las aportaciones de la comunidad, nunca se sabe que nuevas herramientas podemos utilizar.
+
+Crear un proyecto
+-----------------
+
+Desde el entorno
+
+De serie, Eclipse permite crear una relativa variedad de proyectos Java, que se pueden ver incrementados en función de los plug-ins que tengamos instalados. Pero generalmente el proceso para crear un proyecto es tan simple como ejecutar el asistente.
+
+Desde el sistema de fichero
+
+Es muy típico en los últimos años encontrarnos con sistemas de construcción como puede ser Maven. Mediante la utilización de algún plug-in como puede ser m2eclipse, se logra una integración bastante aceptable de proyectos Maven en Eclipse, de forma que aunque creemos el proyecto en una consola y hayamos trabajado con el en otra máquina, siempre podemos importar dicho proyecto Maven en nuestro IDE y que soporte las funciones de construcción, compilación ...
+
+Desde un fichero de otro entorno
+
+Atajos de teclado
+-----------------
+
+Para moverse entre distintos paneles o ficheros
+
+[width="80%",options="header"]
+|======================
+|Atajo de teclado        |Significado
+|+Shift-Cmd-R+           |Abrir un fichero (recurso)
+|+Shift-Cmd-T+           |Abrir un tipo
+|+Cmd-E+                 |Cambiar entre algunas de las pestañas abiertas
+|======================
+
+Para ejecutar y depurar código
+
+[width="80%",options="header"]
+|======================
+|Atajo de teclado        |Significado
+|+Alt-Cmd-X              |Menú de ejecución (abre un desplegable con las /
+posibles opciones)
+|+Shift-Cmd-F11+         |Repetir la última ejecución
+|+Cmd-F11+               |Repetir la última depuración
+|======================
+
+Refactorizaciones
+-----------------
+
+Renombrar
+
+Introducir variable
+
+Introducir método
+
+Reformatear
+-----------
+
+Generación de código
+--------------------
+
+Getters & Setters, comparadores
+
+Tests, plantillas mediante atajos de teclado
+
+Integración con control de versiones
+------------------------------------
+
+Aunque Eclipse posee las herramientas necesarias para realizar control de versiones "Out of the box", solo lo hace con CSV que no es la opción más recomendable actualmente. Por suerte hay una gran cantidad de plugins que permite trabajar con SVN, Mercurial o Git entre otros, pero no es ningún secreto que a veces no funcionan tan bien como la consola ...
+
+Otros sabores de Eclipse
+------------------------
+
+Al tratarse de un software de código abierto, existen una gran variedad de diferentes "sabores" de Eclipse, enfocados a diferentes clases de proyectos o tecnologías. Por ejemplo está Spring Tools Suite más conocido como STS, si sueles utilizar el framework Spring, o MyEclipse que es una versión de pago en la que se incluyen gran cantidad de asistentes para simplificar el proceso de desarrollo, o Aptana Studio que intenta proveer mayor flexibilidad en el trabajo con ficheros HTML, JavaScript y CSS entre otros. 
+
+No tienes que pelearte con nadie para demostrar cual es mejor o si Eclipse es mejor que otros IDEs tan solo debes conocer las ventajas que te aporta si algún día decides utilizarlo.
+
+Conclusiones
+____________
+
+Si eres un gran conocedor del lenguaje o tecnología que estas utilizando, es posible que prefieras ahorrarte la cantidad de recursos que consume un IDE. Pero si como en mi caso, trabajas con un lenguaje un poco pesado como Java y que posee muchas opciones, es muy posible que un IDE como Eclipse te ayude a mejorar enormemente tu productividad.
