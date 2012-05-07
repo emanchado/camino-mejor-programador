@@ -9,15 +9,25 @@ Como cualquier otro IDE tiene muchísimas funciones diferentes y soporta la edic
 Crear un proyecto
 -----------------
 
-Desde el entorno
+El primer paso será la creación del proyecto, en general siempre lo haremos desde el propio IDE, pero hay ocasiones en que el proyecto ha sido creado previamente y lo debemos importar.
 
-De serie, Eclipse permite crear una relativa variedad de proyectos Java, que se pueden ver incrementados en función de los plug-ins que tengamos instalados. Pero generalmente el proceso para crear un proyecto es tan simple como ejecutar el asistente.
+Desde el entorno
+~~~~~~~~~~~~~~~~
+
+De serie, Eclipse permite crear una relativa variedad de proyectos Java, desde un proyecto de escritorio a una aplicación web dinámica, que se pueden ver incrementados en función de los plug-ins que tengamos instalados. Pero generalmente el proceso para crear un proyecto es siempre el mismo.
+
+File > New > Project
+
+De aquí en adelante cambia en función del tipo de proyecto, pero siempre estamos orientados por un asistente que nos indica que campos debemos rellenar, y como hacerlo. Se nos solicitará el nombre del proyecto, que carpetas de fuentes y de test queremos usar, ese tipo de detalles que solemos hacer manualmente mediante la creación de ficheros y directorios en una consola.
 
 Desde el sistema de fichero
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Es muy típico en los últimos años encontrarnos con sistemas de construcción como puede ser Maven. Mediante la utilización de algún plug-in como puede ser m2eclipse, se logra una integración bastante aceptable de proyectos Maven en Eclipse, de forma que aunque creemos el proyecto en una consola y hayamos trabajado con el en otra máquina, siempre podemos importar dicho proyecto Maven en nuestro IDE y que soporte las funciones de construcción, compilación ...
+Es muy típico en los últimos años encontrarnos con sistemas de construcción como puede ser Maven o sistemas anteriores como Ant, lo que permite trabajar en consola de forma sencilla. Pero cuando los proyectos crecen es más sencillo seguir trabajando en Eclipse, lo cual es posible mediante la opción de importación.
 
-Desde un fichero de otro entorno
+File > Import
+
+El tipo de importación que queramos hacer dependerá de si es un proyecto Maven, es un proyecto que se ha creado anteriormente en otro IDE, o tiene alguna otra estructura específica. Obviamente Eclipse no hace magia y si no disponemos de un plug-in que sepa trabajar con la estructura del fichero, no ganaremos mucho trabajando con Eclipse.
 
 Atajos de teclado
 -----------------
@@ -46,26 +56,59 @@ posibles opciones)
 Refactorizaciones
 -----------------
 
+Una de las razones más importantes por las que se utiliza un IDE es porque permite refactorizar el código rápidamente y simplificando increiblemente el proceso.
+
 Renombrar
+~~~~~~~~~
+
+Los IDEs permiten el renombrado de variables, nombres de clases, paquetes, etc. En Eclipse se puede realizar mediante el uso del ratón y los menús contextuales, pero es más sencillo utilizar un atajo de teclas.
+
+Alt-Cmd-R
 
 Introducir variable
+~~~~~~~~~~~~~~~~~~~
+
+Alt-Cmd-L
 
 Introducir método
+~~~~~~~~~~~~~~~~~
+
+Si seleccionamos un bloque de código, lo podemos extraer como un método de forma automática, haciendo uso del siguiente atajo de teclado
+
+Alt-Cmd-M
 
 Reformatear
 -----------
+
+Shift-Cmd-F
 
 Generación de código
 --------------------
 
 Getters & Setters, comparadores
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Tests, plantillas mediante atajos de teclado
+Al principio solemos escribir todo el código manualmente, pero es más productivo no tener que escribir código repetitivo. En un lenguaje como Java, los getters, setters o métodos como equals son muy comunes, para ello podemos hacer uso del siguiente atajo de teclado.
+
+Alt-Cmd-S 
+
+Uso de templates
+~~~~~~~~~~~~~~~~
+
+Hay una función muy interesante en Eclipse que es el uso de plantillas, que permiten generar bloques de código más complejos que posteriormente completaremos con el comportamiento deseado.
+
+Por ejemplo, se pueden generar métodos de test escribiendo tan solo "test" y el atajo de autocompletado (ctrl-espacio). Esta combinación generará el siguiente bloque.
+
+@Test
+public void testName() throws Exception {	
+}
 
 Integración con control de versiones
 ------------------------------------
 
-Aunque Eclipse posee las herramientas necesarias para realizar control de versiones "Out of the box", solo lo hace con CSV que no es la opción más recomendable actualmente. Por suerte hay una gran cantidad de plugins que permite trabajar con SVN, Mercurial o Git entre otros, pero no es ningún secreto que a veces no funcionan tan bien como la consola ...
+Aunque Eclipse posee las herramientas necesarias para realizar control de versiones "Out of the box", solo lo hace con CSV que no es la opción más recomendable actualmente. Por suerte hay una gran cantidad de plugins que permite trabajar con SVN, Mercurial o Git entre otros.
+
+Haciendo uso de la integración con control de versiones, el propio IDE nos informa de los ficheros que tienen cambios, permite comparar con otras versiones del repositorio o realizar las operaciones más comunes sin necesidad de pasar por la consola del sistema.
 
 Otros sabores de Eclipse
 ------------------------
@@ -75,6 +118,6 @@ Al tratarse de un software de código abierto, existen una gran variedad de dife
 No tienes que pelearte con nadie para demostrar cual es mejor o si Eclipse es mejor que otros IDEs tan solo debes conocer las ventajas que te aporta si algún día decides utilizarlo.
 
 Conclusiones
-____________
+------------
 
-Si eres un gran conocedor del lenguaje o tecnología que estas utilizando, es posible que prefieras ahorrarte la cantidad de recursos que consume un IDE. Pero si como en mi caso, trabajas con un lenguaje un poco pesado como Java y que posee muchas opciones, es muy posible que un IDE como Eclipse te ayude a mejorar enormemente tu productividad.
+Si eres un gran conocedor del lenguaje o tecnología que estas utilizando, es posible que prefieras ahorrarte la cantidad de recursos que consume un IDE. Pero si como en mi caso, trabajas con sistemas de un tamaño relativamente grande, es muy posible que un IDE como Eclipse te ayude a mejorar enormemente tu productividad.
