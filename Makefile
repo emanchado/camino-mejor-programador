@@ -1,5 +1,6 @@
 all: herramientas.html \
     malos_olores.html \
+    eclipse.html \
     rest.html
 
 %.html: %.asciidoc
