@@ -632,6 +632,12 @@ TODO: ejemplo,
  <link uri="/shop/orders" rel="http://www.shop.com/linkrels/orders" title="Orders"/>
 En este ejemplo la página principal actúa como directorio, y consiste principalmente en una lista de enlaces a los distintos subsistemas. En este ejemplo seguimos la convención de especificar en el atributo 'title' una descripción para humanos de lo que representa el enlace. Esto es interesante si el consumidor del recurso es realmente una UI, ya que podría generar una representación, tal vez un botón o un enlace HTML, de la acción representada por el enlace. Sin embargo el atributo realmente importante es 'rel'. En este atributo es donde se especifica el significado de seguir ese link. Son los posibles valores que puede tomar 'rel' dentro de nuestro sistema lo que tendremos que documentar. Ya existen algunos valores estandarizados[11], pero en este caso se ha optado por usar valores propietarios del sistema, indicándolo mediante el prefijo 'http://www.shop.com/linkrels'. Se ha usado una URL y no una URN, porque el significada de cada tipo de enlace debe ser documentado. Al usar una URL podemos indicar no sólo el tipo de enlace, sino la página web donde se encuentra la documentación sobre ese tipo de enlace. En dicha  documentación deberíamos especificar el significado exacto de la relación, y que métodos HTTP son admisibles.
 
+Para resumir, en el enfoque HATEOAS la interfaz de nuestra API, que es lo que tenemos que documentar, consta de:
+* Una URI principal de entrada a nuestro sistema.
+* Los tipos mime que vamos a usar.
+* Una serie de convenciones sobre cómo consumir y representar dentro de cada documento, las acciones disponibles en el recurso que estamos accediendo.
+* La forma más extendida de hacer lo anterior es mediante enlaces tipados mediante el atributo 'rel'. Habría que documentar pues lo que significa cada tipo de enlace y como consumirlo.
+
 Consultas autodescubribles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -669,9 +675,38 @@ En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resu
 Acciones como enlaces o formularios
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero
+Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y que efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP, para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
 
-(TODO
+El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". Volvamos al ejemplo la búsqueda de productos:
+TODO uri='user/basket/234255/items/45sf245'
+Se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Si sólo queremos añadir productos podemos usar POST. Veamos que ocurre si hacemos GET sobre la cesta:
+TODO
+Obtenemos una cesta vacía. No hemos tenído que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente. Veamos que pasa si hacemos POST:
+TODO
+Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante verémos cómo. Como POST no es idempotente si enviamos la siguiente petición:
+TODO
+Obtenemos la siguiente respuesta:
+TODO.
+Que es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
+TODO
+Hemos conseguido cambiar la cantidad de ejemplares que queremos. Si seguimos el enlace de tipo 'linkrek/basket', volvemos al carrito de la compra que queda como:
+TODO
+También podemos borrar una línea de pedido completa:
+TODO
+Y el carrito quedaría:
+TODO
+Ahora sólo nos queda pagar. Tan sencillo como hacer PUT con la información de nuestro medio de pago:
+TODO
+De nuevo un ejemplo de "URI desechable". El resultado de esta petición es:
+TODO
+El servidor se nos indica que tenemos un recibo de nuestro pedido. Si hacemos GET sobre éste:
+TODO
+Vemos que podemos hacer polling sobre el para saber el estado de nuesto pedido, o cancelarlo y que nos devuelvan el dinero. Cuando en el futuro nuestro pedido esté completo, si volvemos a hacer GET:
+TODO
+Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el dinero, pero sí podemos hacer una devolución del producto.
+
+Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir securizada con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
+
 ¿Target form? 
 * Con POST: el target es el padre
 * Sin POST:Si es para accion no idempotente o para crear, al hacer GET el target ya viene con URI "desechable"
@@ -682,11 +717,19 @@ Formularios no HTML: JSON y XFORM
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP. Pero, ¿cómo sabemos que información enviar y en que formatos? Una cosa intersante sería hacer una petición con el método OPTIONS:
+TODO
+El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber que tipos mime soportamos debemos emitir una petición HEAD:
+TODO
+El servidor nos ha respondido con información, como los tipos mime soportados. Dichos tipos mime y como usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe que tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos mime soportados y las convenciones sobre como usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
+TODO
+
 (TODO
 Simplemente navega
-Ignora lo que no entiendas
+versionado: Ignora lo que no entiendas, no elimines types antiguos de golpe
 Consulta los rel de los enlaces y el action y el type de los formularios
 Usa el método HEAD)
+
 
 Problema: Casos de uso VS. Datos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
