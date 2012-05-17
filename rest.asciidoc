@@ -1,5 +1,5 @@
-Diseño de servicios REST con HTTP
-=================================
+Introducción al diseño de servicios REST con HTTP
+=================================================
 Enrique J. Amodeo_Rubio <eamodeorubio@gmail.com>
 :Blog: http://eamodeorubio.wordpress.com
 :Twitter: @eamodeorubio
@@ -38,7 +38,7 @@ REST es el acrónimo para "REpresentational State Transfer". Veamos lo que signi
 3. El cliente opcionalmente puede pedir (leer) el detalle completo de cada habitación usando el UUID contenido en el resumen.
 4. El cliente envía una operación de "crear" al recurso que representa las reservas de la habitación elegida. Recordemos que el UUID de este recurso estaba tanto en el resumen como en el detalle de cada habitación. Al enviar la operación pasa como parámetro los detalles de la reserva.
 5. El servidor puede responder de varias formas:
-    . Rechazando la petición. 
+    . Rechazando la petición.
     . Devolviendo el UUID del recurso que representa la reserva que acabamos de crear e indicando que la reserva está completa.
     . Devolviendo el UUID del recurso que representa la reserva que estamos creando, y además un documento donde se pide información adicional, tal vez detalles de forma de pago o nombre de los huéspedes. El cliente debería modificar el documento e invocar la operación "actualizar" contra el UUID. De ahí se volvería al paso 5.
 
@@ -52,11 +52,6 @@ Como se ve toda la dinámica se basa en una conversación entre el cliente y el 
 El enfoque RPC basado en SOAP ha fracasado, no conozco ningún sistema basado en este paradigma que alcance niveles de interoperabilidad tan altos a costes tan bajos como la world wide web. Por lo tanto la world wide web es un ejemplo a seguir, una guía a las decisiones de diseño necesarias para hacer servicios interoperables.
 
 Es trivial darse cuenta de que si quieres hacer servicios web, tienes que respetar los principios de diseño de la web y diseñar tus servicios con ellos en mente. ¿Cuáles son los principios arquitectónicos de la web? Los principios REST.
-
-¿Por qué no hay código?
-~~~~~~~~~~~~~~~~~~~~~~~
-
-En este artículo el autor se ha cuidado mucho de que no haya código. La razón es sencilla, extractos de código ya hay muchos por la web, mientras que explicaciones sobre como es un diseño de servicios REST no hay tantos. El objetivo de este artículo es este último, que el lector se introduzca al mundo del diseño de servicios REST independientemente de la tecnología que use, al fin y al cabo los servicios web deberían ser interoperables y por ende el detalle de que en tecnología están implementados no es realmente importante. Por otro lado las herramientas y frameworks de moda pasan y caducan rápidamente, mientras que las buenas ideas y los conceptos fundamentales de diseño de software perduran. REST es una de esas buenas ideas, documentada allá por el año 2000, todavía no ha perdido ni un ápice de su vigencia.
 
 Llevando REST al mundo real
 ---------------------------
@@ -385,7 +380,7 @@ Más adelante veremos como mezclar lo mejor de POST y PUT para conseguir crear r
 ¡ No uses CRUD !
 ^^^^^^^^^^^^^^^^
 
-Hasta el momento he estado diseñando la API REST de una forma muy similar a como se diseñaría una BBDD. Algunos estarían tentados de ver las colecciones como "tablas" y las entidades como "filas", y pasar por alto el verdadero significado de lo que es un recurso REST. Este diseño ciertamente puede ser útil en casos sencillos, y darnos unos criterios iniciales de diseño, pero si queremos exprimir al máximo las capacidades de interoperabilidad del enfoque REST debemos ir más allá de esta forma de pensar. Más adelante veremos otras técnicas de diseño que maximizan la interoperabilidad.
+Hasta el momento he estado diseñando la API REST de una forma muy similar a como se diseñaría una BBDD. Algunos estarían tentados de ver las colecciones como "tablas" y las entidades como "filas", y pasar por alto el verdadero significado de lo que es un recurso REST. Este diseño ciertamente puede ser útil en casos sencillos, pero si queremos exprimir al máximo las capacidades de interoperabilidad del enfoque REST debemos ir más allá de esta forma de pensar. Más adelante veremos otras técnicas de diseño que maximizan la interoperabilidad.
 
 Por otra parte, como se ha visto antes, no es bueno acoplar nuestro diseño de API REST a la implementación del sistema. En este sentido hay que tener cuidado con los frameworks. Por ejemplo, no es deseable el diseño de tu sistema REST se acople a tu diseño de tablas. En general el diseño de la API REST debe estar totalmente desacoplado de la implementación, y dejar que esta última pueda cambiar sin necesidad de alterar tu capa de servicios REST.
 
@@ -427,7 +422,7 @@ El cliente inspeccionando la ETag puede saber la "versión" de los datos y usarl
 TODO. PUT con éxito
 En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente. El mensaje de respuesta sería:
 TODO. PUT sin éxito
-El uso de If-Match nos permite pues asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos desde el servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
+El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos desde el servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
 
 Cache
 ~~~~~
@@ -603,27 +598,78 @@ Quizás algún lector estuviera tentado de usar esta pseudosesión HTTP como una
 
 Por lo tanto el uso de sesión HTTP en servidor es una mala práctica desde el punto de vista de los servicios REST.
 
+Peticiones asíncronas o de larga duración
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Algunas operaciones pueden representar acciones de larga duración o que desencadenen un workflow. En estos casos puede ser interesante no responder con 201 o 200 a una petición, sino con 202 'Accepted'. Este código indica que la operación ha sido aceptada por el servidor pero que tardará un tiempo en realizarse, y es ideal para modelar peticiones asíncronas. Normalmente en la respuesta se incluye una referencia a una URI que nos indicará el progreso de la operación, y que podremos consultar cada cierto tiempo.
+TODO: ejemplo de esto
+
 Más allá de CRUD: Hyperdata (HATEOAS) 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-(TODO)
+Es muy tentador cuando se comienza a trabajar con REST el definir APIs que modelan interfaces CRUD. Cada URI representa una tabla, o entidad de negocio, y mediante los verbos HTTP definimos las operaciones de edición y lectura. Como ya se comentado, este enfoque puede ser peligroso ya que podemos acoplar nuestra API web a la implementación concreta de nuestro modelo de persistencia.
+
+Sin embargo el principal problema es que con el enfoque CRUD, en realidad no estamos diseñando una web de recursos de información, sino un conjunto de operaciones desconectadas entre sí que no representa realmente nuestro negocio. En este sentido, al diseñar CRUD, lo que estamos haciendo es exponer nuestra capa de datos mediante una API pública, y hacemos que todo el peso de interpretar e implementar la lógica de negocio caiga en el consumidor de nuestra API, con los lógicos problemas que esto acarrea. La API de nuestros servicios web deberían exponer los distintos casos de uso de nuestra aplicación, y no una mera interfaz de persistencia de datos. Es exactamente la misma diferencia que hay entre una aplicación de mantenimiento de tablas, y una aplicación con una UX orientada a que los usuarios completen casos de uso de nuestro negocio de la forma más efectiva posible.
+
+Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: HATEOAS. No es que realmente HATEOAS sea una cosa diferente de REST, sino qué más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de ésta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
 
 La web de servicios
 ^^^^^^^^^^^^^^^^^^^
 
-(TODO)
+El concepto de web de servicios, también llamado hyperdata, es sencillo de entender. Se basa en hacer énfasis en el aspecto más esencial de la web: los recursos no están aislados, sino que están interrelacionados mediante hiperenlaces, de forma que a partir de una página podamos descubrir el resto de la información que me interese.
 
-Consultas autodescubriles como enlaces dentro la colección /libro/oferta, /libro/scifi
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Consultas como páginas
-^^^^^^^^^^^^^^^^^^^^^^
+Decimos que una API REST cumple HATEOAS, cuando:
 
-(TODO
-paginas sencillas: "more content link"
-paginas complejas: total count, count in page, next, prev, first, last)
+* No es un conjunto de puntos de entrada desconectados entre si, sino una red de recursos de información conectados mediante hiperenlaces. De esta forma el consumidor de nuestros servicios web no necesita saber todas las URIs de nuestros recursos REST, sino que sólo tendría que conocer una única URI, quizás de un recurso "home" de nuestro sistema, y seguir los enlaces entre recursos para adquirir la información que vaya necesitando.
+* Cada recurso debería poder ser servido en tantos formatos (tipos mime) como tenga sentido.
+* Las operaciones sobre cada recurso deberían estar codificadas en forma de enlaces dentro de éste. De esta forma no podremos cambiar el estado del sistema si no es siguiendo un enlace.
 
-Acciones como formularios
-^^^^^^^^^^^^^^^^^^^^^^^^^
+La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican que conjunto de operaciones y recursos puedo hacer a continuación.
+
+Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.com/home', con enlaces a todos los subsistemas que ofrezcamos mediante REST.
+TODO: ejemplo,
+ <link uri="/shop/products" rel="http://www.shop.com/linkrels/products" title="Product catalog"/>
+ <link uri="/shop/orders" rel="http://www.shop.com/linkrels/orders" title="Orders"/>
+En este ejemplo la página principal actúa como directorio, y consiste principalmente en una lista de enlaces a los distintos subsistemas. En este ejemplo seguimos la convención de especificar en el atributo 'title' una descripción para humanos de lo que representa el enlace. Esto es interesante si el consumidor del recurso es realmente una UI, ya que podría generar una representación, tal vez un botón o un enlace HTML, de la acción representada por el enlace. Sin embargo el atributo realmente importante es 'rel'. En este atributo es donde se especifica el significado de seguir ese link. Son los posibles valores que puede tomar 'rel' dentro de nuestro sistema lo que tendremos que documentar. Ya existen algunos valores estandarizados[11], pero en este caso se ha optado por usar valores propietarios del sistema, indicándolo mediante el prefijo 'http://www.shop.com/linkrels'. Se ha usado una URL y no una URN, porque el significada de cada tipo de enlace debe ser documentado. Al usar una URL podemos indicar no sólo el tipo de enlace, sino la página web donde se encuentra la documentación sobre ese tipo de enlace. En dicha  documentación deberíamos especificar el significado exacto de la relación, y que métodos HTTP son admisibles.
+
+Consultas autodescubribles
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Lo más sencillo de modelar son las consultas. Como se explicó antes, las consultas se realizan mediante una petición que use el método GET a la URI del recurso colección. Sin embargo, el enfoque HATEOAS nos dice que en vez de tener que especificar una URI para cada colección, éstas deberían ser descubribles como enlaces dentro de otro recurso.
+
+Supongamos el ejemplo anterior de la tienda, si seguimos el enlace marcado como 'linkrels/products', llegamos al siguiente documento:
+TODO
+En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels/products/search/books', o 'linkrels/products/search/offers'. Basta con hacer un GET a la URI de dichos enlaces para acceder a las consultas de 'libros disponibles en la tienda' y 'productos de oferta'.
+
+Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search',
+este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso
+no se trata de una URI en si, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir
+una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
+parámetros de consulta están disponibles y como construir una URI de consulta a partir de éstos. Actualmente se está
+trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que
+existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
+
+En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,description,popularity}', con lo cual podremos construir una
+consulta usando query strings como la siguiente '/shop/products?maxprice=100&description=vampires'. Las URI Template
+tienen una sintaxis muy rica que nos permiten una gran flexibilidad a la hora de definir nuestro esquema de URIs,
+para más detalles ver [9]. Aprovechando algunas de las implementaciones que existen[10] de este estándar podemos
+consumir las URI Template de forma sencilla, y generar la URI que necesitamos para realizar una acción en función de
+los parámetros que nos interesen.
+
+Supongamos que seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'). El documento que nos devolvería sería el siguiente:
+TODO
+Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultado podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar diréctamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre estos.
+
+Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
+TODO
+En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones consistentes con el estado actual.
+
+En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre estos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
+
+Acciones como enlaces o formularios
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero
 
 (TODO
 ¿Target form? 
@@ -642,6 +688,10 @@ Ignora lo que no entiendas
 Consulta los rel de los enlaces y el action y el type de los formularios
 Usa el método HEAD)
 
+Problema: Casos de uso VS. Datos
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+HATEOAS requiere que implementemos la capa de aplicación, hay que trabajar los casos de uso
 REST: ¿Servicios de datos o UI?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -672,3 +722,9 @@ Referencias y bibliografía
 [7] Concurrencia optimista: http://en.wikipedia.org/wiki/Optimistic_concurrency_control y también http://www.w3.org/1999/04/Editing/
 
 [8] Autenticación "Basic" y "Digest" de HTTP: http://tools.ietf.org/html/rfc2617
+
+[9] URI Templates specification: http://tools.ietf.org/html/rfc6570
+
+[10] Algunas implementaciones de URI Templates: http://code.google.com/p/uri-templates/wiki/Implementations
+
+[11] Algunos valores de 'rel' estándarizados: http://www.iana.org/assignments/link-relations/link-relations.xml
