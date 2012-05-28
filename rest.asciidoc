@@ -1,4 +1,4 @@
-Introducción al diseño de servicios REST con HTTP
+Introducción al diseño de APIs REST con HTTP
 =================================================
 Enrique J. Amodeo_Rubio <eamodeorubio@gmail.com>
 :Blog: http://eamodeorubio.wordpress.com
@@ -115,6 +115,8 @@ Los métodos HTTP más comunes son los siguientes (**):
 | PUT     |  No  |    Sí     | Actualizar o Crear                       
 | DELETE  |  No  |    Sí     | Eliminar un recurso                      
 | POST    |  No  |    No     | Cualquier acción genérica no idempotente 
+PATCH (TODO, sólo si es estándar del bueno) 
+OPTIONS
 |=======================================================================
 
 En general el uso de cada método es bastante explicativo, y más adelante veremos cómo usarlos así como buenas prácticas. Sin embargo conviene aclarar un par de aspectos. El primero es la diferencia entre HEAD y GET. Ambos leen el recurso, pero el segundo devuelve tanto los datos del recurso web, como las cabeceras HTTP, mientras que el primero sólo las cabeceras. Por otro lado el método POST es bastante misterioso y objeto de frecuentes malentendidos. En general se usa para crear un nuevo recurso, modificar uno existente o para ejecutar una acción genérica que no sea idempotente como realizar una transacción monetaria. Como veis la semántica de PUT parece que se solapa con la de POST de alguna manera, y esto es fuente de numerosos malentendidos. Más adelante aclararemos este tema.
@@ -314,26 +316,11 @@ La tendencia de diseño es mezclar ambas opciones. Por un lado modelar explícit
 Actualizando
 ^^^^^^^^^^^^
 
-A la hora de actualizar los datos en el servidor podemos usar dos métodos, PUT y POST. Según HTTP, PUT tiene una semántica de UPSERT, es decir, actualizar el contenido de un recurso, y si este no existe crear un nuevo recurso con dicha información en la URI especificada en la petición. POST por el contrario puede usarse para cualquier operación que no sea ni segura ni idempotente, normalmente para añadir un trozo de información a un recurso o bien crear un nuevo recurso.
+A la hora de actualizar los datos en el servidor podemos usar dos métodos, PUT y POST. Según HTTP, PUT tiene una semántica de UPSERT, es decir, actualizar el contenido de un recurso, y si éste no existe crear un nuevo recurso con dicha información en la URI especificada. POST por el contrario puede usarse para cualquier operación que no sea ni segura ni idempotente, normalmente para añadir un trozo de información a un recurso o bien crear un nuevo recurso.
 
 Si queremos actualizar una entidad lo más sencillo es realizar PUT sobre la URI de la entidad, e incluir en el cuerpo de la petición HTTP los nuevos datos. Por ejemplo:
 (TODO: Añadir ejemplo de PUT)
-Esto tiene como consecuencia que el nuevo estado del recurso en el servidor es exactamente el mismo que el que mandamos en el cuerpo de la petición. ¿Cómo hacemos si queremos actualizar sólo algunos campos y otros no? Obviamente podemos usar la técnica anteriormente vista de descomponer la entidad en recursos hijos, o tal vez hacer "slicing" y mandar un parámetro en la querystring.
-
-Otro posible diseño, en el caso de que usemos un tipo mime estructurado, como JSON o XML, lo más sencillo es simplemente enviar en el cuerpo de la petición sólo los campos a actualizar.
-(TODO: Añadir ejemplo de PUT)
-Como vemos en este ejemplo, sólo enviamos un documento parcial, con sólo los campos a actualizar. El servidor interpreta que los campos que no se encuentren en la petición debe dejarlos intacto. Este enfoque suele traer problemas si tenemos campos que son opcionales en la entidad. El servidor no sabría a partir del cuerpo de la petición, si lo que el cliente quiere hacer es que esos campos opcionales no se actualicen en el caso de que existiesen, o que realmente el cliente quiere eliminar esos campos de la entidad. Por esta razón es mejor si modelamos entidades con campos opcionales esta técnica no es muy aconsejable. Es mejor en este caso modelar entidades donde todos los campos son obligatorios, pero pueden tomar un valor por defecto, o nulo.
-
-En cualquier caso, esta forma de usar PUT no es totalmente REST, ya que la especificación HTTP dice que el contenido del cuerpo de la petición pasa a ser el nuevo estado del recurso, es decir, el estado del recurso se debe sobreescribir por completo con lo que viene en la petición. El enfoque de PUT "parcial", al no coincidir con el estándar, nos fuerza a tener que transmitir al desarrollador del consumidor del servicio esta forma "especial" de usar PUT. Esta transmisión de información implica un mayor acoplamiento entre cliente y servidor y por otro lado menos interoperabilidad. Por lo tanto es mejor respetar esta idea y si la entidad es muy grande, descomponerla en entidades hijas, y no usar PUT "parcial".
-
-También podemos actualizar un recurso mediante POST. En este caso la semántica sería actualizar el recurso mediante la adición de contenido, en vez de mediante el reemplazo como en el caso de PUT. Volviendo al ejemplo del libro,
-
-(TODO: Añadir un capítulo)
-Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación no dice nada de ello. Por ello podemos implementar un servidor inteligente que reconozca lo que estamos añadiendo y lo inserte dentro de la sección necesaria. Por ejemplo podríamos añadir un comentario y un capítulo:
-(TODO: añadir un comentario y un capítulo)
-Sin embargo, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición de actualizar un capítulo?
-(TODO: capítulo duplicado)
-Esto como se ve es peligroso en caso de errores de conectividad, donde el cliente no sabe muy bien si el servidor recibió la petición o no, y decide reenviarla.
+Esto tiene como consecuencia que el nuevo estado del recurso en el servidor es exactamente el mismo que el que mandamos en el cuerpo de la petición. Es decir, la semántica de PUT es una actualización donde reemplazamos por completo los datos del servidor con los que enviamos en la petición.
 
 También podemos usar PUT para actualizar una colección ya existente. Veamos un ejemplo:
 (TODO: PUT simple sobre una colección, para reescribirla)
@@ -342,8 +329,6 @@ En este caso PUT ha sobreescrito los contenidos de la colección por completo, b
 En los casos en los que queramos actualizar sólo algunos miembros de la colección y no otros podríamos usar una querystring para delimitar que miembros van a ser actualizados. Veamos un ejemplo:
 (TODO: PUT con querystring sobre una colección)
 La querystring define un subconjunto de recursos sobre la colección, a los cuales se les aplicará la operación PUT. De esta forma conseguimos una manera sencilla de hacer una actualización masiva.
-
-De forma análoga podríamos haber hecho un POST contra la colección y una query string. Esta llamada haría una actualización parcial, del tipo que vimos más arriba, de todos los miembros de la colección que cumplan la querystring.
 
 Borrando
 ^^^^^^^^
@@ -423,6 +408,48 @@ TODO. PUT con éxito
 En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente. El mensaje de respuesta sería:
 TODO. PUT sin éxito
 El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos desde el servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
+
+
+Actualizaciones parciales
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+La técnica de actualización explicada anteriormente nos sirve sólo si queremos actualizar por completo un recurso, pero no es válida si necesitamos actualizar sólo unos campos y otros no.
+
+Si lo que queremos hacer realmente es una actualización parcial, la mejor práctica en este caso es revisar el modelo de nuestros recursos. Normalmente cuando surge esta necesidad, es porque queremos operar con trozos más pequeños del recurso original. En estos casos es mejor dividir el recurso principal, y crear recursos detalle con sus propias URI. El recurso principal contendrá sólo la información más esencial y enlaces a todos los recursos que contienen información más detallada o secundaria. De esta forma cada recurso detalle tiene su propia URI y puede ser actualizado de forma independiente. 
+
+Sin embargo, pueden existir algunos casos de uso donde este enfoque no sea práctico. Supongamos que por motivos de rendimiento queremos intercambiar entre el cliente y el servidor únicamente los cambios que se produzcan en el recurso, y ahorrar así ancho de banda.
+
+En estos casos estaríamos tentados de usar PUT para mandar sólo esos cambios, algo como lo que sigue:
+(TODO: Añadir ejemplo malo de PUT)
+Como vemos en este ejemplo, sólo enviamos un documento parcial, con sólo los campos a actualizar. El servidor interpretaría que los campos que no se encuentren en la petición debe dejarlos intacto. Esta forma de usar PUT no es REST, ya que la especificación HTTP dice que el contenido del cuerpo de la petición pasa a ser el nuevo estado del recurso, es decir, el estado del recurso se debe sobreescribir por completo con lo que viene en la petición. Por lo tanto debemos buscar otra alternativa.
+
+Esa alternativa sería POST. Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación sólo nos indica que esa es una de las posibles acciones que se pueden admitir. El método POST sobre una URI se puede interpretar según el estándar de otras formas. En el caso que nos ocupa se puede usar la interpretación de "añadir" en vez de crear un recurso subordinado. La idea es que podemos ir "añadiendo" información al recurso poco a poco. El truco para hacer una actualización parcial es usar un tipo mime que representa un cambio de estado, o "diff", que se "añade" al estado del servidor. Si mandamos varios de estos "diff" al servidor, éste los va "sumando" y el recurso se va actualizando incrementalmente.
+(TODO: añadir un comentario y un capítulo)
+Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición de actualizar un capítulo?
+(TODO: capítulo duplicado)
+En este caso hemos enviado el mismo "diff" de forma duplicada. Esto hace que la segunda petición sea inconsistente, ya que al haberse procesado el primer "diff" (sin que el cliente lo supiera), el segundo no tiene sentido. En estos casos el servidor debería fallar, con un 409.
+(TODO: fallo con 409)
+Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en que consiste este conflicto, ya que 409 es un código de error bastante genérico. Es mejor ser más explícito y usar las cabeceras ETag e If-Match para realizar peticiones condicionales:
+(TODO: diff con Etag, ifmatch)
+Y si existe una duplicación o un problema de carrera el servidor responde con:
+(TODO)
+Que es mucho más explícito y sencillo de depurar.
+
+Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo mime que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos mime, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
+
+Método PATCH
+^^^^^^^^^^^^
+
+El problema del sistema anteriormente descrito para realizar actualizaciones parciales es que POST es un método genérico que admite casi cualquier tipo de operación que no sea ni segura ni idempotente. En este sentido se está convirtiendo en una especie de cajón de sastre donde podemos modelar casi cualquier operación que no encaje en el resto del marco de REST. Esto es un problema y puede llegar a hacer que los consumidores de nuestros recursos se confundan al usar POST.
+
+Para solucionar este problema se ha propuesto añadir un nuevo método, el método PATCH, que todavía se encuentra en proceso de estandarización[12]. Al igual que POST es un método no seguro y no idempotente, pero tiene una semántica explícita de actualización parcial y sólo admite tipos mime que representen "diffs". Al ser más explícito la API es más clara.
+
+Todo lo explicado anteriormente sobre actualizaciones parciales se aplica a PATCH. Así el ejemplo anterior quedaría:
+(TODO: ejemplo PATCH)
+
+Sin embargo al ser un método nuevo que todavía no está estandarizado podemos tener problemas de interoperabilidad. Para evitar esto podemos usar la cabecera X-HTTP-Method-Override. Esta cabecera es ignorada por los nodos y servidores antiguos, pero permite indicar a los servidores más modernos que queremos usar un método diferente del especificado en la petición HTTP. Así, el ejemplo anterior quedaría como:
+(TODO: ejemplo con X-HTTP-Method-Override)
+Como se observa, para cualquier servidor o nodo que no entienda PATCH, la petición sería un POST. Pero en lo casos en los que el servidor si entienda PATCH, ignorará POST.
 
 Cache
 ~~~~~
@@ -649,8 +676,7 @@ En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels
 
 Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search',
 este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso
-no se trata de una URI en si, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir
-una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
+no se trata de una URI en si, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
 parámetros de consulta están disponibles y como construir una URI de consulta a partir de éstos. Actualmente se está
 trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que
 existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
@@ -707,12 +733,6 @@ Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el diner
 
 Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir securizada con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
 
-¿Target form? 
-* Con POST: el target es el padre
-* Sin POST:Si es para accion no idempotente o para crear, al hacer GET el target ya viene con URI "desechable"
-Modelar formularios: action, ¿target? y type
-Formularios no HTML: JSON y XFORM
-¡No necesitas POST!)
 
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -724,6 +744,12 @@ TODO
 El servidor nos ha respondido con información, como los tipos mime soportados. Dichos tipos mime y como usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe que tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos mime soportados y las convenciones sobre como usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
 TODO
 
+¿Target form?
+* Con POST: el target es el padre
+* Sin POST:Si es para accion no idempotente o para crear, al hacer GET el target ya viene con URI "desechable"
+Modelar formularios: action, ¿target? y type
+Formularios no HTML: JSON y XFORM
+¡No necesitas POST!)
 (TODO
 Simplemente navega
 versionado: Ignora lo que no entiendas, no elimines types antiguos de golpe
@@ -771,3 +797,9 @@ Referencias y bibliografía
 [10] Algunas implementaciones de URI Templates: http://code.google.com/p/uri-templates/wiki/Implementations
 
 [11] Algunos valores de 'rel' estándarizados: http://www.iana.org/assignments/link-relations/link-relations.xml
+
+[12] PATCH Method for HTTP: http://tools.ietf.org/html/rfc5789
+
+[13] An Extensible Markup Language (XML) Patch Operations Framework Utilizing XML Path Language (XPath) Selectors: http://tools.ietf.org/html/rfc5261
+
+[14] JSON Patch: http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-01
