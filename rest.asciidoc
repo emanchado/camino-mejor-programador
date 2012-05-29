@@ -1,5 +1,5 @@
 Introducción al diseño de APIs REST con HTTP
-=================================================
+============================================
 Enrique J. Amodeo_Rubio <eamodeorubio@gmail.com>
 :Blog: http://eamodeorubio.wordpress.com
 :Twitter: @eamodeorubio
