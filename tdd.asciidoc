@@ -1,0 +1,19 @@
+Desarrollo dirigido por pruebas
+===============================
+Joaquín Caraballo
+
+El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; de forma incremental, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de
+
+__________________________
+rojo - verde - refactoriza
+__________________________
+
+Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que hace que la prueba pase y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta.
+
+Por qué y para qué
+------------------
+
+El motivo más importante footnote:[_Para mí_ el más importante, seguro que otros discreparán.] para desarrollar dirigido por pruebas es el énfasis en la función de nuestro código y en su idoneidad para ponerlo a prueba y por lo tanto usarlo. Este énfasis nos obliga a preguntarnos cada vez que vamos a añadir código de explotación: ¿es esto lo que necesito? ¿hace falta _ahora_?; ayudándonos a escribir exclusivamente lo que necesitamos y a mantener el tamaño y la complejidad del código al mínimo necesario.
+
+Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, sí que favorece una cierta simplicidad y definitivamente revela el acoplamiento desde el principio, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular la inyección de dependencias y la separación entre sus interfaces y las implementaciones emergen desde el principio de forma natural, dado que hacen más fácil escribir las pruebas.
+

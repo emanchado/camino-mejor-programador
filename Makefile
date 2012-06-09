@@ -1,7 +1,8 @@
 all: herramientas.html \
     malos_olores.html \
     eclipse.html \
-    rest.html
+    rest.html \
+    tdd.html
 
 %.html: %.asciidoc
 	asciidoc $<
