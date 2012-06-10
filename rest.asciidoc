@@ -7,15 +7,15 @@ Enrique J. Amodeo_Rubio <eamodeorubio@gmail.com>
 Introducción
 ------------
 
-Tras muchos años intentando crear servicios web basados en tecnologías RPC como CORBA o SOAP, la industria del desarrollo de software se encontraba en un punto muerto. Cierto, se había conseguido hacer que un servicio implementado en .NET consiguiera comunicarse con uno escrito en JAVA, o incluso con otro hecho a base de COBOL, sin embargo todo esto sabía a poco. Es normal que supiera a poco, se había invertido cantidades ingentes de dinero en distintas tecnologías, frameworks y herramientas, y las recompensas eran escasas. Lo peor es que además las compañías se encontraban encalladas en varios problemas.
+Tras muchos años intentando crear servicios web basados en tecnologías RPC como CORBA o SOAP, la industria del desarrollo de software se encontraba en un punto muerto. Cierto, se había conseguido hacer que un servicio implementado en .NET consiguiera comunicarse con uno escrito en Java, o incluso con otro hecho a base de COBOL, sin embargo todo esto sabía a poco. Es normal que supiera a poco, se había invertido cantidades ingentes de dinero en distintas tecnologías, frameworks y herramientas, y las recompensas eran escasas. Lo peor es que además las compañías se encontraban encalladas en varios problemas.
 
 Por un lado la mantenibilidad de la base de código resultante era bastante baja. Se necesitaban complejos IDEs para generar las inescrutables toneladas de código necesarias para interoperar. Los desarrolladores tenían pesadillas con la posibilidad de que se descubriera algún bug en la herramienta de turno, o de que algún parche destruyera la interoperabilidad. Y si se necesitaba alguna versión o capacidad más avanzada de SOAP probablemente el IDE no lo soportara o tuviera que ser actualizado.
 
-Por otro lado para depurar cualquier problema de interoperabilidad había que bajar al nivel de HTTP: ¿estarían las cabeceras apropiadas?¿La serialización del documento SOAP es conforme a "Basic Profile"[3]? ¿No se suponía que SOAP era transparente al protocolo?
+Por otro lado para depurar cualquier problema de interoperabilidad había que bajar al nivel de HTTP: ¿estarían las cabeceras apropiadas? ¿La serialización del documento SOAP es conforme a "Basic Profile"[3]? ¿No se suponía que SOAP era transparente al protocolo?
 
 Finalmente también había descontento. Se había soñado con un mundo de servicios web interoperables de manera transparente, organizados en directorios UDDI y demás. Al final esto no se consiguió, sólo interoperaban servicios entre distintos departamentos de una misma empresa, o de forma más rara algún servicio llamaba a otro servicio de otra empresa, todo con mucho cuidado y en condiciones bastante frágiles.
 
-Cuando la situación se hizo insostenible, y algunos gigantes de la informática como Amazon, Google o Twitter necesitaron interoperabilidad a escala global y barata, alguien el camino al futuro mirando hacia el pasado, y descubrió REST...
+Cuando la situación se hizo insostenible, y algunos gigantes de la informática como Amazon, Google o Twitter necesitaron interoperabilidad a escala global y barata, alguien descubrió el camino al futuro mirando hacia el pasado, y descubrió REST...
 
 ¿Qué es REST?
 ~~~~~~~~~~~~~
@@ -28,7 +28,7 @@ REST[1] no es una tecnología, ni siquiera una arquitectura, REST es un estilo a
 * Cada recurso tiene un interfaz, o conjunto de operaciones que admite. Basta saber el UUID del recurso para poder enviarle la operación que queremos realizar. 
 * La interfaz es homogénea para todos los recursos. Esto quiere decir que todos los recursos deben escoger las operaciones que soportan de un conjunto de acciones predefinidos. Este conjunto de operaciones permitidas es una característica específica de cada arquitectura REST y no puede cambiarse. Como consecuencia no podemos inventar nuevas operaciones, sino que tenemos que modelar esas nuevas operaciones como recursos. Por ejemplo, en un sistema REST no podemos añadir una operación "reservarHotel", sino que tendríamos que crear un nuevo recurso llamado "ReservaDeHotel". Sin embargo el conjunto de operaciones mínimo que debe tener un sistema REST es "leer", "actualizar" y "crear".
 * Las operaciones se realizan mediante transferencia de estado del recurso. El cliente puede pedir que una copia del estado de un recurso sea transferido desde el servidor al cliente (leer), modificarlo, y mandar la copia modificada al servidor usando alguna de las operaciones de modificación permitidas (actualizar o crear).
-* Las operaciones son stateless. Es decir, el resultado de una operación es independiente de la conversación que hayan mantenido el cliente y el servidor anteriormente. Como consecuencia de esto toda la información necesaria para llevar a cabo la operación debe mandarse como parámetros de ésta.
+* Las operaciones son _stateless_. Es decir, el resultado de una operación es independiente de la conversación que hayan mantenido el cliente y el servidor anteriormente. Como consecuencia de esto toda la información necesaria para llevar a cabo la operación debe mandarse como parámetros de ésta.
 * Los recursos son multimedia, es decir, el estado de un recurso puede ser representado mediante distintos formatos. Por formato se entiende el formato concreto de serialización del estado cuando se manda por red. Algunos ejemplos de formatos son XML, JSON, imagen JPEG, imagen GIF, etc. Como vimos antes el estado de un recurso puede ser copiado desde un servidor al cliente o viceversa, pero por otro lado el formato interno del recurso es privado y desconocido por el cliente. Para que esto funcione el cliente debe especificar al servidor que formatos entiende y viceversa, y ponerse de acuerdo en el conjunto de formatos más conveniente a usar que ambas partes entiendan.
 
 REST es el acrónimo para "REpresentational State Transfer". Veamos lo que significa con un pequeño ejemplo de como sería la reserva de una habitación de hotel usando REST:
@@ -47,7 +47,7 @@ Como se ve toda la dinámica se basa en una conversación entre el cliente y el 
 ¿Por qué usar REST?
 ~~~~~~~~~~~~~~~~~~~
 
-¿Queremos diseñar un sistema de servicios web? Pues lo más sensato es ver como funciona la web e investigar cómo funciona el único caso de éxito de interoperabilidad a escala global que existe en la actualidad. ¿Cuál es tal caso de éxito? La world wide web. Sí querido lector, las páginas web que navegamos a diario son un caso real de interoperabilidad a escala global, sólo es necesario usar un navegador decente que entienda los formatos disponibles para cada página (HTML, gif, jpeg, codecs de video, etc) para poder consumirlas. No importa que el fabricante del navegador y el autor de la página no hayan interactuado en la vida, o que cada autor de cada página sea totalmente independiente entre ellos.
+¿Queremos diseñar un sistema de servicios web? Pues lo más sensato es ver como funciona la web e investigar cómo funciona el único caso de éxito de interoperabilidad a escala global que existe en la actualidad. ¿Cuál es tal caso de éxito? La world wide web. Sí querido lector, las páginas web que navegamos a diario son un caso real de interoperabilidad a escala global, sólo es necesario usar un navegador decente que entienda los formatos disponibles para cada página (HTML, GIF, JPEG, códecs de video, etc) para poder consumirlas. No importa que el fabricante del navegador y el autor de la página no hayan interactuado en la vida, o que cada autor de cada página sea totalmente independiente entre ellos.
 
 El enfoque RPC basado en SOAP ha fracasado, no conozco ningún sistema basado en este paradigma que alcance niveles de interoperabilidad tan altos a costes tan bajos como la world wide web. Por lo tanto la world wide web es un ejemplo a seguir, una guía a las decisiones de diseño necesarias para hacer servicios interoperables.
 
@@ -61,13 +61,13 @@ Vayamos a lo práctico, ¿cómo implementar REST en el mundo real?
 El protocolo HTTP
 ~~~~~~~~~~~~~~~~~
 
-El protocolo HTTP[2], pieza fundamental en la que se basa la world wide web, especifica como intercambiar entre cliente y servidor recursos web. Es un protocolo idóneo para implementar servicios web, ya que además de ser ubícuo en la web, su diseño sigue los principios REST. Veamos ahora como funciona este protocolo y como encaja en el estilo arquitectónico REST.
+El protocolo HTTP[2], pieza fundamental en la que se basa la world wide web, especifica como intercambiar entre cliente y servidor recursos web. Es un protocolo idóneo para implementar servicios web, ya que además de ser ubicuo, su diseño sigue los principios REST. Veamos ahora como funciona este protocolo y como encaja en el estilo arquitectónico REST.
 
-HTTP es un protocolo que se sitúa al nivel de aplicación, incluyendo algo del nivel de presentación, dentro de la pila ISO[4]. En principio está diseñado para ser ejecutado sobre TCP o sobre transporte seguro TLS/SSL, aunque no seria descabellado mandar mensajes HTTP sobre otro protocolo de transporte. Se basa en un paradigma sencillo petición/respuesta, sin ningún tipo de memoria ni sesión de usuario, es decir, es un protocolo stateless.
+HTTP es un protocolo que se sitúa al nivel de aplicación, incluyendo algo del nivel de presentación, dentro de la pila ISO[4]. En principio está diseñado para ser ejecutado sobre TCP o sobre transporte seguro TLS/SSL, aunque no sería descabellado mandar mensajes HTTP sobre otro protocolo de transporte. Se basa en un paradigma sencillo petición/respuesta, sin ningún tipo de memoria ni sesión de usuario, es decir, es un protocolo stateless.
 
-El mensaje de petición en HTTP consta de una primera línea de texto indicando la versión del protocolo, el verbo HTTP y la URI destino. El verbo HTTP indica la operación a realizar sobre el recurso web localizado en la URI destino, más adelante hablaremos más, tanto sobre los verbos que hay, como sobre las URIs. A continuación, y de forma opcional, vienen las cabeceras. Cada cabecera va en una línea de texto distinta, y consiste en el nombre de la cabecera seguido de su valor, ambos separados por ":". Opcionalmente la petición puede llevar un cuerpo, separado por una linea en blanco del encabezamiento del mensaje, y que contiene un documento. Dicho documento puede estar en cualquier formato (incluso binario), aunque normalmente suele ser texto plano, HTML, XML o JSON. El formato del documento se define en la cabecera "Content-Type".
+El mensaje de petición en HTTP consta de una primera línea de texto indicando la versión del protocolo, el verbo HTTP y la URI destino. El verbo HTTP indica la operación a realizar sobre el recurso web localizado en la URI destino. Más adelante hablaremos más, tanto sobre los verbos que hay, como sobre las URIs. A continuación, y de forma opcional, vienen las cabeceras. Cada cabecera va en una línea de texto distinta, y consiste en el nombre de la cabecera seguido de su valor, ambos separados por ":". Opcionalmente la petición puede llevar un cuerpo, separado por una línea en blanco del encabezamiento del mensaje, y que contiene un documento. Dicho documento puede estar en cualquier formato (incluso binario), aunque normalmente suele ser texto plano, HTML, XML o JSON. El formato del documento se define en la cabecera "Content-Type".
 
-Los mensajes de respuesta HTTP siguen el mismo formato que los de petición, excepto en la primera línea, que se indica el código de respuesta y una explicación textual de dicha respuesta. El código de respuesta indica si la petición tuvo éxito o no y por qué razón.
+Los mensajes de respuesta HTTP siguen el mismo formato que los de petición, excepto en la primera línea, donde se indica el código de respuesta y una explicación textual de dicha respuesta. El código de respuesta indica si la petición tuvo éxito o no y por qué razón.
 
 (TODO: insertar ejemplo de petición/respuesta)
 
@@ -76,9 +76,16 @@ Las URIs
 
 Las URI[5] son los identificadores globales de recursos en la web, y actúan de manera efectiva como UUIDs REST. Las URIs tiene el siguiente formato:
 
+------------------------------
 <esquema>:<parte específica esquema>/<path><querystring><fragmento>
+------------------------------
 
-El esquema, en el caso de una URL(\*) indica que protocolo se debe usar para acceder al recurso. En el caso que nos ocupa podría ser "http" o "https" si usamos transporte seguro. Si es una URN(*) el esquema es "urn". En nuestro caso nos interesan las URLs, e ignoraremos las URNs en el resto de la discusión.
+[NOTE]
+=================================
+Esteban: ¿cambiar «path» por «ruta» y «querystring» por «parámetros»?
+=================================
+
+El esquema, en el caso de una URL(\*), indica qué protocolo se debe usar para acceder al recurso. En el caso que nos ocupa podría ser "http", o "https" si usamos transporte seguro. Si es una URN(*) el esquema es "urn". En nuestro caso nos interesan las URLs, e ignoraremos las URNs en el resto de la discusión.
 
 Tras el esquema, viene la parte específica del esquema. En las URLs sería la dirección del servidor donde se encuentra el recurso. Esta dirección se puede especificar mediante una dirección IP o mediante un nombre de dominio, y se separa del esquema mediante "//". Opcionalmente se especifica el puerto a usar en la conexión concatenándolo con ":". Esto no es necesario si se va a usar el puerto estándar del protocolo especificado. El puerto estándar para "http" es el 80 y para "https" es 443.
 
@@ -97,11 +104,9 @@ Finalmente y también de forma opcional tenemos el fragmento, que se separa del 
 Los verbos HTTP
 ^^^^^^^^^^^^^^^
 
-Una característica completamente alineada con REST del protocolo HTTP es el hecho de que tenga una interfaz uniforme para todos los recursos web. HTTP define un conjunto predefinido y cerrado de acciones o métodos HTTP(*). 
+Una característica completamente alineada con REST del protocolo HTTP es el hecho de que tenga una interfaz uniforme para todos los recursos web. HTTP define un conjunto predefinido y cerrado de acciones o métodos HTTP(*). Es importante tener en cuenta que la propia especificación define los conceptos de "seguridad" e "idempotencia", y clasifica los métodos conforme a estos dos criterios.
 
-Es importante tener en cuenta que la propia especificación define los conceptos de "seguridad" e "idempotencia", y clasifica los métodos conforme a estos dos criterios.
-
-Un método se considera "seguro" si no produce efectos secundarios. Por efecto secundario se entiende cualquier modificación del estado del servidor o interacción de este con cualquier otro sistema que produzca efectos perceptibles por el usuario. Normalmente sólo los métodos que representan lectura se consideran seguros.
+Un método se considera "seguro" si no produce efectos secundarios. Por efecto secundario se entiende cualquier modificación del estado del servidor o interacción de éste con cualquier otro sistema que produzca efectos perceptibles por el usuario. Normalmente sólo los métodos que representan lectura se consideran seguros.
 
 Un método es idempotente, si la ejecución repetida de éste, con exactamente los mismos parámetros, tiene el mismo efecto que si sólo se hubiera ejecutado una vez. Esta propiedad nos permite reintentar con seguridad una petición una y otra vez y tener la seguridad de que la operación no se va a duplicar. De forma muy común, debido a cortes y congestiones de red, el cliente no recibe la confirmación de si una operación se ha realizado o no. Tal vez la petición ha llegado al servidor y se ha ejecutado, con lo que no deberíamos duplicar la operación, o tal vez simplemente se ha quedado por el camino y debemos reintentarla. Los métodos idempotentes nos permiten recuperarnos de esta circunstancia simplemente repitiendo la petición, ya que nos aseguran que no se duplicará la operación si estuviéramos en el primer caso.
 
@@ -112,55 +117,58 @@ Los métodos HTTP más comunes son los siguientes (**):
 | Método  |Seguro|Idempotente|        Semántica                         
 | GET     |  Sí  |    Sí     | Leer el estado del recurso               
 | HEAD    |  Sí  |    Sí     | Leer, pero sólo las cabeceras            
-| PUT     |  No  |    Sí     | Actualizar o Crear                       
+| PUT     |  No  |    Sí     | Actualizar o crear
 | DELETE  |  No  |    Sí     | Eliminar un recurso                      
 | POST    |  No  |    No     | Cualquier acción genérica no idempotente 
-| OPTIONS |  Sí  |    Sí     | Averiguar las opciones disponibles de comunicación de un recurro
+| OPTIONS |  Sí  |    Sí     | Averiguar las opciones disponibles de comunicación de un recurso
 |=======================================================================
 
 En general el uso de cada método es bastante explicativo, y más adelante veremos cómo usarlos así como buenas prácticas. Sin embargo conviene aclarar un par de aspectos. El primero es la diferencia entre HEAD y GET. Ambos leen el recurso, pero el segundo devuelve tanto los datos del recurso web, como las cabeceras HTTP, mientras que el primero sólo las cabeceras. Por otro lado el método POST es bastante misterioso y objeto de frecuentes malentendidos. En general se usa para crear un nuevo recurso, modificar uno existente o para ejecutar una acción genérica que no sea idempotente como realizar una transacción monetaria. Como veis la semántica de PUT parece que se solapa con la de POST de alguna manera, y esto es fuente de numerosos malentendidos. Más adelante aclararemos este tema.
 
-El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como que métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es cacheable, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
+El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como qué métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es cacheable, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
 
 (\*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
 (**) Existen otros métodos que no suelen ser muy usados en servicios REST, como CONNECT o TRACE.
 
-Los tipos mime
+Los tipos MIME
 ^^^^^^^^^^^^^^
 
 Otro aspecto muy apropiado para el desarrollo de servicios REST con el protocolo HTTP es su soporte para negociar distantos formatos (representaciones) a usar en la transferencia del estado entre servidor y cliente (y viceversa).
 
-En HTTP cada uno de estos formatos se constituye lo que se llama un tipo mime distinto y existen muchos tipos mime estandarizados[6]. Cada tipo mime tiene el formato de <tipo>/<subtipo>. Algunos tipos mime muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/plain", "text/rtf", "text/html", "audio/vorbis", "audio/ac3", "image/png", "image/gif", "image/jpeg", "video/H264", "video/ogg", y "video/mpeg".
+En HTTP cada uno de estos formatos se constituye lo que se llama un tipo MIME distinto y existen muchos tipos MIME estandarizados[6]. Cada tipo MIME tiene el formato de <tipo>/<subtipo>. Algunos tipos MIME muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/plain", "text/rtf", "text/html", "audio/vorbis", "audio/ac3", "image/png", "image/gif", "image/jpeg", "video/H264", "video/ogg", y "video/mpeg".
 
-A veces en el subtipo suele aparecer el caracter "+". Esto indica que el tipo mime es una variante de otro tipo principal. Por ejemplo "application/atom+xml", indica que el tipo mime es una variante del más genérico "application/xml" pero siguiendo el XML schema de atom. Otra convención común es que si el subtipo empieza por "x-" entonces el tipo mime no es estándar, sino propietario.
+[NOTE]
+==================================
+Hacer la lista más corta. Podría ser simplemente: «"application/json", "application/xml", "application/atom+xml", "application/javascript", "text/html" y "audio/vorbis"».
+==================================
 
-¿Cómo se negocia el tipo mime entre el cliente y el servidor? Es sencillo, en el mensaje de petición se incluye una cabecera "Accept", con una lista de tipos mime que el cliente entiende, el servidor selecciona el tipo que más le interese de entre todos los especificados en la cabecera "Accept", y devuelve la respuesta. Si el servidor no entiende ninguno de los tipos mime propuestos devuelve un mensaje con código 406, indicando que es incapaz de aceptar la petición. Si no se incluye la cabecera "Accept" se indica que se acepta cualquier tipo mime.
+A veces en el subtipo suele aparecer el caracter "+". Esto indica que el tipo MIME es una variante de otro tipo principal. Por ejemplo "application/atom+xml", indica que el tipo MIME es una variante del más genérico "application/xml" pero siguiendo el XML schema de atom. Otra convención común es que si el subtipo empieza por "x-" entonces el tipo MIME no es estándar, sino propietario.
 
-Por otro lado, ya sea en la petición como en la respuesta HTTP, la cabecera "Content-Type" debe contener el tipo mime del documento que aparece en el cuerpo del mensaje. Si el mensaje no tiene cuerpo no debe aparecer dicha cabecera.
+¿Cómo se negocia el tipo MIME entre el cliente y el servidor? Es sencillo, en el mensaje de petición se incluye una cabecera "Accept", con una lista de tipos MIME que el cliente entiende, el servidor selecciona el tipo que más le interese de entre todos los especificados en la cabecera "Accept", y devuelve la respuesta. Si el servidor no entiende ninguno de los tipos MIME propuestos devuelve un mensaje con código 406, indicando que es incapaz de aceptar la petición. Si no se incluye la cabecera "Accept" se indica que se acepta cualquier tipo MIME. Por otro lado, ya sea en la petición como en la respuesta HTTP, la cabecera "Content-Type" debe contener el tipo MIME del documento que aparece en el cuerpo del mensaje. Si el mensaje no tiene cuerpo no debe aparecer dicha cabecera.
 
-En la cabecera "Accept", la lista de tipos mime se especifica mediante lo que se llama un "media range". Un "media range" es una lista separada por comas de tipos mime, donde cada uno de los tipos mime puede ir acompañados por uno o más parámetros.
-
-Para indicar un parámetro en un tipo mime se usa el ";". Así "text/html;level=3" indica el tipo mime "text/html" con un parámetro "level" con valor "3". En general el significado del parámetro es específico de cada tipo mime. Un ejemplo de parámetro podría ser "charset" indicando la codificación de caracteres dentro de un formato de tipo texto o de tipo aplicación no binario. Ej. "text/plain; charset=ISO-8859-1" y "application/json; charset=UTF-8"
+En la cabecera "Accept", la lista de tipos MIME se especifica mediante lo que se llama un "media range". Un "media range" es una lista separada por comas de tipos MIME, donde cada uno de los tipos MIME puede ir acompañados por uno o más parámetros. Para indicar un parámetro en un tipo MIME se usa el ";". Así "text/html;level=3" indica el tipo MIME "text/html" con un parámetro "level" con valor "3". En general el significado del parámetro es específico de cada tipo MIME. Un ejemplo de parámetro podría ser "charset" indicando la codificación de caracteres dentro de un formato de tipo texto o de tipo aplicación no binario. Ej. "text/plain; charset=ISO-8859-1" y "application/json; charset=UTF-8"
 
 Además en un "media range" pueden aparecer expresiones de rango. Hay dos:
 
-1. "\*/*" indica cualquier tipo mime
+1. "\*/*" indica cualquier tipo MIME
 2. "<tipo>/\*" indica cualquier subtipo dentro del tipo. Por ejemplo "image/*" indica cualquier imagen en cualquier formato.
 
-Un "media range" no sólo especifica una lista de tipos mime aceptables, sino tambien un orden de preferencia, de tal manera que el servidor debe intentar elegir el tipo mime que soporte pero que tenga mayor preferencia para el cliente. La preferencia se calcula usando las siguientes reglas:
+Un "media range" no sólo especifica una lista de tipos MIME aceptables, sino tambien un orden de preferencia, de tal manera que el servidor debe intentar elegir el tipo MIME que soporte pero que tenga mayor preferencia para el cliente. La preferencia se calcula usando las siguientes reglas:
 
-1. Si el tipo mime tiene un parámetro llamado "q", usar el valor de ese parámetro como preferencia. Este valor debe estar entre 0 y 1, y el parámetro "q" debe ser el primero.
+1. Si el tipo MIME tiene un parámetro llamado "q", usar el valor de ese parámetro como preferencia. Este valor debe estar entre 0 y 1, y el parámetro "q" debe ser el primero.
 2. Si no existe parámetro "q", asumir que tiene un valor de 1.
 3. Si hay empate en el valor de "q", el orden de preferencia para desempatar, de mayor a menor es el que sigue:
-3.1 El tipo mime con mayor número de parámetros
-3.2 Las expresiones <tipo>/*
-3.3 La expresión */*
+ a. El tipo MIME con mayor número de parámetros
+ b. Las expresiones <tipo>/*
+ c. La expresión \*/*
 
 Pongamos un ejemplo, la siguiente cabecera:
 
-Accept: text/\*;q=0.3, text/html;q=0.7, text/html;level=1, */*;q=0.5
+---------------------------
+Accept: text/*;q=0.3, text/html;q=0.7, text/html;level=1, */*;q=0.5
+---------------------------
 
-Especifica el siguiente orden de preferencias de tipos mime:
+Especifica el siguiente orden de preferencias de tipos MIME:
 
 1. text/html;level=1
 2. text/html
@@ -172,18 +180,18 @@ Códigos de estado
 
 En HTTP el mensaje de respuesta contiene en su primera línea lo que se llama el código de estado, que indica el resultado de la operación. Los códigos de respuesta más usados son:
 
-* 200. Indica éxito de la operación de forma genérica. Se usa cuando no hay otro código de éxito más específico. El mensaje de respuesta debe contener un cuerpo, en otro caso usar 204.
+* 200. Indica éxito de la operación de forma genérica. Se usa cuando no hay otro código de éxito más específico. El mensaje de respuesta debe contener un cuerpo, en otro caso se usa 204.
 * 201. Indica que se creó con éxito un nuevo recurso web. Suele devolverse cuando ejecutamos un método POST o PUT. En la respuesta se devuelve la URI del nuevo recurso creado dentro de la cabecera "Location". La respuesta puede contener un cuerpo con los datos del nuevo recurso.
 * 202. Indica que la petición se ha aceptado pero que no está completa. Se puede devolver en la respuesta un cuerpo con información sobre cuanto queda para que se complete la operación o indicando como monitorizar el progreso de ésta. Es muy útil cuando el servidor esta congestionado o para modelar operaciones de larga duración.
 * 204. Indica éxito de la operación de forma genérica. Se usa cuando no hay otro código de éxito más específico. El mensaje de respuesta está vacio y no tiene cuerpo, en otro caso usar 200.
 * 301. Indica que el recurso se ha movido a otra URI de forma permanente. La nueva URI se indica en la cabecera "Location" de la respuesta. Este mecanismo de redirección se puede usar para versionar servicios como veremos más adelante.
 * 304. Indica que el recurso no se ha modificado. Normalmente es la respuesta de un cache a una operación. La respuesta no contiene cuerpo.
 * 400. El mensaje de petición está mal formado.
-* 401. La petición no está autorizada, acceso denegado. Las credenciales de la petición son incorrectas (tal vez el usuario no existía o el esquema de autenticación no es correcto) o simplemente la petición no tenía credenciasles. Indica la necesidad de volver a hacer la petición con unas credenciales correctas para autenticarse.
-* 403. Acceso denegado, las credenciales son insuficientes para acceder al recurso, el usuario no tiene permiso.
+* 401. La petición no está autorizada, acceso denegado. Las credenciales de la petición son incorrectas (tal vez el usuario no existía o el esquema de autenticación no es correcto) o simplemente la petición no tenía credenciales. Indica la necesidad de volver a hacer la petición con unas credenciales correctas para autenticarse.
+* 403. Acceso denegado: las credenciales son insuficientes para acceder al recurso, el usuario no tiene permiso.
 * 404. Recurso no encontrado.
 * 405. Método no soportado, la operación HTTP especificada en la petición no está implementada. Un ejemplo de esto sería al intentar actualizar un recurso de sólo lectura.
-* 406. La petición no es aceptable. Tal vez el servidor no soporta los tipos mime aceptados por el cliente.
+* 406. La petición no es aceptable. Tal vez el servidor no soporta los tipos MIME aceptados por el cliente.
 * 409. Conflicto de versiones. Usado en la implementación de concurrencia optimista (ver más adelante).
 * 412. Fallo en la precondición. Usado en la implementación de concurrencia optimista (ver más adelante).
 * 500. Se produjo un error inesperado en el servidor. Se puede usar para modelar excepciones en la capa de aplicación.
@@ -195,6 +203,11 @@ QoS en HTTP
 
 Existen cabeceras en HTTP que tienen que ver con mejorar la eficiencia de la comunicación. 
 
+[NOTE]
+============================
+¿Quizás convertir todo este apartado en una lista de ejemplos?
+============================
+
 Por ejemplo, las cabeceras "Content-Encoding" y "Accept-Encoding" nos permiten modificar la codificación del cuerpo de los mensajes. Un caso práctico de esto es comprimir el cuerpo de los mensajes con el algoritmo GZIP para ahorrar ancho de banda.
 
 La cabecera "Keep-Alive" nos permite reutilizar una misma conexión a nivel de transporte (un socket TCP por ejemplo) para varios ciclos de petición/respuesta. Sin esta cabecera cada petición/respuesta iría en una conexión diferente, lo que consumiría mayor cantidad de recursos y aumentaría la latencia.
@@ -203,12 +216,18 @@ La cabecera "Upgrade", nos permite cambiar a otro protocolo. Ahora está siendo 
 
 Una cabecera muy usada es "Transfer-Encoding", que nos permite enviar mensajes de longitud variable, lo que es indispensable para hacer streaming.
 
-Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo más adelante más adelante veremos aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que sí impactan en el diseño de servicios.
+Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo más adelante veremos aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que sí impactan en el diseño de servicios.
+
+[NOTE]
+=============================
+Cuidado con la expresión «más adelante» si al final partimos el artículo en
+dos...
+=============================
 
 HTTP y REST
 ^^^^^^^^^^^
 
-Como vemos el protocolo HTTP está diseñado para cumplir los principios REST. Tenemos recursos (documentos web), que poseen UUIDs (URIs) y que pueden ser accesibles mediante múltiples representaciones (tipos mime). Además se tiene un conjunto de operaciones predefinidas, los verbos HTTP, que se pueden utilizar siguiendo petición/respuesta stateless de HTTP. Como se ve HTTP tiene todos los ingredientes de una arquitectura REST.
+Como vemos el protocolo HTTP está diseñado para cumplir los principios REST. Tenemos recursos (documentos web), que poseen UUIDs (URIs) y que pueden ser accesibles mediante múltiples representaciones (tipos MIME). Además se tiene un conjunto de operaciones predefinidas, los verbos HTTP, que se pueden utilizar siguiendo petición/respuesta stateless de HTTP. Como se ve HTTP tiene todos los ingredientes de una arquitectura REST.
 
 Sin embargo existen formas de usar el protocolo HTTP que no son REST, aunque se le parecen. A estos diseños los llamamos servicios RESTlike, en contraposición a los servicios REST puros o RESTful.
 
@@ -227,7 +246,7 @@ El buen diseño de servicios web REST se basa en saber como mapear los distintos
 
 Cuando diseñemos nuestros servicios REST hay que pensar que la API de estos consta de lo siguiente:
 * El diseño de URIs que vayamos a seguir, y al meno la URI de un servicio raiz a partir del cual entrar en el sistema. El cliente sólo debería conocer esta URI raiz.
-* Los tipos mime soportados por los recursos REST.
+* Los tipos MIME soportados por los recursos REST.
 * Los verbos HTTP soportados. No debemos romper la semántica de dichos métodos HTTP
 
 Cualquier cambio en alguno de estos puntos implica cambiar el API público de nuestro sistema, y por lo tanto romper la interoperabilidad con nuestros clientes.
@@ -375,7 +394,7 @@ Servicios multimedia
  
 Una ventaja de los servicios REST es que permite negociar el formato exacto en el que se va a intercambiar la información.
 
-Como ya vimos cada formato viene definido por un tipo mime, y podemos usar las cabeceras Accept y Content-Type para gestionar que tipo mime se va a usar.
+Como ya vimos cada formato viene definido por un tipo MIME, y podemos usar las cabeceras Accept y Content-Type para gestionar que tipo MIME se va a usar.
 
 Esto nos abre un nuevo campo con el que hacer nuestros servicios más potentes. Usando la misma URI y los mísmos métodos HTTP, podemos consumir el recurso en distintos formatos, no es necesario tener una URI diferente para cada formato.
 
@@ -383,11 +402,11 @@ Por ejemplo podríamos consumir el recurso http://www.server.com/rest/libro/3d-5
 
 Otro ejemplo sería un recurso colección con todos los movimientos bancarios de una cuenta. Lo puedo consumir como HTML y acceder a una página web donde visualizar y operar. ¿Y por qué no en forma Excell para descargarlos como una hoja de cálculo? ¿Y que tal en PDF para poder imprimir los recibos de todos los movimientos? ¿O quizás es mejor pedirlo en formato JPG o GIF para ver una bonita gráfica de gastos/ingresos?
 
-En general, para maximizar la interoperabilidad, es mejor usar tipos mime estandarizados, al fin y al cabo, de esta forma no tendremos que crear clientes específicos para consumir esos tipos mime.
+En general, para maximizar la interoperabilidad, es mejor usar tipos MIME estandarizados, al fin y al cabo, de esta forma no tendremos que crear clientes específicos para consumir esos tipos MIME.
 
-De forma opcional, se suelen definir tipos mime específicos y propietarios para nuestros servicios REST. En estos casos, cuando el tipo mime no es estándar, el nombre del tipo empieza por "x-". Estos tipos propietarios suelen estar muy optimizados para el caso concreto de nuestro sistemas. Por ejemplo, si quiero definir un formato especial para los datos de libro, podría publicar el recurso libro de forma que soportara el tipo "application/x-libro". De esta forma los clientes que soporten este tipo especial podrían aprovechar las características optimizadas de este tipo.
+De forma opcional, se suelen definir tipos MIME específicos y propietarios para nuestros servicios REST. En estos casos, cuando el tipo MIME no es estándar, el nombre del tipo empieza por "x-". Estos tipos propietarios suelen estar muy optimizados para el caso concreto de nuestro sistemas. Por ejemplo, si quiero definir un formato especial para los datos de libro, podría publicar el recurso libro de forma que soportara el tipo "application/x-libro". De esta forma los clientes que soporten este tipo especial podrían aprovechar las características optimizadas de este tipo.
 
-En cualquier caso, crear tipos mime propietarios de nuestra aplicación es algo opcional, ya que implica menor interoperabilidad ya que los posibles consumidores del recurso no lo entenderán a priori, y necesitarán hacer un desarrollo a medida para consumir dicho formato. Por lo tanto, independientemente de tener tipos mime propietarios, siempre debemos publicar los recursos REST mediante tipos mime estándar.
+En cualquier caso, crear tipos MIME propietarios de nuestra aplicación es algo opcional, ya que implica menor interoperabilidad ya que los posibles consumidores del recurso no lo entenderán a priori, y necesitarán hacer un desarrollo a medida para consumir dicho formato. Por lo tanto, independientemente de tener tipos MIME propietarios, siempre debemos publicar los recursos REST mediante tipos MIME estándar.
 
 Concurrencia optimista
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -424,7 +443,7 @@ En estos casos estaríamos tentados de usar PUT para mandar sólo esos cambios, 
 (TODO: Añadir ejemplo malo de PUT)
 Como vemos en este ejemplo, sólo enviamos un documento parcial, con sólo los campos a actualizar. El servidor interpretaría que los campos que no se encuentren en la petición debe dejarlos intacto. Esta forma de usar PUT no es REST, ya que la especificación HTTP dice que el contenido del cuerpo de la petición pasa a ser el nuevo estado del recurso, es decir, el estado del recurso se debe sobreescribir por completo con lo que viene en la petición. Por lo tanto debemos buscar otra alternativa.
 
-Esa alternativa sería POST. Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación sólo nos indica que esa es una de las posibles acciones que se pueden admitir. El método POST sobre una URI se puede interpretar según el estándar de otras formas. En el caso que nos ocupa se puede usar la interpretación de "añadir" en vez de crear un recurso subordinado. La idea es que podemos ir "añadiendo" información al recurso poco a poco. El truco para hacer una actualización parcial es usar un tipo mime que representa un cambio de estado, o "diff", que se "añade" al estado del servidor. Si mandamos varios de estos "diff" al servidor, éste los va "sumando" y el recurso se va actualizando incrementalmente.
+Esa alternativa sería POST. Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación sólo nos indica que esa es una de las posibles acciones que se pueden admitir. El método POST sobre una URI se puede interpretar según el estándar de otras formas. En el caso que nos ocupa se puede usar la interpretación de "añadir" en vez de crear un recurso subordinado. La idea es que podemos ir "añadiendo" información al recurso poco a poco. El truco para hacer una actualización parcial es usar un tipo MIME que representa un cambio de estado, o "diff", que se "añade" al estado del servidor. Si mandamos varios de estos "diff" al servidor, éste los va "sumando" y el recurso se va actualizando incrementalmente.
 (TODO: añadir un comentario y un capítulo)
 Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición de actualizar un capítulo?
 (TODO: capítulo duplicado)
@@ -436,14 +455,14 @@ Y si existe una duplicación o un problema de carrera el servidor responde con:
 (TODO)
 Que es mucho más explícito y sencillo de depurar.
 
-Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo mime que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos mime, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
+Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos MIME, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
 
 Método PATCH
 ^^^^^^^^^^^^
 
 El problema del sistema anteriormente descrito para realizar actualizaciones parciales es que POST es un método genérico que admite casi cualquier tipo de operación que no sea ni segura ni idempotente. En este sentido se está convirtiendo en una especie de cajón de sastre donde podemos modelar casi cualquier operación que no encaje en el resto del marco de REST. Esto es un problema y puede llegar a hacer que los consumidores de nuestros recursos se confundan al usar POST.
 
-Para solucionar este problema se ha propuesto añadir un nuevo método, el método PATCH, que todavía se encuentra en proceso de estandarización[12]. Al igual que POST es un método no seguro y no idempotente, pero tiene una semántica explícita de actualización parcial y sólo admite tipos mime que representen "diffs". Al ser más explícito la API es más clara.
+Para solucionar este problema se ha propuesto añadir un nuevo método, el método PATCH, que todavía se encuentra en proceso de estandarización[12]. Al igual que POST es un método no seguro y no idempotente, pero tiene una semántica explícita de actualización parcial y sólo admite tipos MIME que representen "diffs". Al ser más explícito la API es más clara.
 
 Todo lo explicado anteriormente sobre actualizaciones parciales se aplica a PATCH. Así el ejemplo anterior quedaría:
 (TODO: ejemplo PATCH)
@@ -546,9 +565,9 @@ Versionado de API
 
 Como en cualquier sistema de servicios web, cuando usamos REST estamos publicando una API. Si cambiamos esa API entonces vamos a romper la interoperabilidad con los clientes antiguos. ¿Cómo podemos cambiar la API de forma que tenga el mínimo impacto posible?
 
-Uno de las posibles cosas que pueden cambiar es el formato. Es muy común que se añadan nuevos campos para reflejar nueva información, o que empecemos a soportar nuevos tipos mime. Realmente esto no suele ser un problema, basta con que el cliente ignore los campos que no entienda o no pueda procesar. Si usamos XML hay que tener a la hora de definir el XML Schema, y dejar puntos de extensión dentro de este.
+Uno de las posibles cosas que pueden cambiar es el formato. Es muy común que se añadan nuevos campos para reflejar nueva información, o que empecemos a soportar nuevos tipos MIME. Realmente esto no suele ser un problema, basta con que el cliente ignore los campos que no entienda o no pueda procesar. Si usamos XML hay que tener a la hora de definir el XML Schema, y dejar puntos de extensión dentro de este.
 
-Si por cualquier razón hacemos un cambio en el formato de datos que vaya a romper los clientes de forma inevitable, podemos aprovechar la capacidad multimedia de HTTP en nuestro provecho. Podemos publicar el nuevo formato con otro nombre, y seguir soportando el antiguo. El formato antiguo lo podemos marcar como obsoleto en la documentación, pero seguir sirviéndolo mientras los clientes que lo consuman no sean una ínfima minoría. Por ejemplo, si soportábamos "application/x-libro+xml", y hacemos un cambio que inevitáblemente no pueda ser retrocompatible, haremos este cambio en otro tipo mime "application/x-libroV2+xml" y dejaremos el original tal como estaba. De esta forma los clientes antiguos pueden seguir consumiendo el formato antiguo, y los nuevos aprovechar las ventajas del nuevo tipo mime.
+Si por cualquier razón hacemos un cambio en el formato de datos que vaya a romper los clientes de forma inevitable, podemos aprovechar la capacidad multimedia de HTTP en nuestro provecho. Podemos publicar el nuevo formato con otro nombre, y seguir soportando el antiguo. El formato antiguo lo podemos marcar como obsoleto en la documentación, pero seguir sirviéndolo mientras los clientes que lo consuman no sean una ínfima minoría. Por ejemplo, si soportábamos "application/x-libro+xml", y hacemos un cambio que inevitáblemente no pueda ser retrocompatible, haremos este cambio en otro tipo MIME "application/x-libroV2+xml" y dejaremos el original tal como estaba. De esta forma los clientes antiguos pueden seguir consumiendo el formato antiguo, y los nuevos aprovechar las ventajas del nuevo tipo MIME.
 
 Otra cosa que puede cambiar es la URI. Realmente esto hay que evitarlo a toda costa, pero si se da el caso tiene fácil solución. Sólo hay que configurar una nueva redirección permanente a la nueva URI y asunto resuelto.
 
@@ -557,7 +576,7 @@ Multiidioma
 
 Mediante el protocolo HTTP podemos construir un soporte multiidioma robusto en nuestros servicios REST.
 
-Mediante la cabecera Accept-Charset el cliente puede especificar al servidor los juegos de caracteres que soporta por orden de preferencia. Podemos especificar una lista de juegos de caracteres, e incluso especificar preferencia mediante el parámetro q. Se trata de un mecanismo similar al usado en la cabecera Accept para especificar preferencia en tipos mime. Si no se define el juego de caracteres se escogerá ISO-8859-1 por defecto.
+Mediante la cabecera Accept-Charset el cliente puede especificar al servidor los juegos de caracteres que soporta por orden de preferencia. Podemos especificar una lista de juegos de caracteres, e incluso especificar preferencia mediante el parámetro q. Se trata de un mecanismo similar al usado en la cabecera Accept para especificar preferencia en tipos MIME. Si no se define el juego de caracteres se escogerá ISO-8859-1 por defecto.
 
 Lo mismo podemos hacer con la cabecera Accept-Language, definir una lista por orden de preferencia de los lenguajes que desea el usuario. El servidor debe incluir en la respuesta la cabecera Content-Language indicando el idioma escogido.
 
@@ -649,7 +668,7 @@ El concepto de web de servicios, también llamado hyperdata, es sencillo de ente
 Decimos que una API REST cumple HATEOAS, cuando:
 
 * No es un conjunto de puntos de entrada desconectados entre si, sino una red de recursos de información conectados mediante hiperenlaces. De esta forma el consumidor de nuestros servicios web no necesita saber todas las URIs de nuestros recursos REST, sino que sólo tendría que conocer una única URI, quizás de un recurso "home" de nuestro sistema, y seguir los enlaces entre recursos para adquirir la información que vaya necesitando.
-* Cada recurso debería poder ser servido en tantos formatos (tipos mime) como tenga sentido.
+* Cada recurso debería poder ser servido en tantos formatos (tipos MIME) como tenga sentido.
 * Las operaciones sobre cada recurso deberían estar codificadas en forma de enlaces dentro de éste. De esta forma no podremos cambiar el estado del sistema si no es siguiendo un enlace.
 
 La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican que conjunto de operaciones y recursos puedo hacer a continuación.
@@ -662,7 +681,7 @@ En este ejemplo la página principal actúa como directorio, y consiste principa
 
 Para resumir, en el enfoque HATEOAS la interfaz de nuestra API, que es lo que tenemos que documentar, consta de:
 * Una URI principal de entrada a nuestro sistema.
-* Los tipos mime que vamos a usar.
+* Los tipos MIME que vamos a usar.
 * Una serie de convenciones sobre cómo consumir y representar dentro de cada documento, las acciones disponibles en el recurso que estamos accediendo.
 * La forma más extendida de hacer lo anterior es mediante enlaces tipados mediante el atributo 'rel'. Habría que documentar pues lo que significa cada tipo de enlace y como consumirlo.
 
@@ -739,9 +758,9 @@ WSDL no es necesario: Servicios web autodescriptivos
 
 Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en que formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
 TODO
-El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber que tipos mime soportamos debemos emitir una petición HEAD:
+El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber que tipos MIME soportamos debemos emitir una petición HEAD:
 TODO
-El servidor nos ha respondido con información, como los tipos mime soportados. Dichos tipos mime y como usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe que tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos mime soportados y las convenciones sobre como usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
+El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y como usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe que tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre como usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
 
 Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para parsear y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de parseo y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
 
@@ -761,7 +780,7 @@ Referencias y bibliografía
 
 [5] Uniform Resource Identifier: http://www.ietf.org/rfc/rfc3986.txt
 
-[6] Directorio de tipos mime estandarizados por IANA: http://www.iana.org/assignments/media-types/index.html
+[6] Directorio de tipos MIME estandarizados por IANA: http://www.iana.org/assignments/media-types/index.html
 
 [7] Concurrencia optimista: http://en.wikipedia.org/wiki/Optimistic_concurrency_control y también http://www.w3.org/1999/04/Editing/
 
