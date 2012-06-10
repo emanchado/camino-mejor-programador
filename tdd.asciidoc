@@ -19,6 +19,7 @@ Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, sí que fav
 
 Por ejemplo el siguiente traductor es muy difícil de probar, y por lo tanto, de desarrollar con TDD.
 
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 class SpanishIntoEnglishTranslator {
@@ -36,6 +37,7 @@ class SpanishIntoEnglishTranslator {
 
 Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta unidad, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
 
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala[example2/SpanishIntoEnglishTranslatorTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 test("translates") {
@@ -45,6 +47,7 @@ test("translates") {
 
 Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
 
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala[example2/SpanishIntoEnglishTranslator.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 class SpanishIntoEnglishTranslator {
