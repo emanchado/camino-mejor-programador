@@ -12,7 +12,6 @@ Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la mod
 
 Por qué y para qué
 ------------------
-
 El motivo más importante footnote:[_Para mí_ el más importante, seguro que otros discreparán.] para desarrollar dirigido por pruebas es el énfasis en la función de nuestro código y en su idoneidad para ponerlo a prueba y por lo tanto usarlo. Este énfasis nos obliga a preguntarnos cada vez que vamos a añadir código de explotación: ¿es esto lo que necesito? ¿hace falta _ahora_?; ayudándonos a escribir exclusivamente lo que necesitamos y a mantener el tamaño y la complejidad del código al mínimo necesario.
 
 Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, sí que favorece una cierta simplicidad y definitivamente revela el acoplamiento desde el principio, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular la inyección de dependencias y la separación entre sus interfaces y las implementaciones emergen desde el principio de forma natural, dado que hacen más fácil escribir las pruebas.
@@ -89,7 +88,7 @@ test("translates word by word according to dictionary") {
 }
 -----------------------------------------------------------------------------
 
-Lo que nos lleva a un diseño menos acoplado
+El traductor que nos queda está más centrado en descomponer y componer, y es independiente del diccionario.
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Translator.scala[example3/Translator.scala]
 [source,scala]
@@ -100,5 +99,8 @@ class Translator(val dictionary: (String) => String) {
 }
 -----------------------------------------------------------------------------
 
+Este diseño está más preparado para acrecentar la funcionalidad; por ejemplo, si quisiéramos que la división en palabras tuviera en cuenta signos de puntuación, sólo necesitaríamos incrementear la complejidad de la clase +Translator+, encargada de la descomposición y recomposición de palabras; permitiéndonos no tener que pensar en el diccionario al mismo tiempo.
 
- 
+Crítica
+~~~~~~~
+En realidad aquí estamos ilustrando también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
