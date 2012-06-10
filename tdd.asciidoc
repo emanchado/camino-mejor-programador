@@ -17,3 +17,48 @@ El motivo más importante footnote:[_Para mí_ el más importante, seguro que ot
 
 Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, sí que favorece una cierta simplicidad y definitivamente revela el acoplamiento desde el principio, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular la inyección de dependencias y la separación entre sus interfaces y las implementaciones emergen desde el principio de forma natural, dado que hacen más fácil escribir las pruebas.
 
+Por ejemplo el siguiente traductor es muy difícil de probar, y por lo tanto, de desarrollar con TDD.
+
+[source,scala]
+-----------------------------------------------------------------------------
+class SpanishIntoEnglishTranslator {
+  def translateWord(s: String): String = s match {
+    case "yo" => "I"
+    case "soy" => "am"
+    case _ => "mmmeh"
+  }
+
+  def translate(spanish: String) {
+    println(spanish.split(' ').map(translateWord(_)).reduceLeft(_ + " " + _))
+  }
+}
+-----------------------------------------------------------------------------
+
+Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta unidad, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
+
+[source,scala]
+-----------------------------------------------------------------------------
+test("translates") {
+  new SpanishIntoEnglishTranslator().translate("yo soy") should be("I am")
+}
+-----------------------------------------------------------------------------
+
+Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
+
+[source,scala]
+-----------------------------------------------------------------------------
+class SpanishIntoEnglishTranslator {
+  def translateWord(s: String): String = s match {
+    case "yo" => "I"
+    case "soy" => "am"
+    case _ => "mmmeh"
+  }
+
+  def translate(spanish: String): String =
+    spanish.split(' ').map(translateWord(_)).reduceLeft(_ + " " + _)
+}
+-----------------------------------------------------------------------------
+
+(continuar el ejemplo con la inyección del traductor de palabras o de un _Map_ de palabras)
+
+ 
