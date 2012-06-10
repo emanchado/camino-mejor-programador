@@ -23,25 +23,33 @@ Por ejemplo el siguiente traductor es muy difícil de probar, y por lo tanto, de
 [source,scala]
 -----------------------------------------------------------------------------
 class SpanishIntoEnglishTranslator {
-  def translateWord(s: String): String = s match {
-    case "yo" => "I"
-    case "soy" => "am"
-    case _ => "mmmeh"
-  }
-
   def translate(spanish: String) {
-    println(spanish.split(' ').map(translateWord(_)).reduceLeft(_ + " " + _))
+    println(spanish.split(' ').map(_ match {
+      case "yo" => "I"
+      case "soy" => "am"
+      case _ => "mmmeh"
+    }).reduceLeft(_ + " " + _))
   }
 }
 -----------------------------------------------------------------------------
 
-Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta unidad, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
+Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta clase, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala[example2/SpanishIntoEnglishTranslatorTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-test("translates") {
-  new SpanishIntoEnglishTranslator().translate("yo soy") should be("I am")
+var translator: SpanishIntoEnglishTranslator = _
+
+before {
+  translator = new SpanishIntoEnglishTranslator()
+}
+
+test("translates what it can") {
+  translator.translate("yo soy") should be("I am")
+}
+
+test("mmmehs what it can't") {
+  translator.translate("dame argo") should be("mmmeh mmmeh")
 }
 -----------------------------------------------------------------------------
 
@@ -51,17 +59,46 @@ Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
 [source,scala]
 -----------------------------------------------------------------------------
 class SpanishIntoEnglishTranslator {
-  def translateWord(s: String): String = s match {
-    case "yo" => "I"
-    case "soy" => "am"
-    case _ => "mmmeh"
-  }
-
   def translate(spanish: String): String =
-    spanish.split(' ').map(translateWord(_)).reduceLeft(_ + " " + _)
+    spanish.split(' ').map(_ match {
+      case "yo" => "I"
+      case "soy" => "am"
+      case _ => "mmmeh"
+    }).reduceLeft(_ + " " + _)
 }
 -----------------------------------------------------------------------------
 
-(continuar el ejemplo con la inyección del traductor de palabras o de un _Map_ de palabras)
+Aún así, nuestro traductor hace unas cuantas cosas: separar frases en palabras, traducir las palabras y juntarlas otra vez... ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/TranslatorTest.scala[example3/TranslatorTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+var translator: Translator = _
+
+before {
+  val dictionary: (String => String) = _ match {
+    case "bueno" => "scorchio"
+    case "cerveza" => "pissed"
+    case _ => "changeplease"
+  }
+  translator = new Translator(dictionary)
+}
+
+test("translates word by word according to dictionary") {
+  translator.translate("soy bueno") should be("changeplease scorchio")
+}
+-----------------------------------------------------------------------------
+
+Lo que nos lleva a un diseño menos acoplado
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Translator.scala[example3/Translator.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class Translator(val dictionary: (String) => String) {
+  def translate(spanish: String): String =
+    spanish.split(' ').map(dictionary).reduceLeft(_ + " " + _)
+}
+-----------------------------------------------------------------------------
+
 
  
