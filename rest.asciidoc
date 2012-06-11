@@ -125,7 +125,7 @@ Los métodos HTTP más comunes son los siguientes (**):
 
 En general el uso de cada método es bastante explicativo, y más adelante veremos cómo usarlos así como buenas prácticas. Sin embargo conviene aclarar un par de aspectos. El primero es la diferencia entre HEAD y GET. Ambos leen el recurso, pero el segundo devuelve tanto los datos del recurso web, como las cabeceras HTTP, mientras que el primero sólo las cabeceras. Por otro lado el método POST es bastante misterioso y objeto de frecuentes malentendidos. En general se usa para crear un nuevo recurso, modificar uno existente o para ejecutar una acción genérica que no sea idempotente como realizar una transacción monetaria. Como veis la semántica de PUT parece que se solapa con la de POST de alguna manera, y esto es fuente de numerosos malentendidos. Más adelante aclararemos este tema.
 
-El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como qué métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es cacheable, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
+El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como qué métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es _cacheable_, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
 
 (\*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
 (**) Existen otros métodos que no suelen ser muy usados en servicios REST, como CONNECT o TRACE.
@@ -244,14 +244,15 @@ Buenas prácticas y patrones
 
 El buen diseño de servicios web REST se basa en saber como mapear los distintos conceptos de REST al protocolo HTTP. La idea es aprovechar bien todas las capacidades de dicho protocolo para implementar REST sin destruir la semántica estándar de HTTP. De esta forma conseguiremos aprovechar de forma efectiva toda la infraestructura que ya está disponible en la web, como caches, proxies, firewalls y CDNs.
 
-Cuando diseñemos nuestros servicios REST hay que pensar que la API de estos consta de lo siguiente:
-* El diseño de URIs que vayamos a seguir, y al meno la URI de un servicio raiz a partir del cual entrar en el sistema. El cliente sólo debería conocer esta URI raiz.
+Cuando diseñemos nuestros servicios REST hay que pensar que la API de éstos consta de lo siguiente:
+
+* El diseño de URIs que vayamos a seguir, y al menos la URI de un servicio raíz a partir del cual entrar en el sistema. El cliente sólo debería conocer esta URI raíz.
 * Los tipos MIME soportados por los recursos REST.
-* Los verbos HTTP soportados. No debemos romper la semántica de dichos métodos HTTP
+* Los verbos HTTP soportados. No debemos romper la semántica de dichos métodos HTTP.
 
 Cualquier cambio en alguno de estos puntos implica cambiar el API público de nuestro sistema, y por lo tanto romper la interoperabilidad con nuestros clientes.
 
-En esta sección veremos las prácticas más importantes en este sentido, y como podemos aprovechar las capacidades de HTTP en nuestro favor.
+En esta sección veremos las prácticas más importantes en este sentido, y cómo podemos aprovechar las capacidades de HTTP en nuestro favor.
 
 CRUD
 ~~~~
@@ -263,7 +264,7 @@ Las colecciones actuan como listas o contenedores de entidades, y en el caso pur
 [options="header"]
 |=============================================================
 |Método HTTP| Operación                                       
-|    GET    | Leer todos las entidades dentro de la colección 
+|    GET    | Leer todas las entidades dentro de la colección
 |    PUT    | Actualización mútiple y/o masiva                
 |   DELETE  | Borrar la colección y todas sus entidades       
 |    POST   | Crear una nueva entidad dentro de la colección  
@@ -295,9 +296,14 @@ El caso más sencillo es el de leer la información de una entidad, que se reali
 
 Una posible solución es dejar sólo en esa entidad los datos de uso más común, y el resto dividirlo en varios recursos hijos. De esta manera cuando el cliente lea la entidad, sólo recibirá los datos de uso más común y un conjunto de enlaces a los recursos hijos, que contienen los diferentes detalles asociados a ésta. Cada recurso puede ser o una entidad o una colección.
 
-En general se suele seguir la convención de concatenar el nombre del detalle a la URI de la entidad padre para conseguir la URI de la entidad hija. Por ejemplo, dada una entidad http://www.server.com/rest/libro/23424-dsdff, si se le realiza un GET, recibiríamos un documento, con el título, los autores, un resumen, valoración global, una lista de enlaces a los distintos capítulos, otra para los comentarios y valoraciones, etc. Por ejemplo, para accerder al capítulo 3, podríamos modelar los capítulos como una colección y tener la siguiente URL: http://www.server.com/rest/libro/23424-dsdff/capitulo/3. Otra opción sería no tener esa colección intermedia y hacer que cada capítulo fuera un recurso que colgara diréctamente del libro, con lo que la URI sería: http://www.server.com/rest/libro/23424-dsdff/capitulo3. En el primer enfoque, tenemos a nuestra disposición una colección en http://www.server.com/rest/libro/23424-dsdff/capitulo, con la cual podemos operar de forma estándar, para insertar, actualizar, borrar o consultar capítulos. Sin embargo, si decidimos no tener esta colección intermedia, la creación de nuevos capítulos y su consulta debería hacerse mediante la entidad padre. La decisión depende sobre todo del uso que vayamos a dar a los recursos hijos. Si no lo tenemos claro, o si queremos mayor flexibilidad, es mejor optar por poner una colección intermedia. Si sólo vamos a acceder a los capítulos por nombre o número, quizás sea más sencillo eliminar esa colección intermedia.
+En general se suele seguir la convención de concatenar el nombre del detalle a la URI de la entidad padre para conseguir la URI de la entidad hija. Por ejemplo, dada una entidad http://www.server.com/rest/libro/23424-dsdff, si se le realiza un GET, recibiríamos un documento, con el título, los autores, un resumen, valoración global, una lista de enlaces a los distintos capítulos, otra para los comentarios y valoraciones, etc. Por ejemplo, para acceder al capítulo 3, podríamos modelar los capítulos como una colección y tener la siguiente URL: http://www.server.com/rest/libro/23424-dsdff/capitulo/3. Otra opción sería no tener esa colección intermedia y hacer que cada capítulo fuera un recurso que colgara directamente del libro, con lo que la URI sería: http://www.server.com/rest/libro/23424-dsdff/capitulo3. En el primer enfoque, tenemos a nuestra disposición una colección en http://www.server.com/rest/libro/23424-dsdff/capitulo, con la cual podemos operar de forma estándar, para insertar, actualizar, borrar o consultar capítulos. Sin embargo, si decidimos no tener esta colección intermedia, la creación de nuevos capítulos y su consulta debería hacerse mediante la entidad padre. La decisión depende sobre todo del uso que vayamos a dar a los recursos hijos. Si no lo tenemos claro, o si queremos mayor flexibilidad, es mejor optar por poner una colección intermedia. Si sólo vamos a acceder a los capítulos por nombre o número, quizás sea más sencillo eliminar esa colección intermedia.
 
 Volviendo al problema de tener una entidad con un gran volumen de datos, existe otra solución en la que no es necesario descomponerla en varios recursos. Se trata simplemente de hacer un GET a la URI de la entidad pero añadiendo una querystring. Por ejemplo, si queremos ir al capítulo número 3, podemos hacer GET sobre http://www.server.com/rest/libro/23424-dsdff?capitulo=3. De esta forma hacemos una lectura parcial de la entidad, donde el servidor devuelve la entidad libro, pero con sólo el campo relativo al capítulo 3. A esta técnica la llamo "slicing". El usar "slicing" nos lleva a olvidarnos de esta separación tan fuerte entre entidad y colección, ya que un recurso sobre el que podemos hacer "slicing" es, en cierta medida, una entidad y una colección al mismo tiempo.
+
+[NOTE]
+=========================
+¿"una querystring" -> "parámetros GET"?
+=========================
 
 Como se aprecia REST es bastante flexible y nos ofrece diferentes alternativas de diseño, el usar una u otra depende sólo de lo que pensemos que será más interoperable en cada caso. Un criterio sencillo para decidir si hacer "slicing" o descomponer la entidad en recursos de detalle, es cuantos niveles de anidamiento vamos a tener. En el caso del libro, ¿se accederá a cada capítulo como un todo o por el contrario el cliente va a necesitar acceder a las secciones de cada capítulo de forma individual? En el primer caso el "slicing" parece un buen diseño, en el segundo no lo parece tanto. Si hacemos "slicing", para acceder a la sección 4 del capítulo 3, tendríamos que hacer: http://www.server.com/rest/libro/23424-dsdff?capitulo=3&seccion=4. Este esquema de URI es menos semántico, y además nos crea el problema de que puede confundir al cliente y pensar que puede hacer cosas como esta: http://www.server.com/rest/libro/23424-dsdff?seccion=4 ¿Qué devolvemos? ¿Una lista con todas las secciones 4 de todos los capítulos? ¿Un 404 no encontrado? Sin embargo en el diseño orientado a subrecursos es claro, un GET sobre http://www.server.com/rest/libro/23424-dsdff/capitulo/3/seccion/4 nos devuelve la sección 4 del capítulo 3, y sobre http://www.server.com/rest/libro/23424-dsdff/seccion/4 nos debería devolver 404 no encontrado, ya que un libro no tiene secciones por dentro, sino capítulos. Otra desventaja del "slicing" es que la URI no es limpia, y el posicionamiento en buscadores de nuestro recurso puede ser afectado negativamente por esto (sí, un recurso REST puede tener SEO, ya lo veremos más adelante).
 
@@ -309,6 +315,11 @@ Consultas
 ^^^^^^^^^
 
 La operación más común sobre una colección es la consulta o query. Si queremos obtener todos los miembros de una colección, simplemente hay que realizar un GET sobre la URI de la colección. En el ejemplo de los libros sería: http://www.server.com/rest/libro. Yo he puesto "libro" en singular, pero realmente es una colección. ¿Qué nos devolvería esta llamada? Realmente hay dos opciones: una lista con enlaces a todos los libros o una lista de libros, con todos sus datos.
+
+[NOTE]
+=========================
+¿Podemos quitar el «o query», o quizás dejar «query» en cursiva?
+=========================
 
 Un ejemplo del primer caso sería:
 (TODO: Añadir ejemplo select all)
@@ -323,11 +334,27 @@ Lo normal en todo caso, no es traerse todos los miembros de una colección, sino
 
 Fijaros en el detalle de que los resultados viene ordenados por precio. Normalmente el servidor debería ordenar los resultados de alguna manera en función de la consulta. Si quisiéramos que el cliente definiera en un orden diferente al que proporcionamos por defecto, deberíamos dar soporte a consultas como esta: http://www.server.com/rest/libro?precio_max=20&genero=scifi&ordenarPor=genero&ascendiente=false
 
-¿Y si queremos buscar una entidad por identificador ....? No, eso no se hace, simplemente hay que hacer un GET sobre la URI de la entidad, por lo que consultas por "clave primaria" no tienen sentido dentro de una colección REST.
+[NOTE]
+===========================
+¿«Fijaros en» -> «Fijaos en»? O, en mi opinión mejor, «Nótese».
+===========================
 
-Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring. GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi&ultimo_precio=12&numero_resultados=10. Fijaos que estamos aprovechando el hecho de que recibimos los datos en orden ascendente de precio, para decirle al servidor mediante "ultimo_precio", que el último resultado que recibimos tenía ese precio, con lo que debe continuar la consulta a partir de ahi. Estamos jugando con la ordenación de los datos para conseguir la paginación. El parámetro "numero_resultados" indica al servidor cuantos resultados queremos como máximo. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
+¿Y si queremos buscar una entidad por identificador...? No, eso no se hace, simplemente hay que hacer un GET sobre la URI de la entidad, por lo que consultas por "clave primaria" no tienen sentido dentro de una colección REST.
 
-Tal como se han diseñado las consultas anteriormente, el servidor tiene que estar preparado para interpretar correctamente los parámetros de la querystring. La ventaja es que es muy simple. La desventaja es que el cliente tiene que entender que parámetros hay disponible y su significado, con lo que es menos interoperable. Existe otra forma de diseñar consultas, que consiste en modelarlas directamente como recursos REST. De esta forma podemos tener consultas que son recursos hijos de la colección principal. Se puede entender este enfoque como crear consultas predefinidas, filtros o vistas sobre la colección principal. En este enfoque podríamos hacer http://www.server.com/rest/libro/novedades y http://www.server.com/rest/libro/scifi para consultar las novedades y los libros de ciencia ficción respectivamente. Sobre estas colecciones hijas podemos añadir parámetros en la querystring para restringirlas más o para hacer paginación. Alternativamente podemos tener colecciones hijas anidadas hasta el nivel que necesitemos.
+Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring. GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi&ultimo_precio=12&numero_resultados=10. Fijaos que estamos aprovechando el hecho de que recibimos los datos en orden ascendente de precio, para decirle al servidor mediante "ultimo_precio", que el último resultado que recibimos tenía ese precio, con lo que debe continuar la consulta a partir de ahí. Estamos jugando con la ordenación de los datos para conseguir la paginación. El parámetro "numero_resultados" indica al servidor cuantos resultados queremos como máximo. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
+
+[NOTE]
+===========================
+¿«a la querystring» -> «, p.ej.»?
+===========================
+
+Tal como se han diseñado las consultas anteriormente, el servidor tiene que estar preparado para interpretar correctamente los parámetros de la querystring. La ventaja es que es muy simple. La desventaja es que el cliente tiene que entender que parámetros hay disponibles y su significado, con lo que es menos interoperable. Existe otra forma de diseñar consultas, que consiste en modelarlas directamente como recursos REST. De esta forma podemos tener consultas que son recursos hijos de la colección principal. Se puede entender este enfoque como crear consultas predefinidas, filtros o vistas sobre la colección principal. En este enfoque podríamos hacer http://www.server.com/rest/libro/novedades y http://www.server.com/rest/libro/scifi para consultar las novedades y los libros de ciencia ficción respectivamente. Sobre estas colecciones hijas podemos añadir parámetros en la querystring para restringirlas más o para hacer paginación. Alternativamente podemos tener colecciones hijas anidadas hasta el nivel que necesitemos.
+
+[NOTE]
+===========================
+¿Quitar «en la querystring», o cambiar por «GET»? Pero, en fin, que yo quitaría
+todos los «querystring» que haya en el artículo.
+===========================
 
 Esta forma de modelar consultas nos da una API mucho más limpia, y como ya veremos más adelante nos permite mayor interoperabilidad. Como mayor inconveniente está que es un enfoque menos flexible, ya que se necesita pensar por adelantado que consultas va a tener el sistema. Por lo tanto suele ser un diseño muy apropiado en aplicaciones de negocio donde normalmente sabemos las consultas que vamos a tener, pero no es muy apropiado en aplicaciones donde el usuario define sus propias consultas en tiempo de uso de la aplicación.
 
@@ -391,16 +418,16 @@ Por otra parte, como se ha visto antes, no es bueno acoplar nuestro diseño de A
 
 Servicios multimedia
 ~~~~~~~~~~~~~~~~~~~~
- 
+
 Una ventaja de los servicios REST es que permite negociar el formato exacto en el que se va a intercambiar la información.
 
-Como ya vimos cada formato viene definido por un tipo MIME, y podemos usar las cabeceras Accept y Content-Type para gestionar que tipo MIME se va a usar.
+Como ya vimos cada formato viene definido por un tipo MIME, y podemos usar las cabeceras Accept y Content-Type para gestionar qué tipo MIME se va a usar.
 
-Esto nos abre un nuevo campo con el que hacer nuestros servicios más potentes. Usando la misma URI y los mísmos métodos HTTP, podemos consumir el recurso en distintos formatos, no es necesario tener una URI diferente para cada formato.
+Esto nos abre un nuevo campo con el que hacer nuestros servicios más potentes. Usando la misma URI y los mismos métodos HTTP, podemos consumir el recurso en distintos formatos, no es necesario tener una URI diferente para cada formato.
 
 Por ejemplo podríamos consumir el recurso http://www.server.com/rest/libro/3d-5FG-67 como JSON para poder mostrar información del libro dentro de nuestra aplicación web rica. Al mismo tiempo podemos usar el formato PDF para descargar una copia del libro cuando alguien lo compre. También podríamos consumirlo como audio y descargar la versión audiolibro del mismo. Otra opción sería pedir el recurso en formato HTML, y entonces recibo una página web con la que ver los detalles del libro y poder comprarlo. El límite realmente está en definir que es lo que tiene sentido desde un punto de vista de negocio.
 
-Otro ejemplo sería un recurso colección con todos los movimientos bancarios de una cuenta. Lo puedo consumir como HTML y acceder a una página web donde visualizar y operar. ¿Y por qué no en forma Excell para descargarlos como una hoja de cálculo? ¿Y que tal en PDF para poder imprimir los recibos de todos los movimientos? ¿O quizás es mejor pedirlo en formato JPG o GIF para ver una bonita gráfica de gastos/ingresos?
+Otro ejemplo sería un recurso colección con todos los movimientos bancarios de una cuenta. Lo puedo consumir como HTML y acceder a una página web donde visualizar y operar. ¿Y por qué no en forma Excel para descargarlos como una hoja de cálculo? ¿Y que tal en PDF para poder imprimir los recibos de todos los movimientos? ¿O quizás es mejor pedirlo en formato JPG o GIF para ver una bonita gráfica de gastos/ingresos?
 
 En general, para maximizar la interoperabilidad, es mejor usar tipos MIME estandarizados, al fin y al cabo, de esta forma no tendremos que crear clientes específicos para consumir esos tipos MIME.
 
@@ -416,6 +443,11 @@ En sistemas distribuidos siempre debemos tener en cuenta los efectos de la concu
 En servicios REST podemos implementar la concurrencia optimista mediante el uso de la cabecera HTTP ETag. Esta cabecera permite al servidor indicar en la respuesta una hash o fingerprint del estado del recurso. La idea es que la ETag cambie si y sólo si el estado del recurso cambia. Hay dos formas sencillas de implementar una ETag en el servidor: mediante una hash resistente a colisiones y mediante un identificador de versión.
 
 Existen dos tipos de ETag, las fuertes y las débiles. Si el estado del recurso cambia en al menos un bit, una ETag fuerte también cambia de valor. Nos permiten hacer una hash o fingerprint a nivel binario. Las ETag fuertes también tienen en cuenta los valores de las cabeceras HTTP y el formato concreto del documento. Por lo tanto si añadiésemos un espacio a un documento JSON, una ETag fuerte cambiaría, aunque la semántica del JSON no haya cambiado. Para solucionar esto existen las ETag débiles. Las ETag débiles no deberían cambiar con la mínima alteración del contenido de un mensaje HTTP, sino sólo si la semántica del estado del recurso ha cambiado. Sintácticamente podemos distinguir a una ETag fuerte de una débil, ya que la débil debe tener concatenado "W/" como prefijo.Por ejemplo, una ETag fuerte sería: "sdl1kfj3FA", y una débil W/"sdl1kfj3FA".
+
+[NOTE]
+===========================
+¿No debería ser «"W/sdl1kfj3FA"»?
+===========================
 
 Para hacer concurrencia optimista nos basta con ETag débiles. Como ya se dijo, podemos usar en el servidor una hash resistente a colisiones o un número de versión, que se actualizan cada vez que se modifiquen o cree un recurso. Es importante que el cálculo de la ETag sea consistente entre todas las máquinas servidoras en las que está distribuido nuestros servicios REST. Es decir, la ETag debería ser la misma independientemente de que servidor responda a la petición. El valor de la ETag así generado podría persistirse junto con el estado del recurso, para futura referencia.
 
