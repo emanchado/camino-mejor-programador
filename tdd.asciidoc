@@ -14,8 +14,13 @@ Por qué y para qué
 ------------------
 El motivo más importante footnote:[_Para mí_ el más importante, seguro que otros discreparán.] para desarrollar dirigido por pruebas es el énfasis en la función de nuestro código y en su idoneidad para ponerlo a prueba y por lo tanto usarlo. Este énfasis nos obliga a preguntarnos cada vez que vamos a añadir código de explotación: ¿es esto lo que necesito? ¿hace falta _ahora_?; ayudándonos a escribir exclusivamente lo que necesitamos y a mantener el tamaño y la complejidad del código al mínimo necesario.
 
-Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, sí que favorece una cierta simplicidad y definitivamente revela el acoplamiento desde el principio, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular la inyección de dependencias y la separación entre sus interfaces y las implementaciones emergen desde el principio de forma natural, dado que hacen más fácil escribir las pruebas.
+Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, escribir código que, desde el primer momento, es fácil de probar favorece una cierta simplicidad y, definitivamente, evidencia el acoplamiento, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular, la inyección de dependencias y la separación entre sus interfaces y las implementaciones, emergen de forma natural, dado que facilitan las pruebas automatizadas.
 
+Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento con una batería de pruebas al día, que documenta la intención de cada unidad del software, de combinaciones de unidades y del software en su totalidad. Además, las pruebas, si bien no la garantizan, dan una buena indicación de la corrección del software; lo que reduce el miedo a romper algo, y lo sustituye por un hábito diligente de refactorizar con frecuencia y mejorar el diseño progresivamente.
+
+
+Ejemplos
+~~~~~~~~
 Por ejemplo el siguiente traductor es muy difícil de probar, y por lo tanto, de desarrollar con TDD.
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
