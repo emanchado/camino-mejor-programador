@@ -481,13 +481,18 @@ Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, 
 (TODO: capítulo duplicado)
 En este caso hemos enviado el mismo "diff" de forma duplicada. Esto hace que la segunda petición sea inconsistente, ya que al haberse procesado el primer "diff" (sin que el cliente lo supiera), el segundo no tiene sentido. En estos casos el servidor debería fallar, con un 409.
 (TODO: fallo con 409)
-Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en que consiste este conflicto, ya que 409 es un código de error bastante genérico. Es mejor ser más explícito y usar las cabeceras ETag e If-Match para realizar peticiones condicionales:
+Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en qué consiste este conflicto, ya que 409 es un código de error bastante genérico. Es mejor ser más explícito y usar las cabeceras ETag e If-Match para realizar peticiones condicionales:
 (TODO: diff con Etag, ifmatch)
 Y si existe una duplicación o un problema de carrera el servidor responde con:
 (TODO)
 Que es mucho más explícito y sencillo de depurar.
 
 Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos MIME, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
+
+[NOTE]
+============================
+Aclarar la redacción de la última frase. No queda claro si el del formato JSON está basado en XPath o no, y si está en proceso de estandarización o no. También me suena un poco raro como está escrito (poniendo tanto la referencia a XPath y al proceso de estandarización en la misma frase).
+============================
 
 Método PATCH
 ^^^^^^^^^^^^
@@ -501,12 +506,12 @@ Todo lo explicado anteriormente sobre actualizaciones parciales se aplica a PATC
 
 Sin embargo al ser un método nuevo que todavía no está estandarizado podemos tener problemas de interoperabilidad. Para evitar esto podemos usar la cabecera X-HTTP-Method-Override. Esta cabecera es ignorada por los nodos y servidores antiguos, pero permite indicar a los servidores más modernos que queremos usar un método diferente del especificado en la petición HTTP. Así, el ejemplo anterior quedaría como:
 (TODO: ejemplo con X-HTTP-Method-Override)
-Como se observa, para cualquier servidor o nodo que no entienda PATCH, la petición sería un POST. Pero en lo casos en los que el servidor si entienda PATCH, ignorará POST.
+Como se observa, para cualquier servidor o nodo que no entienda PATCH, la petición sería un POST. Pero en los casos en los que el servidor sí entienda PATCH, ignorará POST.
 
 Cache
 ~~~~~
 
-Es importante saber cuando un cliente, o un nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuando no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Sin embargo debemos ser capaces de especificar cuando hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
+Es importante saber cuándo un cliente, o un nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuándo no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
 
 Una forma de controlar la cache es mediante ETag. La cache puede hacer un GET condicional al servidor mediante la cabecera If-None-Match. De esta forma el servidor puede responder con la nueva información (y la nueva ETag) en el caso de que ésta haya cambiado.
 
@@ -521,9 +526,9 @@ Si los datos hubieran cambiado sería como sigue.
 TODO: Ejemplo Last-Modified, con cambios
 Observese que se devuelve el nuevo valor de Last-Modified. Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
 
-Algunos os preguntareis porque no usar Last-Modified en vez de ETag. Al fin y al cabo parece más simple de calcular en servidor. La razón es que algunas caches, notoriamente la cache de IE, no soportan correctamente If-Modified-Since, pero sí lo hacen bien con If-None-Match. Por otra parte algunos servidores de cache antiguos no soportan ETag. Por lo tanto se aconseja mezclar ETag y Last-Modified para un óptimo control de cache.
+Algunos os preguntareis por qué no usar Last-Modified en vez de ETag. Al fin y al cabo parece más simple de calcular en servidor. La razón es que algunas caches, notoriamente la cache de IE, no soportan correctamente If-Modified-Since, pero sí lo hacen bien con If-None-Match. Por otra parte algunos servidores de cache antiguos no soportan ETag. Por lo tanto se aconseja mezclar ETag y Last-Modified para un óptimo control de cache.
 
-Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los daton en ese intervalos de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP1.0, en caso de que ambas se contradigan Cache-Control tiene prioridad. Veamos un ejemplo.
+Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Veamos un ejemplo.
 TODO: ejemplo cache por tiempo
 De esta forma si volvemos a pedir los datos a la cache, y no han pasado cinco minutos, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando los cinco minutos expiren, la cache volverá a intentar comprobar si los datos han cambiado o no.
 
@@ -550,7 +555,12 @@ Resumiendo:
 * El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
 * El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
 
-Como se aprecia el truco consiste en que el recurso no se crea realmente hasta que no se recibe el PUT. Sin embargo queda un problema por resolver, si no almacenamos nada ni en memoria ni en soporte persistente, ¿cómo puede el servidor saber que la URI que le llega en el PUT es legítima? Al fin y al cabo no queremos que el cliente genere las URIs, sino que el servidor controle tal cosa. Lo ideal sería que si el cliente nos manda un PUT a una URI que no existe devolvamos un código 403, indicando que el cliente no tiene permiso para generar recursos en URIs que no sean asignadas por el servidor.
+[NOTE]
+===========================
+Yo cambiaría esta lista a numerada.
+===========================
+
+Como se aprecia el truco consiste en que el recurso no se crea realmente hasta que no se recibe el PUT. Sin embargo queda un problema por resolver: si no almacenamos nada ni en memoria ni en soporte persistente, ¿cómo puede el servidor saber que la URI que le llega en el PUT es legítima? Al fin y al cabo no queremos que el cliente genere las URIs, sino que el servidor controle tal cosa. Lo ideal sería que si el cliente nos manda un PUT a una URI que no existe devolvamos un código 403, indicando que el cliente no tiene permiso para generar recursos en URIs que no sean asignadas por el servidor.
 
 Una solución inocente sería almacenar en algún sitio, en memoria tal vez, las URIs de los recursos, y chequear contra esta información la URI de la petición PUT. Sin embargo esto contradice el principio de que los recursos "virtuales" no deben ocupar espacio en servidor. De lo contrario el cliente no podría reintentar el POST con la seguridad de que no va a pasar nada malo.
 
@@ -597,9 +607,9 @@ Versionado de API
 
 Como en cualquier sistema de servicios web, cuando usamos REST estamos publicando una API. Si cambiamos esa API entonces vamos a romper la interoperabilidad con los clientes antiguos. ¿Cómo podemos cambiar la API de forma que tenga el mínimo impacto posible?
 
-Uno de las posibles cosas que pueden cambiar es el formato. Es muy común que se añadan nuevos campos para reflejar nueva información, o que empecemos a soportar nuevos tipos MIME. Realmente esto no suele ser un problema, basta con que el cliente ignore los campos que no entienda o no pueda procesar. Si usamos XML hay que tener a la hora de definir el XML Schema, y dejar puntos de extensión dentro de este.
+Uno de las posibles cosas que pueden cambiar es el formato. Es muy común que se añadan nuevos campos para reflejar nueva información, o que empecemos a soportar nuevos tipos MIME. Realmente esto no suele ser un problema, basta con que el cliente ignore los campos que no entienda o no pueda procesar. Si usamos XML hay que tener a la hora de definir el XML Schema, y dejar puntos de extensión dentro de éste.
 
-Si por cualquier razón hacemos un cambio en el formato de datos que vaya a romper los clientes de forma inevitable, podemos aprovechar la capacidad multimedia de HTTP en nuestro provecho. Podemos publicar el nuevo formato con otro nombre, y seguir soportando el antiguo. El formato antiguo lo podemos marcar como obsoleto en la documentación, pero seguir sirviéndolo mientras los clientes que lo consuman no sean una ínfima minoría. Por ejemplo, si soportábamos "application/x-libro+xml", y hacemos un cambio que inevitáblemente no pueda ser retrocompatible, haremos este cambio en otro tipo MIME "application/x-libroV2+xml" y dejaremos el original tal como estaba. De esta forma los clientes antiguos pueden seguir consumiendo el formato antiguo, y los nuevos aprovechar las ventajas del nuevo tipo MIME.
+Si por cualquier razón hacemos un cambio en el formato de datos que vaya a romper los clientes de forma inevitable, podemos aprovechar la capacidad multimedia de HTTP en nuestro provecho. Podemos publicar el nuevo formato con otro nombre, y seguir soportando el antiguo. El formato antiguo lo podemos marcar como obsoleto en la documentación, pero seguir sirviéndolo mientras los clientes que lo consuman no sean una ínfima minoría. Por ejemplo, si soportábamos "application/x-libro+xml", y hacemos un cambio que inevitablemente no pueda ser retrocompatible, haremos este cambio en otro tipo MIME "application/x-libroV2+xml" y dejaremos el original tal como estaba. De esta forma los clientes antiguos pueden seguir consumiendo el formato antiguo, y los nuevos aprovechar las ventajas del nuevo tipo MIME.
 
 Otra cosa que puede cambiar es la URI. Realmente esto hay que evitarlo a toda costa, pero si se da el caso tiene fácil solución. Sólo hay que configurar una nueva redirección permanente a la nueva URI y asunto resuelto.
 
@@ -631,7 +641,7 @@ Si usamos las "URIs desechables" que explicamos anteriormente se resuelve este p
 
 Otro posible riesgo consiste en usar las claves primarias de nuestro sistema de persistencia para montar las URIs. Esto nos puede exponer a otros ataques como la inyección de SQL o de código.
 
-Una posible solución, es tener en formato persistente un mapeo entre las URIs y las verdaderas claves primarias. Otra solución más eficiente puede ser construir la clave primaria a partir de la URI mediante una clave secreta. Se trataría de hacer una hash criptográfica de la URI con un secreto.
+Una posible solución es tener en formato persistente un mapeo entre las URIs y las verdaderas claves primarias. Otra solución más eficiente puede ser construir la clave primaria a partir de la URI mediante una clave secreta. Se trataría de hacer una hash criptográfica de la URI con un secreto.
 
   PK = HASH(URI+SECRETO)
 
@@ -642,24 +652,29 @@ Privacidad
 
 La privacidad es otro aspecto a tener en cuenta. En recursos REST sensibles los datos no deberían transmitirse en claro por la red. La forma más obvia de solucionar esto es mediante el uso de HTTPS.
 
-Si queremos un mayor nivel de seguridad, o incluso prescindir de HTTPS, podemos añadir una capa de encriptación a nivel de aplicación, de forma que la petición HTTP no esté encriptado, sino sólo su cuerpo. Esto sin embargo tiene como problema que disminuye la interoperabilidad al usar un sistema de encriptación no estándar.
+Si queremos un mayor nivel de seguridad, o incluso prescindir de HTTPS, podemos añadir una capa de encriptación a nivel de aplicación, de forma que la petición HTTP no esté encriptada, sino sólo su cuerpo. Esto sin embargo tiene como problema que disminuye la interoperabilidad al usar un sistema de encriptación no estándar.
 
 Autenticación y autorización
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafio/respueste mediante la cabecera WWW-Authenticate.
+El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafío/respueste mediante la cabecera WWW-Authenticate.
 
 La idea es que cuando se realiza una petición a un recurso REST protegido, y la petición no lleva credenciales adecuadas, el servidor responde con un 401 que contiene una cabecera WWW-Authenticate. En dicha cabecera se detalla el tipo de credenciales que se necesita y el dominio de seguridad.
 TODO. Ejemplo de esto
-El cliente debe responder al desafio repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes
+El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes
 TODO. ejemplo de esto
-Si el servidor considera que las credenciales son suficiones permite el acceso al recurso. Si por el contrario considera que el cliente, aunque posee credenciales válidas, no posee permisos suficientes para acceder al recurso, devuelve un 403.
+Si el servidor considera que las credenciales son suficientes, permite el acceso al recurso. Si por el contrario considera que el cliente, aunque posee credenciales válidas, no posee permisos suficientes para acceder al recurso, devuelve un 403.
 TODO. ejemplo de esto.
 Puede ocurrir que el servidor dictamine que la credenciales no identifican a un usuario del sistema. En ese caso debe devolver un 401 con un nuevo WWW-Authenticate.
 
-En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de este son simplemente la codificación en base 64 de la concatenación del usuario y password separadas por ":". Al mandarse el usuario y password en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
+En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y password en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
 
 El otro algoritmo, "Digest", es más seguro y usa unas credenciales que no contienen la password en claro, como es el caso de "Basic". Esto permite autenticarse con seguridad sobre HTTP, sin necesidad de usar HTTPS. Detalles en [8].
+
+[NOTE]
+======================
+¿No se debería usar «contraseña» en vez de «password»?
+======================
 
 ¿Necesito una sesión HTTP?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -672,7 +687,7 @@ Quizás algún lector estuviera tentado de usar esta pseudosesión HTTP como una
 
 * Es una práctica no estándar desde el punto de vista de HTTP y la web.
 * Es poco escalable, ya que impone al servidor una sobrecarga, al tener que reservar memoria para la sesión.
-* Abre la posibilidad a implementar servicios web stateful, con memoria. Este tipo de servicios, a parte de no ser tan escalables, imponen un mayor acoplamiento entre cliente y servidor disminuyendo la interoperabilidad. Los servicios stateless son más sencillos al declarar explícitamente toda la información necesaria para consumirlos en forma de parámetros y no necesitar publicar un modelo de como cambia la respuesta del servicio en función del estado de la conversación.
+* Abre la posibilidad a implementar servicios web stateful, con memoria. Este tipo de servicios, a parte de no ser tan escalables, imponen un mayor acoplamiento entre cliente y servidor disminuyendo la interoperabilidad. Los servicios stateless son más sencillos al declarar explícitamente toda la información necesaria para consumirlos en forma de parámetros y no necesitar publicar un modelo de cómo cambia la respuesta del servicio en función del estado de la conversación.
 * No se gana nada en rendimiento, ya que si antes tenemos que estar mandando continuamente el token de seguridad, usando sesión deberíamos mantar continuamente el identificador de sesión.
 
 Por lo tanto el uso de sesión HTTP en servidor es una mala práctica desde el punto de vista de los servicios REST.
@@ -686,11 +701,16 @@ TODO: ejemplo de esto
 Más allá de CRUD: Hyperdata (HATEOAS) 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+[NOTE]
+========================
+¿Quizás esto debería ir en el artículo de CRUD, si lo separamos?
+========================
+
 Es muy tentador cuando se comienza a trabajar con REST el definir APIs que modelan interfaces CRUD. Cada URI representa una tabla, o entidad de negocio, y mediante los verbos HTTP definimos las operaciones de edición y lectura. Como ya se comentado, este enfoque puede ser peligroso ya que podemos acoplar nuestra API web a la implementación concreta de nuestro modelo de persistencia.
 
 Sin embargo el principal problema es que con el enfoque CRUD, en realidad no estamos diseñando una web de recursos de información, sino un conjunto de operaciones desconectadas entre sí que no representa realmente nuestro negocio. En este sentido, al diseñar CRUD, lo que estamos haciendo es exponer nuestra capa de datos mediante una API pública, y hacemos que todo el peso de interpretar e implementar la lógica de negocio caiga en el consumidor de nuestra API, con los lógicos problemas que esto acarrea. La API de nuestros servicios web deberían exponer los distintos casos de uso de nuestra aplicación, y no una mera interfaz de persistencia de datos. Es exactamente la misma diferencia que hay entre una aplicación de mantenimiento de tablas, y una aplicación con una UX orientada a que los usuarios completen casos de uso de nuestro negocio de la forma más efectiva posible.
 
-Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: HATEOAS. No es que realmente HATEOAS sea una cosa diferente de REST, sino qué más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de ésta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
+Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: HATEOAS. No es que realmente HATEOAS sea una cosa diferente de REST, sino que más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de esta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
 
 La web de servicios
 ^^^^^^^^^^^^^^^^^^^
@@ -703,7 +723,14 @@ Decimos que una API REST cumple HATEOAS, cuando:
 * Cada recurso debería poder ser servido en tantos formatos (tipos MIME) como tenga sentido.
 * Las operaciones sobre cada recurso deberían estar codificadas en forma de enlaces dentro de éste. De esta forma no podremos cambiar el estado del sistema si no es siguiendo un enlace.
 
-La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican que conjunto de operaciones y recursos puedo hacer a continuación.
+La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
+
+[NOTE]
+====================
+Yo cambiaría las dos frases que empiezan por «Las reglas de HATEOAS [...]» por «Las reglas de HATEOAS hacen precisamente esto: por un lado [...]; por otro lado no es [...]».
+
+Otra cosa: ¿qué demonios significa HATEOAS? :-)
+====================
 
 Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.com/home', con enlaces a todos los subsistemas que ofrezcamos mediante REST.
 TODO: ejemplo,
@@ -712,10 +739,11 @@ TODO: ejemplo,
 En este ejemplo la página principal actúa como directorio, y consiste principalmente en una lista de enlaces a los distintos subsistemas. En este ejemplo seguimos la convención de especificar en el atributo 'title' una descripción para humanos de lo que representa el enlace. Esto es interesante si el consumidor del recurso es realmente una UI, ya que podría generar una representación, tal vez un botón o un enlace HTML, de la acción representada por el enlace. Sin embargo el atributo realmente importante es 'rel'. En este atributo es donde se especifica el significado de seguir ese link. Son los posibles valores que puede tomar 'rel' dentro de nuestro sistema lo que tendremos que documentar. Ya existen algunos valores estandarizados[11], pero en este caso se ha optado por usar valores propietarios del sistema, indicándolo mediante el prefijo 'http://www.shop.com/linkrels'. Se ha usado una URL y no una URN, porque el significada de cada tipo de enlace debe ser documentado. Al usar una URL podemos indicar no sólo el tipo de enlace, sino la página web donde se encuentra la documentación sobre ese tipo de enlace. En dicha  documentación deberíamos especificar el significado exacto de la relación, y que métodos HTTP son admisibles.
 
 Para resumir, en el enfoque HATEOAS la interfaz de nuestra API, que es lo que tenemos que documentar, consta de:
+
 * Una URI principal de entrada a nuestro sistema.
 * Los tipos MIME que vamos a usar.
 * Una serie de convenciones sobre cómo consumir y representar dentro de cada documento, las acciones disponibles en el recurso que estamos accediendo.
-* La forma más extendida de hacer lo anterior es mediante enlaces tipados mediante el atributo 'rel'. Habría que documentar pues lo que significa cada tipo de enlace y como consumirlo.
+* La forma más extendida de hacer lo anterior es mediante enlaces tipados mediante el atributo 'rel'. Habría que documentar pues lo que significa cada tipo de enlace y cómo consumirlo.
 
 Consultas autodescubribles
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -728,8 +756,8 @@ En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels
 
 Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search',
 este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso
-no se trata de una URI en si, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
-parámetros de consulta están disponibles y como construir una URI de consulta a partir de éstos. Actualmente se está
+no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
+parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está
 trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que
 existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
 
@@ -742,30 +770,40 @@ los parámetros que nos interesen.
 
 Si seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'), el documento que nos devolvería sería el siguiente:
 TODO
-Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultado podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar diréctamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre estos.
+Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultado podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
+
+[NOTE]
+====================
+No estoy seguro de si el «de resultado» debería ser «de resultados» o si fue queriendo...
+====================
 
 Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
 TODO
 En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones consistentes con el estado actual.
 
-En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre estos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
+[NOTE]
+====================
+En este contexto prefiero «coherente» a «consistente», pero lo dejo a tu elección...
+====================
+
+En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
 
 Acciones como enlaces o formularios
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y que efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP[2b], para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
+Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y qué efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP[2b], para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
 
 El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". Volvamos al ejemplo la búsqueda de productos:
 TODO uri='user/basket/234255/items/45sf245'
 Se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Si sólo queremos añadir productos podemos usar POST. Veamos que ocurre si hacemos GET sobre la cesta:
 TODO
-Obtenemos una cesta vacía. No hemos tenído que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente. Veamos que pasa si hacemos POST:
+Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente. Veamos que pasa si hacemos POST:
 TODO
-Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante verémos cómo. Como POST no es idempotente si enviamos la siguiente petición:
+Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Como POST no es idempotente si enviamos la siguiente petición:
 TODO
 Obtenemos la siguiente respuesta:
 TODO.
-Que es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
+Lo cual es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
 TODO
 Hemos conseguido cambiar la cantidad de ejemplares que queremos. Si seguimos el enlace de tipo 'linkrek/basket', volvemos al carrito de la compra que queda como:
 TODO
@@ -779,22 +817,32 @@ De nuevo un ejemplo de "URI desechable". El resultado de esta petición es:
 TODO
 El servidor se nos indica que tenemos un recibo de nuestro pedido. Si hacemos GET sobre éste:
 TODO
-Vemos que podemos hacer polling sobre el para saber el estado de nuesto pedido, o cancelarlo y que nos devuelvan el dinero. Cuando en el futuro nuestro pedido esté completo, si volvemos a hacer GET:
+Vemos que podemos hacer polling sobre él para saber el estado de nuesto pedido, o cancelarlo y que nos devuelvan el dinero. Cuando en el futuro nuestro pedido esté completo, si volvemos a hacer GET:
 TODO
 Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el dinero, pero sí podemos hacer una devolución del producto.
 
 Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir securizada con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
 
+[NOTE]
+====================
+¿«asegurada» o «protegida» en vez de «securizada»?
+====================
+
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en que formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
+Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
 TODO
-El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber que tipos MIME soportamos debemos emitir una petición HEAD:
+El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber qué tipos MIME soportamos debemos emitir una petición HEAD:
 TODO
-El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y como usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe que tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre como usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
+El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y cómo usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe qué tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre cómo usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
 
 Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para parsear y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de parseo y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
+
+[NOTE]
+==================
+¿«lectura», «consumo» o «análisis» en vez de «parseo»?
+==================
 
 No es de extrañar que los intentos de acercar WSDL a REST[15] o de crear equivalentes a WSDL en REST, como es el caso de WADL[16], no hayan tenido realmente mucho éxito. Al fin y al cabo no aportan mucho a lo que ya te da la filosofía HATEOAS de diseño de APIs REST.
 
