@@ -2,6 +2,8 @@ Desarrollo dirigido por pruebas
 ===============================
 Joaquín Caraballo
 
+Desarrollo dirigido por pruebas
+-------------------------------
 El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; de forma incremental, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de
 
 __________________________
@@ -9,6 +11,33 @@ rojo - verde - refactoriza
 __________________________
 
 Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que hace que la prueba pase y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta.
+
+Ejemplo
+~~~~~~~
+Veamos un ejemplo de TDD a nivel unitario. Supongamos que estamos desarrollando una aplicación que necesita procesar cadenas de caracteres que representan información tabular mediante barras verticales. En TDD, empezamos con una prueba:
+
+Rojo
+^^^^
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/BetweenBarsParserTest.scala[example0/BetweenBarsParserTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+test("Parses table with header and one content row") {
+  BetweenBarsParser.parse(
+  "|Spanish|English|\n" +
+  "|Yo     |I      |") should be (Map("Spanish" -> "Yo", "English" -> "I")
+  )
+}
+-----------------------------------------------------------------------------
+
+Como vemos, escribir la prueba nos ha obligado a definir la parte de la interfaz, teniendo nuestra atención centrada en un (el) uso. Como no hemos hecho nada con el código de explotación, ni siquiera compilará footnote:[Esta distinción se debe a que estamos utilizando para los ejemplos un lenguaje compilado, si no fuera el caso podemos pasar directamente a la ejecución de la prueba]. Para poder ejecutar la prueba, hacemos lo mínimo para que compile; si estamos usando un entorno integrado la función de _arreglo_ nos dará el esqueleto; para que compile añadimos cualquier implementación footnote:[Yo suelo añadir una implementación inicial que simplemente lanza una excepción, que inserto con un atajo de teclado, para mayor rapidez]. Y ejecutamos la prueba, a sabiendas de que nos va a dar un resultado fallido (rojo).
+
+Aunque parezca innecesario, merece la pena el esfuerzo de ejecutar una prueba que _sabemos_ que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia pone al descubierto suposiciones erróneas... especialmente cuando resulta que la prueba no falla o que lo hace de una forma distinta de la que esperábamos.
+
+Verde
+^^^^^
+A continuación acrecentamos el código de explotación 
+
+
 
 Por qué y para qué
 ------------------
