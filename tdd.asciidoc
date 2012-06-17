@@ -14,28 +14,57 @@ Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la mod
 
 Ejemplo
 ~~~~~~~
-Probablemente la forma más fácil de explicar TDD es a nivel unitario. Supongamos que estamos desarrollando una aplicación que necesita procesar cadenas de caracteres que representan información tabular mediante barras verticales. En TDD, empezamos con una prueba:
+Probablemente la forma más fácil de explicar TDD es a nivel unitario. Supongamos que nuestra aplicación necesita convertir millas a kilómetros; empezamos con una prueba:
 
 Rojo
 ^^^^
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/BetweenBarsParserTest.scala[example0/BetweenBarsParserTest.scala]
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala[example0/MilesToKilometersConverterTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-test("Parses table with header and one content row") {
-  BetweenBarsParser.parse(
-  "|Spanish|English|\n" +
-  "|Yo     |I      |") should be (Map("Spanish" -> "Yo", "English" -> "I")
-  )
+test("Converts miles into kilometers"){
+  MilesToKilometersConverter.convert(1.0) should be (1.609)
 }
 -----------------------------------------------------------------------------
 
-Como vemos, escribir la prueba nos ha obligado a definir la parte de la interfaz, teniendo nuestra atención centrada en un (el) uso. Como no hemos hecho nada con el código de explotación, ni siquiera compilará footnote:[Esta distinción se debe a que estamos utilizando para los ejemplos un lenguaje compilado, si no fuera el caso podemos pasar directamente a la ejecución de la prueba]. Para poder ejecutar la prueba, hacemos lo mínimo para que compile; si estamos usando un entorno integrado la función de _arreglo_ nos dará el esqueleto; para que compile añadimos cualquier implementación footnote:[Yo suelo añadir una implementación inicial que simplemente lanza una excepción, que inserto con un atajo de teclado, para mayor rapidez]. Y ejecutamos la prueba, a sabiendas de que nos va a dar un resultado fallido (rojo).
+A continuación, escribimos el mínimo código de explotación necesario para ejecutar la prueba. Como los ejemplos están en Scala, que es un lenguaje compilado, simplemente hacemos que nuestro código compile:
 
-Aunque parezca innecesario, merece la pena el esfuerzo de ejecutar una prueba que _sabemos_ que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia pone al descubierto suposiciones erróneas... especialmente cuando resulta que la prueba no falla o que lo hace de una forma distinta de la que esperábamos.
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+object MilesToKilometersConverter {
+  def convert(miles: Double): Double = 
+    throw new RuntimeException("Not yet implemented")
+}
+-----------------------------------------------------------------------------
+
+Para terminar el paso rojo, ejecutamos la prueba y vemos que falla (lo que muchos entornos marcan en rojo) porque lanza una excepción:
+
+-----------------------------------------------------------------------------
+Not yet implemented
+java.lang.RuntimeException: Not yet implemented
+	at org.casa.translation.example0.MilesToKilometersConverter$.convert(MilesToKilometersConverter.scala:4)
+	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply$mcV$sp(MilesToKilometersConverterTest.scala:8)
+	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply(MilesToKilometersConverterTest.scala:8)
+	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply(MilesToKilometersConverterTest.scala:8)
+-----------------------------------------------------------------------------
+
+Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisiones importantes:
+
+Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del _objeto_ (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado, las millas están expresadas con tipo +Double+, etc.
+
+Segundo y más fundamental, hemos comenzado a definir la funcionalidad de la unidad, con ejemplos en un lenguaje de programación que nos proporcionan una cierta protección de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
+______________
+Cuando dijimos millas, ¿eran millas internacionales (1,609km)? ¿Millas náuticas (1,852km)? ¿Millas nórdicas (10km)?
+______________
+
+Porque la prueba ha dejado claro que el tipo de milla que importa en nuestra aplicación _es igual a 1,609 kilómetros._
+
+Aunque a veces parezca innecesario, merece la pena, antes de progresar al paso verde, completar el rojo llegando a ejecutar una prueba que _sabemos_ que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia pone al descubierto suposiciones erróneas... especialmente cuando resulta que la prueba no falla o que lo hace de una forma distinta de la que esperábamos.
 
 Verde
 ^^^^^
-A continuación acrecentamos el código de explotación. 
+A continuación acrecentamos el código de explotación. Lo más purista es escribir sólo el código imprescindible para superar la prueba:
+
 
 
 
@@ -138,3 +167,7 @@ Este diseño está más preparado para acrecentar la funcionalidad; por ejemplo,
 Crítica
 ~~~~~~~
 En realidad aquí estamos ilustrando también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
+
+Recortes (basura)
+-----------------
+Como vemos, escribir la prueba nos ha obligado a definir la parte de la interfaz, teniendo nuestra atención centrada en un (el) uso. Como no hemos hecho nada con el código de explotación, ni siquiera compilará footnote:[Esta distinción se debe a que estamos utilizando para los ejemplos un lenguaje compilado, si no fuera el caso podemos pasar directamente a la ejecución de la prueba]. Para poder ejecutar la prueba, hacemos lo mínimo para que compile; si estamos usando un entorno integrado la función de _arreglo_ nos dará el esqueleto; para que compile añadimos cualquier implementación footnote:[Yo suelo añadir una implementación inicial que simplemente lanza una excepción, que inserto con un atajo de teclado, para mayor rapidez]. Y ejecutamos la prueba, a sabiendas de que nos va a dar un resultado fallido (rojo).
