@@ -63,8 +63,30 @@ Aunque a veces parezca innecesario, merece la pena, antes de progresar al paso v
 
 Verde
 ^^^^^
-A continuación acrecentamos el código de explotación. Lo más purista es escribir sólo el código imprescindible para superar la prueba:
+A continuación acrecentamos el código de explotación. Lo más purista es escribir sólo el código imprescindible para superar la prueba: 
 
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+object MilesToKilometersConverter {
+  def convert(miles: Double): Double = 1.609
+}
+-----------------------------------------------------------------------------
+
+Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así. footnote:[Más despacio: con http://www.informit.com/articles/article.aspx?p=30641[triangulación]; más deprisa: saltándose el paso verde inicial. Recortes:
+Y a continuación ejecutar la prueba, añadir otra prueba con otro valor, ejecutarla y a continuación refactorizar la implementación para que cumpla varias pruebas y la funcionalidad general. Esto es lo que Kent Beck llama triangulación y es la versión más conservadora de la programación dirigida por pruebas. La mayoría de los programadores, cuando lo que desarrollan con TDD está claro, como es el caso, se saltan la triangulación (e incluso el paso verde, pero eso es más delicado)]
+
+Refactorización
+^^^^^^^^^^^^^^^
+En este caso más que una refactorización vamos a hacer una generalización: El código actual supera la prueba, es decir, un ejemplo, pero no proporciona la funcionalidad general de la que es ejemplo. El código que buscamos es el siguiente:
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+object MilesToKilometersConverter {
+  def convert(miles: Double): Double = miles * 1.609
+}
+-----------------------------------------------------------------------------
 
 
 
