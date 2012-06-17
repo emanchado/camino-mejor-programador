@@ -14,7 +14,7 @@ Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la mod
 
 Ejemplo
 ~~~~~~~
-Veamos un ejemplo de TDD a nivel unitario. Supongamos que estamos desarrollando una aplicación que necesita procesar cadenas de caracteres que representan información tabular mediante barras verticales. En TDD, empezamos con una prueba:
+Probablemente la forma más fácil de explicar TDD es a nivel unitario. Supongamos que estamos desarrollando una aplicación que necesita procesar cadenas de caracteres que representan información tabular mediante barras verticales. En TDD, empezamos con una prueba:
 
 Rojo
 ^^^^
@@ -35,7 +35,7 @@ Aunque parezca innecesario, merece la pena el esfuerzo de ejecutar una prueba qu
 
 Verde
 ^^^^^
-A continuación acrecentamos el código de explotación 
+A continuación acrecentamos el código de explotación. 
 
 
 
