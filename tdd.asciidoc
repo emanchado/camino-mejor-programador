@@ -10,7 +10,7 @@ __________________________
 rojo - verde - refactoriza
 __________________________
 
-Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que hace que la prueba pase y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta.
+Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que hace que la prueba pase y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta. footnote:[mencionar el diseño incremental un poco más]
 
 Ejemplo
 ~~~~~~~
@@ -26,7 +26,7 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-A continuación, escribimos el mínimo código de explotación necesario para ejecutar la prueba. Como los ejemplos están en Scala, que es un lenguaje compilado, simplemente hacemos que nuestro código compile:
+A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno, la función de _arreglo_ hará la mayor parte del trabajo por nosotros.]
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -44,8 +44,6 @@ Not yet implemented
 java.lang.RuntimeException: Not yet implemented
 	at org.casa.translation.example0.MilesToKilometersConverter$.convert(MilesToKilometersConverter.scala:4)
 	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply$mcV$sp(MilesToKilometersConverterTest.scala:8)
-	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply(MilesToKilometersConverterTest.scala:8)
-	at org.casa.translation.example0.MilesToKilometersConverterTest$$anonfun$1.apply(MilesToKilometersConverterTest.scala:8)
 -----------------------------------------------------------------------------
 
 Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisiones importantes:
@@ -76,9 +74,28 @@ object MilesToKilometersConverter {
 Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así. footnote:[Más despacio: con http://www.informit.com/articles/article.aspx?p=30641[triangulación]; más deprisa: saltándose el paso verde inicial. Recortes:
 Y a continuación ejecutar la prueba, añadir otra prueba con otro valor, ejecutarla y a continuación refactorizar la implementación para que cumpla varias pruebas y la funcionalidad general. Esto es lo que Kent Beck llama triangulación y es la versión más conservadora de la programación dirigida por pruebas. La mayoría de los programadores, cuando lo que desarrollan con TDD está claro, como es el caso, se saltan la triangulación (e incluso el paso verde, pero eso es más delicado)]
 
-Refactorización
-^^^^^^^^^^^^^^^
-En este caso más que una refactorización vamos a hacer una generalización: El código actual supera la prueba, es decir, un ejemplo, pero no proporciona la funcionalidad general de la que es ejemplo. El código que buscamos es el siguiente:
+Rojo
+^^^^
+Antes de saltar a la implementación general, merece la pena que consideremos otras condiciones de entrada: ¿aceptamos distancias negativas? Como en este caso sí las aceptamos, lo expresamos con otra prueba.
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala[example0/MilesToKilometersConverterTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+test("Converts miles into kilometers"){
+  MilesToKilometersConverter.convert(-2.0) should be (-3.218)
+}
+-----------------------------------------------------------------------------
+
+Ejecutamos las pruebas para ver como la nueva falla.
+
+-----------------------------------------------------------------------------
+1.609 was not equal to -3.218
+org.scalatest.TestFailedException: 1.609 was not equal to -3.218
+-----------------------------------------------------------------------------
+
+Verde
+^^^^^
+Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama _triangulación_. No estoy seguro de que me guste el término, porque la triangulación a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que satisfaga no sólo estas dos pruebas, sino también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -88,6 +105,9 @@ object MilesToKilometersConverter {
 }
 -----------------------------------------------------------------------------
 
+Refactorización
+^^^^^^^^^^^^^^^
+Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que quermos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
 
 
 Por qué y para qué
