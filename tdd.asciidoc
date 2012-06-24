@@ -4,7 +4,7 @@ Joaquín Caraballo
 
 Desarrollo dirigido por pruebas
 -------------------------------
-El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; de forma incremental, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de
+El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; de forma incremental, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de:
 
 __________________________
 rojo - verde - refactoriza
