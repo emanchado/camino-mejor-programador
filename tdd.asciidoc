@@ -26,7 +26,7 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno, la función de _arreglo_ hará la mayor parte del trabajo por nosotros.]
+A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno, la función de _arreglo_ hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra --por ejemplo devolviendo +0+ o +null+--]
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -37,7 +37,7 @@ object MilesToKilometersConverter {
 }
 -----------------------------------------------------------------------------
 
-Para terminar el paso rojo, ejecutamos la prueba y vemos que falla (lo que muchos entornos marcan en rojo) porque lanza una excepción:
+Para terminar el paso rojo, ejecutamos la prueba, comprobando vemos que falla (lo que muchos entornos marcan en rojo) lanzando la excepción que esperábamos:
 
 -----------------------------------------------------------------------------
 Not yet implemented
@@ -50,14 +50,14 @@ Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisione
 
 Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del _objeto_ (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado, las millas están expresadas con tipo +Double+, etc.
 
-Segundo y más fundamental, hemos comenzado a definir la funcionalidad de la unidad, con ejemplos en un lenguaje de programación que nos proporcionan una cierta protección de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
+Segundo y más fundamental, hemos comenzado a definir la funcionalidad de la unidad, con un ejemplo que nos protege en cierta manera de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
 ______________
 Cuando dijimos millas, ¿eran millas internacionales (1,609km)? ¿Millas náuticas (1,852km)? ¿Millas nórdicas (10km)?
 ______________
 
 Porque la prueba ha dejado claro que el tipo de milla que importa en nuestra aplicación _es igual a 1,609 kilómetros._
 
-Aunque a veces parezca innecesario, merece la pena, antes de progresar al paso verde, completar el rojo llegando a ejecutar una prueba que _sabemos_ que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia pone al descubierto suposiciones erróneas... especialmente cuando resulta que la prueba no falla o que lo hace de una forma distinta de la que esperábamos.
+Aunque a veces parezca innecesario, merece la pena, antes de progresar al paso verde, completar el rojo llegando a ejecutar una prueba que _sabemos_ que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia desvela suposiciones erróneas... especialmente cuando resulta que la prueba no falla, o que lo hace de una forma distinta de la que esperábamos.
 
 Verde
 ^^^^^
@@ -95,7 +95,7 @@ org.scalatest.TestFailedException: 1.609 was not equal to -3.218
 
 Verde
 ^^^^^
-Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama _triangulación_. No estoy seguro de que me guste el término, porque la triangulación a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que satisfaga no sólo estas dos pruebas, sino también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
+Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama _triangulación_. No estoy seguro de que me guste el término, porque la triangulación a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que no sólo satisfaga estas dos pruebas, sino que también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -107,7 +107,7 @@ object MilesToKilometersConverter {
 
 Refactorización
 ^^^^^^^^^^^^^^^
-Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que quermos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
+Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que quermos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
 
 
 Por qué y para qué
@@ -209,7 +209,3 @@ Este diseño está más preparado para acrecentar la funcionalidad; por ejemplo,
 Crítica
 ~~~~~~~
 En realidad aquí estamos ilustrando también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
-
-Recortes (basura)
------------------
-Como vemos, escribir la prueba nos ha obligado a definir la parte de la interfaz, teniendo nuestra atención centrada en un (el) uso. Como no hemos hecho nada con el código de explotación, ni siquiera compilará footnote:[Esta distinción se debe a que estamos utilizando para los ejemplos un lenguaje compilado, si no fuera el caso podemos pasar directamente a la ejecución de la prueba]. Para poder ejecutar la prueba, hacemos lo mínimo para que compile; si estamos usando un entorno integrado la función de _arreglo_ nos dará el esqueleto; para que compile añadimos cualquier implementación footnote:[Yo suelo añadir una implementación inicial que simplemente lanza una excepción, que inserto con un atajo de teclado, para mayor rapidez]. Y ejecutamos la prueba, a sabiendas de que nos va a dar un resultado fallido (rojo).
