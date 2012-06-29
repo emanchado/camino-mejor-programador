@@ -10,7 +10,7 @@ __________________________
 rojo - verde - refactoriza
 __________________________
 
-Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que hace que la prueba pase y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta. footnote:[mencionar el diseño incremental un poco más]
+Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que satisface la prueba y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta. footnote:[mencionar el diseño incremental un poco más]
 
 Ejemplo
 ~~~~~~~
