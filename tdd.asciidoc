@@ -209,3 +209,13 @@ Este diseño está más preparado para acrecentar la funcionalidad; por ejemplo,
 Crítica
 ~~~~~~~
 En realidad aquí estamos ilustrando también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
+
+
+Cómo desarrollar dirigido por pruebas
+-------------------------------------
+Mantener la batería verde
+~~~~~~~~~~~~~~~~~~~~~~~~~
+La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
+
+Lo ideal será que ejecutemos todas las pruebas antes de enviar cualquier cambio al repositorio, particularmente cuando el proyecto está empezando y la batería se ejecuta rápidamente. A medida que la aplicación crece, con frecuencia se transige y se acuerda cuál es el mínimo grupo de pruebas a incluir en una _batería rápida_, que se deberá ejecutar antes de enviar cualquier cambio al repositorio. El resto de pruebas se relega a un _sistema de integración continua_, que se encargará de ejecutar automáticamente la totalidad de la batería con cada cambio detectado en el repositorio. Hayamos acordado con nuestro equipo ejecutar la batería completa o una batería rápida, antes de enviar cambios al repositorio comun, es importante crear en el equipo una cultura en la que los desarrolladores muestran respeto por sus compañeros evitando romper tanto la batería rápida como el resto de las pruebas y cualquier otra funcionalidad de la aplicación en desarrollo.
+
