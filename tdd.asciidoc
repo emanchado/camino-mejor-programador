@@ -37,7 +37,7 @@ object MilesToKilometersConverter {
 }
 -----------------------------------------------------------------------------
 
-Para terminar el paso rojo, ejecutamos la prueba, comprobando vemos que falla (lo que muchos entornos marcan en rojo) lanzando la excepción que esperábamos:
+Para terminar el paso rojo, ejecutamos la prueba, comprobando que falla (lo que muchos entornos marcan en rojo) lanzando la excepción que esperábamos:
 
 -----------------------------------------------------------------------------
 Not yet implemented
@@ -168,7 +168,7 @@ class SpanishIntoEnglishTranslator {
       case "yo" => "I"
       case "soy" => "am"
       case _ => "mmmeh"
-    }).reduceLeft(_ + " " + _)
+    }).mkString(" ")
 }
 -----------------------------------------------------------------------------
 
@@ -200,7 +200,7 @@ El traductor que nos queda está más centrado en descomponer y componer, y es i
 -----------------------------------------------------------------------------
 class Translator(val dictionary: (String) => String) {
   def translate(spanish: String): String =
-    spanish.split(' ').map(dictionary).reduceLeft(_ + " " + _)
+    spanish.split(' ').map(dictionary).mkString(" ")
 }
 -----------------------------------------------------------------------------
 
@@ -217,10 +217,26 @@ Mantener la batería verde
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
 
-Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema, con las pruebas satisfechas en todo momento; idealmente todas las versiones en el repositorio común deberán estar listas para ponerlas en explotación footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación] y la documentación proporcionada por las pruebas esté siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; para mantener la factibilidad de esta tarea el equipo deberá invertir un esfuerzo continuo; las soluciones dependen del proyecto en sí, incluyendo a veces algunas de compromiso como relegar parte de las pruebas a un sistema de integración continua que las verificará cada vez que se detecte un cambio en el repositorio.
+Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación -- _cita... continuous deployment, etc._], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; muchos equipos ayudándose además de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
+
+Probar una sola cosa cada vez
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El mantenimiento de la batería de pruebas, que crece con la aplicación, 
+A medida que crece la aplicación, con ella aumenta la batería; la calidad de nuestras pruebas determinará en gran medida el coste de mantenerlas al día. Uno de los aspectos que hacen costoso el mantenimiento de las pruebas es la verificación de varios aspectos independientes en la misma prueba. Esto se suele manifestar cuando un cambio pequeño en el código de explotación requiere retocar un gran número de pruebas.
+
+# método con un par de funcionalidades
+# inicialización o paso previo común
+
 
 Recortes
 ~~~~~~~~
+
+A medida que crece la aplicación, con ella aumenta la batería
+
+
+
+para mantener la factibilidad de esta tarea es necesario que el equipo invierta un esfuerzo continuo en mantener reducido el tiempo de ejecución de la batería y corregir fallos intermitentes, cuando se da el caso; las soluciones dependen del proyecto en sí, incluyendo a veces algunas de compromiso como relegar parte de las pruebas a un sistema de integración continua que las verificará cada vez que se detecte un cambio en el repositorio.
+
 
 Al comienzo de la vida del proyecto, deberemos asegurarnos de satisfacer todas las pruebas antes de enviar cualquier cambio al repositorio. A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar. Puesto que es importante enviar cambios al repositorio con frecuencia, deberemos esforzarnos en mantener reducido este tiempo, para limitar el coste e incentivar la satisfacción rigurosa de las pruebas antes de enviar los cambios; la manera de lograrlo va más allá de un artículo introductorio; pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida. 
 
