@@ -77,13 +77,8 @@ Las URIs
 Las URI[5] son los identificadores globales de recursos en la web, y actúan de manera efectiva como UUIDs REST. Las URIs tiene el siguiente formato:
 
 ------------------------------
-<esquema>:<parte específica esquema>/<path><querystring><fragmento>
+<esquema>:<parte específica esquema>/<ruta><querystring><fragmento>
 ------------------------------
-
-[NOTE]
-=================================
-Esteban: ¿cambiar «path» por «ruta» y «querystring» por «parámetros»?
-=================================
 
 El esquema, en el caso de una URL(\*), indica qué protocolo se debe usar para acceder al recurso. En el caso que nos ocupa podría ser "http", o "https" si usamos transporte seguro. Si es una URN(*) el esquema es "urn". En nuestro caso nos interesan las URLs, e ignoraremos las URNs en el resto de la discusión.
 
@@ -91,7 +86,7 @@ Tras el esquema, viene la parte específica del esquema. En las URLs sería la d
 
 A continuación viene la ruta del recurso dentro del servidor. Tiene la forma de un conjunto de segmentos separados por "/"(**).
 
-De forma opcional tenemos la "query string", que indica parámetros adicionales de la URI a ser procesados en el servidor por la aplicación. Su uso más común es el de especificar criterios de búsqueda o filtrado o bien añadir parámetros o tokens de control. La "query string" se separa del path mediante el carácter "?" y consiste en una serie de pares clave/valor separados por "&". Dentro de cada para la clave y el valor se separa por "=".
+De forma opcional tenemos la "query string", que indica parámetros adicionales de la URI a ser procesados en el servidor por la aplicación. Su uso más común es el de especificar criterios de búsqueda o filtrado o bien añadir parámetros o tokens de control. La "query string" se separa de la ruta mediante el carácter "?" y consiste en una serie de pares clave/valor separados por "&". Dentro de cada para la clave y el valor se separa por "=".
 
 Finalmente y también de forma opcional tenemos el fragmento, que se separa del resto de la URI mediante "#". Al contrario que la "query string" el fragmento no se procesa en servidor, sino que está pensado para ser procesado por la aplicación cliente. Por lo tanto no tiene impacto en el diseño de servicios web.
 
@@ -127,7 +122,7 @@ En general el uso de cada método es bastante explicativo, y más adelante verem
 
 El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como qué métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es _cacheable_, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
 
-(\*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
+(*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
 (**) Existen otros métodos que no suelen ser muy usados en servicios REST, como CONNECT o TRACE.
 
 Los tipos MIME
@@ -135,12 +130,7 @@ Los tipos MIME
 
 Otro aspecto muy apropiado para el desarrollo de servicios REST con el protocolo HTTP es su soporte para negociar distantos formatos (representaciones) a usar en la transferencia del estado entre servidor y cliente (y viceversa).
 
-En HTTP cada uno de estos formatos se constituye lo que se llama un tipo MIME distinto y existen muchos tipos MIME estandarizados[6]. Cada tipo MIME tiene el formato de <tipo>/<subtipo>. Algunos tipos MIME muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/plain", "text/rtf", "text/html", "audio/vorbis", "audio/ac3", "image/png", "image/gif", "image/jpeg", "video/H264", "video/ogg", y "video/mpeg".
-
-[NOTE]
-==================================
-Hacer la lista más corta. Podría ser simplemente: «"application/json", "application/xml", "application/atom+xml", "application/javascript", "text/html" y "audio/vorbis"».
-==================================
+En HTTP cada uno de estos formatos se constituye lo que se llama un tipo MIME distinto y existen muchos tipos MIME estandarizados[6]. Cada tipo MIME tiene el formato de <tipo>/<subtipo>. Algunos tipos MIME muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/html" y "audio/vorbis".
 
 A veces en el subtipo suele aparecer el caracter "+". Esto indica que el tipo MIME es una variante de otro tipo principal. Por ejemplo "application/atom+xml", indica que el tipo MIME es una variante del más genérico "application/xml" pero siguiendo el XML schema de atom. Otra convención común es que si el subtipo empieza por "x-" entonces el tipo MIME no es estándar, sino propietario.
 
@@ -201,12 +191,7 @@ El uso de muchos de estos códigos de estado es bastante evidente. Más adelante
 QoS en HTTP
 ^^^^^^^^^^^
 
-Existen cabeceras en HTTP que tienen que ver con mejorar la eficiencia de la comunicación. 
-
-[NOTE]
-============================
-¿Quizás convertir todo este apartado en una lista de ejemplos?
-============================
+Existen cabeceras en HTTP que tienen que ver con mejorar la eficiencia de la comunicación.
 
 Por ejemplo, las cabeceras "Content-Encoding" y "Accept-Encoding" nos permiten modificar la codificación del cuerpo de los mensajes. Un caso práctico de esto es comprimir el cuerpo de los mensajes con el algoritmo GZIP para ahorrar ancho de banda.
 
@@ -216,13 +201,7 @@ La cabecera "Upgrade", nos permite cambiar a otro protocolo. Ahora está siendo 
 
 Una cabecera muy usada es "Transfer-Encoding", que nos permite enviar mensajes de longitud variable, lo que es indispensable para hacer streaming.
 
-Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo más adelante veremos aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que sí impactan en el diseño de servicios.
-
-[NOTE]
-=============================
-Cuidado con la expresión «más adelante» si al final partimos el artículo en
-dos...
-=============================
+Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo sí que hay aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que impactan en el diseño de servicios.
 
 HTTP y REST
 ^^^^^^^^^^^
@@ -300,11 +279,6 @@ En general se suele seguir la convención de concatenar el nombre del detalle a 
 
 Volviendo al problema de tener una entidad con un gran volumen de datos, existe otra solución en la que no es necesario descomponerla en varios recursos. Se trata simplemente de hacer un GET a la URI de la entidad pero añadiendo una querystring. Por ejemplo, si queremos ir al capítulo número 3, podemos hacer GET sobre http://www.server.com/rest/libro/23424-dsdff?capitulo=3. De esta forma hacemos una lectura parcial de la entidad, donde el servidor devuelve la entidad libro, pero con sólo el campo relativo al capítulo 3. A esta técnica la llamo "slicing". El usar "slicing" nos lleva a olvidarnos de esta separación tan fuerte entre entidad y colección, ya que un recurso sobre el que podemos hacer "slicing" es, en cierta medida, una entidad y una colección al mismo tiempo.
 
-[NOTE]
-=========================
-¿"una querystring" -> "parámetros GET"?
-=========================
-
 Como se aprecia REST es bastante flexible y nos ofrece diferentes alternativas de diseño, el usar una u otra depende sólo de lo que pensemos que será más interoperable en cada caso. Un criterio sencillo para decidir si hacer "slicing" o descomponer la entidad en recursos de detalle, es cuantos niveles de anidamiento vamos a tener. En el caso del libro, ¿se accederá a cada capítulo como un todo o por el contrario el cliente va a necesitar acceder a las secciones de cada capítulo de forma individual? En el primer caso el "slicing" parece un buen diseño, en el segundo no lo parece tanto. Si hacemos "slicing", para acceder a la sección 4 del capítulo 3, tendríamos que hacer: http://www.server.com/rest/libro/23424-dsdff?capitulo=3&seccion=4. Este esquema de URI es menos semántico, y además nos crea el problema de que puede confundir al cliente y pensar que puede hacer cosas como esta: http://www.server.com/rest/libro/23424-dsdff?seccion=4 ¿Qué devolvemos? ¿Una lista con todas las secciones 4 de todos los capítulos? ¿Un 404 no encontrado? Sin embargo en el diseño orientado a subrecursos es claro, un GET sobre http://www.server.com/rest/libro/23424-dsdff/capitulo/3/seccion/4 nos devuelve la sección 4 del capítulo 3, y sobre http://www.server.com/rest/libro/23424-dsdff/seccion/4 nos debería devolver 404 no encontrado, ya que un libro no tiene secciones por dentro, sino capítulos. Otra desventaja del "slicing" es que la URI no es limpia, y el posicionamiento en buscadores de nuestro recurso puede ser afectado negativamente por esto (sí, un recurso REST puede tener SEO, ya lo veremos más adelante).
 
 A veces no tenemos claro cual va a ser el uso de nuestra API REST. En estos casos es mejor optar por el modelo más flexible de URIs, de forma que podamos evolucionar el sistema sin tener que romper el esquema de URIs, cosa que rompería a todos los clientes. En este caso el sistema más flexible es descomponer la entidad en recursos de detalle, usando colecciones intermedias si es necesario.
@@ -314,12 +288,7 @@ Recordad que se tome la decisión que se tome, esta no debe afectar al diseño i
 Consultas
 ^^^^^^^^^
 
-La operación más común sobre una colección es la consulta o query. Si queremos obtener todos los miembros de una colección, simplemente hay que realizar un GET sobre la URI de la colección. En el ejemplo de los libros sería: http://www.server.com/rest/libro. Yo he puesto "libro" en singular, pero realmente es una colección. ¿Qué nos devolvería esta llamada? Realmente hay dos opciones: una lista con enlaces a todos los libros o una lista de libros, con todos sus datos.
-
-[NOTE]
-=========================
-¿Podemos quitar el «o query», o quizás dejar «query» en cursiva?
-=========================
+La operación más común sobre una colección es la consulta. Si queremos obtener todos los miembros de una colección, simplemente hay que realizar un GET sobre la URI de la colección. En el ejemplo de los libros sería: http://www.server.com/rest/libro. Yo he puesto "libro" en singular, pero realmente es una colección. ¿Qué nos devolvería esta llamada? Realmente hay dos opciones: una lista con enlaces a todos los libros o una lista de libros, con todos sus datos.
 
 Un ejemplo del primer caso sería:
 (TODO: Añadir ejemplo select all)
@@ -332,31 +301,15 @@ Observen como vienen todos los datos del libro, pero además viene un campo extr
 Lo normal en todo caso, no es traerse todos los miembros de una colección, sino sólo los que cumplan unos criterios de búsqueda. La forma más sencilla es definir los criterios de búsqueda en la query string. De esta forma, un GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi, devolvería:
 (TODO: Añadir ejemplo select con parámetros)
 
-Fijaros en el detalle de que los resultados viene ordenados por precio. Normalmente el servidor debería ordenar los resultados de alguna manera en función de la consulta. Si quisiéramos que el cliente definiera en un orden diferente al que proporcionamos por defecto, deberíamos dar soporte a consultas como esta: http://www.server.com/rest/libro?precio_max=20&genero=scifi&ordenarPor=genero&ascendiente=false
-
-[NOTE]
-===========================
-¿«Fijaros en» -> «Fijaos en»? O, en mi opinión mejor, «Nótese».
-===========================
+Nótese el detalle de que los resultados viene ordenados por precio. Normalmente el servidor debería ordenar los resultados de alguna manera en función de la consulta. Si quisiéramos que el cliente definiera en un orden diferente al que proporcionamos por defecto, deberíamos dar soporte a consultas como esta: http://www.server.com/rest/libro?precio_max=20&genero=scifi&ordenarPor=genero&ascendiente=false
 
 ¿Y si queremos buscar una entidad por identificador...? No, eso no se hace, simplemente hay que hacer un GET sobre la URI de la entidad, por lo que consultas por "clave primaria" no tienen sentido dentro de una colección REST.
 
-Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring. GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi&ultimo_precio=12&numero_resultados=10. Fijaos que estamos aprovechando el hecho de que recibimos los datos en orden ascendente de precio, para decirle al servidor mediante "ultimo_precio", que el último resultado que recibimos tenía ese precio, con lo que debe continuar la consulta a partir de ahí. Estamos jugando con la ordenación de los datos para conseguir la paginación. El parámetro "numero_resultados" indica al servidor cuantos resultados queremos como máximo. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
-
-[NOTE]
-===========================
-¿«a la querystring» -> «, p.ej.»?
-===========================
+Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring, por ejemplo: GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi&ultimo_precio=12&numero_resultados=10. Fijaos que estamos aprovechando el hecho de que recibimos los datos en orden ascendente de precio, para decirle al servidor mediante "ultimo_precio", que el último resultado que recibimos tenía ese precio, con lo que debe continuar la consulta a partir de ahí. Estamos jugando con la ordenación de los datos para conseguir la paginación. El parámetro "numero_resultados" indica al servidor cuantos resultados queremos como máximo. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
 
 Tal como se han diseñado las consultas anteriormente, el servidor tiene que estar preparado para interpretar correctamente los parámetros de la querystring. La ventaja es que es muy simple. La desventaja es que el cliente tiene que entender que parámetros hay disponibles y su significado, con lo que es menos interoperable. Existe otra forma de diseñar consultas, que consiste en modelarlas directamente como recursos REST. De esta forma podemos tener consultas que son recursos hijos de la colección principal. Se puede entender este enfoque como crear consultas predefinidas, filtros o vistas sobre la colección principal. En este enfoque podríamos hacer http://www.server.com/rest/libro/novedades y http://www.server.com/rest/libro/scifi para consultar las novedades y los libros de ciencia ficción respectivamente. Sobre estas colecciones hijas podemos añadir parámetros en la querystring para restringirlas más o para hacer paginación. Alternativamente podemos tener colecciones hijas anidadas hasta el nivel que necesitemos.
 
-[NOTE]
-===========================
-¿Quitar «en la querystring», o cambiar por «GET»? Pero, en fin, que yo quitaría
-todos los «querystring» que haya en el artículo.
-===========================
-
-Esta forma de modelar consultas nos da una API mucho más limpia, y como ya veremos más adelante nos permite mayor interoperabilidad. Como mayor inconveniente está que es un enfoque menos flexible, ya que se necesita pensar por adelantado que consultas va a tener el sistema. Por lo tanto suele ser un diseño muy apropiado en aplicaciones de negocio donde normalmente sabemos las consultas que vamos a tener, pero no es muy apropiado en aplicaciones donde el usuario define sus propias consultas en tiempo de uso de la aplicación.
+Esta forma de modelar consultas nos da una API mucho más limpia, y nos permite mayor interoperabilidad. Como mayor inconveniente está que es un enfoque menos flexible, ya que se necesita pensar por adelantado que consultas va a tener el sistema. Por lo tanto suele ser un diseño muy apropiado en aplicaciones de negocio donde normalmente sabemos las consultas que vamos a tener, pero no es muy apropiado en aplicaciones donde el usuario define sus propias consultas en tiempo de uso de la aplicación.
 
 La tendencia de diseño es mezclar ambas opciones. Por un lado modelar explícitamente la consultas que se puedan detectar como colecciones hijas. Por otro lado permitir una consulta genérica, normalmente de texto libre, mediante querystring.
 
@@ -407,8 +360,6 @@ Nótese como el servidor siempre responde con la cabecera Location, indicando la
 
 ¿Qué es mejor? POST tiene como ventaja que la lógica de creación URIs no está en el cliente, sino bajo el control del servidor. Esto hace a nuestros servicios REST más interoperables, ya que el servidor y el cliente no se tienen que poner de acuerdo en que URIs son válidas y cuáles no, y en el algoritmo de generación de URIs. Por otro lado POST no es idempotente, mientra que PUT sí. Esto hace que PUT sea muy útil para poder recuperarnos de problemas de conectividad. Si el cliente tiene dudas sobre si su petición de creación se realizó o no, sólo tiene que repetirla. Sin embargo esto no es posible con POST, ya que duplicaríamos el recurso en el caso de que el servidor sí atendió a nuestra petición y nosotros no lo supiéramos.
 
-Más adelante veremos como mezclar lo mejor de POST y PUT para conseguir crear recursos de forma eficiente e interoperable.
-
 ¡ No uses CRUD !
 ^^^^^^^^^^^^^^^^
 
@@ -444,11 +395,6 @@ En servicios REST podemos implementar la concurrencia optimista mediante el uso 
 
 Existen dos tipos de ETag, las fuertes y las débiles. Si el estado del recurso cambia en al menos un bit, una ETag fuerte también cambia de valor. Nos permiten hacer una hash o fingerprint a nivel binario. Las ETag fuertes también tienen en cuenta los valores de las cabeceras HTTP y el formato concreto del documento. Por lo tanto si añadiésemos un espacio a un documento JSON, una ETag fuerte cambiaría, aunque la semántica del JSON no haya cambiado. Para solucionar esto existen las ETag débiles. Las ETag débiles no deberían cambiar con la mínima alteración del contenido de un mensaje HTTP, sino sólo si la semántica del estado del recurso ha cambiado. Sintácticamente podemos distinguir a una ETag fuerte de una débil, ya que la débil debe tener concatenado "W/" como prefijo.Por ejemplo, una ETag fuerte sería: "sdl1kfj3FA", y una débil W/"sdl1kfj3FA".
 
-[NOTE]
-===========================
-¿No debería ser «"W/sdl1kfj3FA"»?
-===========================
-
 Para hacer concurrencia optimista nos basta con ETag débiles. Como ya se dijo, podemos usar en el servidor una hash resistente a colisiones o un número de versión, que se actualizan cada vez que se modifiquen o cree un recurso. Es importante que el cálculo de la ETag sea consistente entre todas las máquinas servidoras en las que está distribuido nuestros servicios REST. Es decir, la ETag debería ser la misma independientemente de que servidor responda a la petición. El valor de la ETag así generado podría persistirse junto con el estado del recurso, para futura referencia.
 
 ¿Y qué tiene todo esto que ver con la concurrencia optimista? Es simple, podemos usar la ETag para detectar los conflictos, y hacer peticiones HTTP condicionales.
@@ -460,7 +406,6 @@ TODO. PUT con éxito
 En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente. El mensaje de respuesta sería:
 TODO. PUT sin éxito
 El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos desde el servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
-
 
 Actualizaciones parciales
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -487,12 +432,7 @@ Y si existe una duplicación o un problema de carrera el servidor responde con:
 (TODO)
 Que es mucho más explícito y sencillo de depurar.
 
-Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos MIME, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
-
-[NOTE]
-============================
-Aclarar la redacción de la última frase. No queda claro si el del formato JSON está basado en XPath o no, y si está en proceso de estandarización o no. También me suena un poco raro como está escrito (poniendo tanto la referencia a XPath y al proceso de estandarización en la misma frase).
-============================
+Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no nuestra API sería confusa. Ya existen tipos MIME en proceso de estandarización para representar "diff" entre documentos. Algunos basados en XPath[13], y otros en formato JSON[14].
 
 Método PATCH
 ^^^^^^^^^^^^
@@ -550,26 +490,21 @@ La forma de solucionar esto es haciendo trabajar juntos a PUT y a POST. En este 
 
 Resumiendo:
 
-* El cliente hace POST a un recurso "factoría", encargado de crear recursos "virtuales".
-* El servidor devuelve la URI de ese nuevo recurso "virtual"
-* El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
-* El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
-
-[NOTE]
-===========================
-Yo cambiaría esta lista a numerada.
-===========================
+1. El cliente hace POST a un recurso "factoría", encargado de crear recursos "virtuales".
+2. El servidor devuelve la URI de ese nuevo recurso "virtual"
+3. El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
+4. El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
 
 Como se aprecia el truco consiste en que el recurso no se crea realmente hasta que no se recibe el PUT. Sin embargo queda un problema por resolver: si no almacenamos nada ni en memoria ni en soporte persistente, ¿cómo puede el servidor saber que la URI que le llega en el PUT es legítima? Al fin y al cabo no queremos que el cliente genere las URIs, sino que el servidor controle tal cosa. Lo ideal sería que si el cliente nos manda un PUT a una URI que no existe devolvamos un código 403, indicando que el cliente no tiene permiso para generar recursos en URIs que no sean asignadas por el servidor.
 
 Una solución inocente sería almacenar en algún sitio, en memoria tal vez, las URIs de los recursos, y chequear contra esta información la URI de la petición PUT. Sin embargo esto contradice el principio de que los recursos "virtuales" no deben ocupar espacio en servidor. De lo contrario el cliente no podría reintentar el POST con la seguridad de que no va a pasar nada malo.
 
-La solución consiste en generar una URI desechable. Las URIs desechables pueden ser reconocidas como legítimas por el servidor a simple vista, y no pueden ser falsificadas por el cliente. De esta forma no se se necesita almacenar la URI ni en memoria ni en soporte persistente. ¿Cómo generar una URI desechable? La forma más simple es tener en el servidor una clave secreta y un generador de UUID. La idea sería que cada vez que el servidor reciba un POST, genere un nuevo UUID, le concatene la clave secreta y el resultado lo pase por una función hash criptográfica. El resultado de este proceso es una firma de la URI. Esta firma es concatenada con el UUID anteriormente generado. Esto termina generando un identificador que se transforma en el último segmento del path de la URI.
+La solución consiste en generar una URI desechable. Las URIs desechables pueden ser reconocidas como legítimas por el servidor a simple vista, y no pueden ser falsificadas por el cliente. De esta forma no se se necesita almacenar la URI ni en memoria ni en soporte persistente. ¿Cómo generar una URI desechable? La forma más simple es tener en el servidor una clave secreta y un generador de UUID. La idea sería que cada vez que el servidor reciba un POST, genere un nuevo UUID, le concatene la clave secreta y el resultado lo pase por una función hash criptográfica. El resultado de este proceso es una firma de la URI. Esta firma es concatenada con el UUID anteriormente generado. Esto termina generando un identificador que se transforma en el último segmento de la ruta de la URI.
 
   FIRMA = HASH(UUID+SECRETO)
   URI = URI_RECURSO_PADRE + "/" + UUID + "_" + FIRMA
 
-Cuando el servidor reciba un PUT, es tan sencillo como extraer el UUID del último segmento del path de la URI, calcularle la firma, y ver si coinciden. Si es así la URI es legítima, si no, debemos devolver 403. Esta lógica puede hacerse genérica a todas las peticiones PUT e implementarse en un filtro común a todas las URIs.
+Cuando el servidor reciba un PUT, es tan sencillo como extraer el UUID del último segmento de la ruta de la URI, calcularle la firma, y ver si coinciden. Si es así la URI es legítima, si no, debemos devolver 403. Esta lógica puede hacerse genérica a todas las peticiones PUT e implementarse en un filtro común a todas las URIs.
 
 Veamos un par de ejemplos de uso de esta técnica.
 
@@ -667,14 +602,9 @@ Si el servidor considera que las credenciales son suficientes, permite el acceso
 TODO. ejemplo de esto.
 Puede ocurrir que el servidor dictamine que la credenciales no identifican a un usuario del sistema. En ese caso debe devolver un 401 con un nuevo WWW-Authenticate.
 
-En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y password en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
+En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y contraseña en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
 
 El otro algoritmo, "Digest", es más seguro y usa unas credenciales que no contienen la password en claro, como es el caso de "Basic". Esto permite autenticarse con seguridad sobre HTTP, sin necesidad de usar HTTPS. Detalles en [8].
-
-[NOTE]
-======================
-¿No se debería usar «contraseña» en vez de «password»?
-======================
 
 ¿Necesito una sesión HTTP?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -701,16 +631,11 @@ TODO: ejemplo de esto
 Más allá de CRUD: Hyperdata (HATEOAS) 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[NOTE]
-========================
-¿Quizás esto debería ir en el artículo de CRUD, si lo separamos?
-========================
-
 Es muy tentador cuando se comienza a trabajar con REST el definir APIs que modelan interfaces CRUD. Cada URI representa una tabla, o entidad de negocio, y mediante los verbos HTTP definimos las operaciones de edición y lectura. Como ya se comentado, este enfoque puede ser peligroso ya que podemos acoplar nuestra API web a la implementación concreta de nuestro modelo de persistencia.
 
 Sin embargo el principal problema es que con el enfoque CRUD, en realidad no estamos diseñando una web de recursos de información, sino un conjunto de operaciones desconectadas entre sí que no representa realmente nuestro negocio. En este sentido, al diseñar CRUD, lo que estamos haciendo es exponer nuestra capa de datos mediante una API pública, y hacemos que todo el peso de interpretar e implementar la lógica de negocio caiga en el consumidor de nuestra API, con los lógicos problemas que esto acarrea. La API de nuestros servicios web deberían exponer los distintos casos de uso de nuestra aplicación, y no una mera interfaz de persistencia de datos. Es exactamente la misma diferencia que hay entre una aplicación de mantenimiento de tablas, y una aplicación con una UX orientada a que los usuarios completen casos de uso de nuestro negocio de la forma más efectiva posible.
 
-Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: HATEOAS. No es que realmente HATEOAS sea una cosa diferente de REST, sino que más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de esta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
+Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: Hypermedia As The Engine Of Application State (HATEOAS). No es que realmente HATEOAS sea una cosa diferente de REST, sino que más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de esta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
 
 La web de servicios
 ^^^^^^^^^^^^^^^^^^^
@@ -723,14 +648,7 @@ Decimos que una API REST cumple HATEOAS, cuando:
 * Cada recurso debería poder ser servido en tantos formatos (tipos MIME) como tenga sentido.
 * Las operaciones sobre cada recurso deberían estar codificadas en forma de enlaces dentro de éste. De esta forma no podremos cambiar el estado del sistema si no es siguiendo un enlace.
 
-La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
-
-[NOTE]
-====================
-Yo cambiaría las dos frases que empiezan por «Las reglas de HATEOAS [...]» por «Las reglas de HATEOAS hacen precisamente esto: por un lado [...]; por otro lado no es [...]».
-
-Otra cosa: ¿qué demonios significa HATEOAS? :-)
-====================
+La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto: por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema; por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
 
 Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.com/home', con enlaces a todos los subsistemas que ofrezcamos mediante REST.
 TODO: ejemplo,
@@ -770,21 +688,11 @@ los parámetros que nos interesen.
 
 Si seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'), el documento que nos devolvería sería el siguiente:
 TODO
-Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultado podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
-
-[NOTE]
-====================
-No estoy seguro de si el «de resultado» debería ser «de resultados» o si fue queriendo...
-====================
+Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultados podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
 
 Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
 TODO
-En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones consistentes con el estado actual.
-
-[NOTE]
-====================
-En este contexto prefiero «coherente» a «consistente», pero lo dejo a tu elección...
-====================
+En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones que sean consistentes con el estado actual.
 
 En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
 
@@ -821,12 +729,7 @@ Vemos que podemos hacer polling sobre él para saber el estado de nuesto pedido,
 TODO
 Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el dinero, pero sí podemos hacer una devolución del producto.
 
-Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir securizada con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
-
-[NOTE]
-====================
-¿«asegurada» o «protegida» en vez de «securizada»?
-====================
+Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir protegida con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
 
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -837,12 +740,7 @@ El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la
 TODO
 El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y cómo usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe qué tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre cómo usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
 
-Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para parsear y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de parseo y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
-
-[NOTE]
-==================
-¿«lectura», «consumo» o «análisis» en vez de «parseo»?
-==================
+Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para analizar y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de análisis  y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
 
 No es de extrañar que los intentos de acercar WSDL a REST[15] o de crear equivalentes a WSDL en REST, como es el caso de WADL[16], no hayan tenido realmente mucho éxito. Al fin y al cabo no aportan mucho a lo que ya te da la filosofía HATEOAS de diseño de APIs REST.
 
