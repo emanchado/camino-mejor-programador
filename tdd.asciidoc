@@ -319,7 +319,7 @@ Ejemplo
 ~~~~~~~
 Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer un servicio de conversión de unidades nuestros clientes a través de un servicio web, porque hemos decidido que no hay suficientes conversores Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/test/scala/org/casa/unitconverter/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 test("Converts miles into kilometers"){
@@ -332,7 +332,7 @@ El método get es aquí un método de ayuda para pruebas, que hace una petición
 Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión casi mínima viene a ser:
 
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/main/scala/org/casa/unitconverter/step1/Converter.scala[step1/Converter.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 class Converter extends HttpServlet {
@@ -346,7 +346,7 @@ Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicia
 
 A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/test/scala/org/casa/unitconverter/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 test("Converts negative miles into kilometers") {
@@ -354,7 +354,7 @@ test("Converts negative miles into kilometers") {
 }
 -----------------------------------------------------------------------------
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/main/scala/org/casa/unitconverter/step2/Converter.scala[step2/Converter.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step2/Converter.scala[step2/Converter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 class Converter extends HttpServlet {
@@ -367,7 +367,7 @@ class Converter extends HttpServlet {
 
 A continuación el manejo de los casos de error, como cantidades de millas que no sean numéricas
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/test/scala/org/casa/unitconverter/step3/functional/ConversionTest.scala[step3/functional/ConversionTest.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala[step3/functional/ConversionTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amounts of miles") {
@@ -376,7 +376,7 @@ test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amount
 }
 -----------------------------------------------------------------------------
 
-.https://www.assembla.com/code/unitconverter/git/nodes/master/src/main/scala/org/casa/unitconverter/step3/Converter.scala[step3/Converter.scala]
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step3/Converter.scala[step3/Converter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 class Converter extends HttpServlet {
