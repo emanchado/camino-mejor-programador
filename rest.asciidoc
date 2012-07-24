@@ -120,6 +120,7 @@ De forma opcional tenemos la "query string", que indica parámetros adicionales 
 Finalmente y también de forma opcional tenemos el fragmento, que se separa del resto de la URI mediante "#". Al contrario que la "query string" el fragmento no se procesa en servidor, sino que está pensado para ser procesado por la aplicación cliente. Por lo tanto no tiene impacto en el diseño de servicios web.
 
 Las siguientes son todas URIs:
+
 ------------------------------
 http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.2
 https://www.myserver.com/rest/books?author=vega
@@ -344,6 +345,7 @@ Content-Type: application/json;charset=utf-8
 ---------------------------
 
 Un ejemplo del segundo sería:
+
 ---------------------------
 HTTP/1.1 200 Ok
 Content-Type: application/json;charset=utf-8
