@@ -555,7 +555,6 @@ Content-Type: application/json
 Nótese que la petición es indistinguible de una actualización. El hecho de que se produzca una actualización o se cree un nuevo recurso depende únicamente de si dicho recurso, identificado por la URL, existe ya o no en el servidor. La respuesta:
 ---------------------------
 HTTP/1.1 201 Created
-Host: www.server.com
 Location: http://www.server.com/rest/libro/465
 Content-Type: application/json;charset=utf-8
 
@@ -586,7 +585,6 @@ Content-Type: application/json
 Y la respuesta:
 ---------------------------
 HTTP/1.1 201 Created
-Host: www.server.com
 Location: http://www.server.com/rest/libro/3d7ef
 Content-Type: application/json;charset=utf-8
 
@@ -979,14 +977,46 @@ Veamos un par de ejemplos de uso de esta técnica.
 Crear recursos
 ^^^^^^^^^^^^^^
 
-Primero el cliente hace un POST al recurso colección:
-TODO: ejemplo
---------------------------
---------------------------
+Primero el cliente hace un POST al recurso colección, sin datos:
+---------------------------
+POST /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34
+
+---------------------------
 El cliente, usando la URI que le ha sido devuelta en la cabecera location, realiza un PUT con los datos de la nueva entidad.
-TODO: ejemplo
---------------------------
---------------------------
+---------------------------
+PUT /rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34"
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
 De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. 
 
 Comando
