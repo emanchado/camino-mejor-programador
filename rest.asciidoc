@@ -827,7 +827,6 @@ Y la respuesta:
 HTTP/1.1 200 OK
 Allow: GET, PUT, POST, OPTIONS, HEAD, DELETE, PATCH
 Accept-Patch: application/book-diff+json
-Accept: application/json
 Content-Length: 0
 
 --------------------------
@@ -928,7 +927,6 @@ Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
 }
 ---------------------------
 Si por el contrario los datos siguieran siendo los mismos:
-TODO: Ejemplo Last-Modified, con cambios
 --------------------------
 HTTP/1.1 304 Not Modified
 Date: Tue, 27 Dec 2012 05:25:19 GMT
@@ -1636,17 +1634,58 @@ En este caso el formulario no tiene campo "body", lo que indica que el cliente d
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
-TODO OPTIONS
+Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS. Recordemos el ejemplo que apareció anteriormente:
 --------------------------
---------------------------
-El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber qué tipos MIME soportamos debemos emitir una petición HEAD:
-TODO HEAD
---------------------------
---------------------------
-El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y cómo usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe qué tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre cómo usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
+OPTIONS /rest/libro/465 HTTP/1.1
+Host: www.server.com
 
-Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para analizar y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de análisis  y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
+--------------------------
+Y la respuesta:
+--------------------------
+HTTP/1.1 200 OK
+Allow: GET, PUT, POST, OPTIONS, HEAD, DELETE, PATCH
+Accept-Patch: application/book-diff+json
+Content-Length: 0
+
+--------------------------
+El servidor nos responde con los métodos admisibles por dicha URI, si soporta o no el método PATCH. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Adicionalmente OPTIONS nos permite un cuerpo en la respuesta, donde se especificarían detalles adicionales a nivel de aplicación.
+
+Otro método útil es HEAD. El método HEAD es idéntico a GET, excepto que el servidor no devuelve datos y por lo tanto no intenta acceder a información ni realizar ninguna consulta. La utilidad de HEAD está en que nos devuelve exactamente las misma cabeceras y respuestas HTTP que como si hubiéramos hecho un GET.
+Por ejemplo:
+--------------------------
+HEAD /rest/libro/465 HTTP/1.1
+Host: www.server.com
+If-None-Match: W/"686897696a7c876b7e"
+If-Modified-Since: Wed, 01 Sep 2012 13:24:52 GMT
+Accept: application/json
+
+--------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
+ETag: W/"9082aff9627ab7cb60"
+
+---------------------------
+Con lo que sabemos si el recurso ha cambiado o no y su nuevo ETag. HEAD es muy útil para comprobar si un link funciona como el cliente espera. Pero también nos permite averiguar que tipos mime soporta. Si la respuesta hubiera sido:
+---------------------------
+HTTP/1.1 406 Not acceptable
+
+---------------------------
+Entonces sabríamos si dicho recurso soporta el tipo mime o no por adelantado.
+
+Usando una mezcla de HEAD y OPTIONS podemos inspeccionar las capacidades de un recurso REST
+
+Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para analizar y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio.
+
+Sin embargo la dificultad de consumir una API pública no está en la sintaxis de los formatos de datos, sino en la semántica de éstos. HATEOAS nos proporciona unas reglas y patrones mínimos y de bajo acoplamiento que nos permiten homogeneizar la forma de consumir nuestros servicios. La parte importante queda en la documentación y en la definición de los tipos mime a utilizar. Lo único que se necesita para desarrollar un cliente que pueda consumir una API HATEOAS es:
+* Una primera URL como punto de entrada a nuestro sistema.
+* Una documentación describiendo la semántica de los tipos mime específicos de nuestra API. Esto no sólo incluye las entidades, sino también los formularios. Se recomienda basar dichos tipos en otros formatos ya existentes (JSON, XML, ATOM, HTML). La descripción de la estructura sintáctica la podemos dejar en mános de herramientas que consuman XML Schema o Relax NG o algo similar.
+* Una documentación describiendo como consumir cada tipo de enlace (métodos a usar, tipos mime aceptables, patrones de uso).
 
 No es de extrañar que los intentos de acercar WSDL a REST[15] o de crear equivalentes a WSDL en REST, como es el caso de WADL[16], no hayan tenido realmente mucho éxito. Al fin y al cabo no aportan mucho a lo que ya te da la filosofía HATEOAS de diseño de APIs REST.
 
