@@ -1270,11 +1270,27 @@ Decimos que una API REST cumple HATEOAS, cuando:
 La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto: por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema; por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
 
 Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.com/home', con enlaces a todos los subsistemas que ofrezcamos mediante REST.
-TODO: ejemplo,
- <link uri="/shop/products" rel="http://www.shop.com/linkrels/products" title="Product catalog"/>
- <link uri="/shop/orders" rel="http://www.shop.com/linkrels/orders" title="Orders"/>
---------------------------
---------------------------
+---------------------------
+GET /home HTTP/1.1
+Host: www.shop.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "links": [
+    { "href": "/home", "title": "Shop home", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/orders", "title": "Orders system", "rel": "http://www.shop.com/linkrels/orders" }
+  ]
+
+  ... other data ...
+}
+---------------------------
 En este ejemplo la página principal actúa como directorio, y consiste principalmente en una lista de enlaces a los distintos subsistemas. En este ejemplo seguimos la convención de especificar en el atributo 'title' una descripción para humanos de lo que representa el enlace. Esto es interesante si el consumidor del recurso es realmente una UI, ya que podría generar una representación, tal vez un botón o un enlace HTML, de la acción representada por el enlace. Sin embargo el atributo realmente importante es 'rel'. En este atributo es donde se especifica el significado de seguir ese link. Son los posibles valores que puede tomar 'rel' dentro de nuestro sistema lo que tendremos que documentar. Ya existen algunos valores estandarizados[11], pero en este caso se ha optado por usar valores propietarios del sistema, indicándolo mediante el prefijo 'http://www.shop.com/linkrels'. Se ha usado una URL y no una URN, porque el significada de cada tipo de enlace debe ser documentado. Al usar una URL podemos indicar no sólo el tipo de enlace, sino la página web donde se encuentra la documentación sobre ese tipo de enlace. En dicha  documentación deberíamos especificar el significado exacto de la relación, y que métodos HTTP son admisibles.
 
 Para resumir, en el enfoque HATEOAS la interfaz de nuestra API, que es lo que tenemos que documentar, consta de:
@@ -1290,35 +1306,84 @@ Consultas autodescubribles
 Lo más sencillo de modelar son las consultas. Como se explicó antes, las consultas se realizan mediante una petición que use el método GET a la URI del recurso colección. Sin embargo, el enfoque HATEOAS nos dice que en vez de tener que especificar una URI para cada colección, éstas deberían ser descubribles como enlaces dentro de otro recurso.
 
 Supongamos el ejemplo anterior de la tienda, si seguimos el enlace marcado como 'linkrels/products', llegamos al siguiente documento:
-TODO
---------------------------
---------------------------
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "links": [
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/books", "title": "Books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+    { "href": "/shop/products{?maxprice,minprice,description,popularity}", "title": "Search products", "rel": "http://www.shop.com/linkrels/search", "template": true }
+  ]
+
+  ... other data ...
+}
+---------------------------
 En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels/products/search/books', o 'linkrels/products/search/offers'. Basta con hacer un GET a la URI de dichos enlaces para acceder a las consultas de 'libros disponibles en la tienda' y 'productos de oferta'.
 
-Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search',
-este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso
-no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
-parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está
-trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que
-existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
+Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search', este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
 
-En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,description,popularity}', con lo cual podremos construir una
-consulta usando query strings como la siguiente '/shop/products?maxprice=100&description=vampires'. Las URI Template
-tienen una sintaxis muy rica que nos permiten una gran flexibilidad a la hora de definir nuestro esquema de URIs,
-para más detalles ver [9]. Aprovechando algunas de las implementaciones que existen[10] de este estándar podemos
-consumir las URI Template de forma sencilla, y generar la URI que necesitamos para realizar una acción en función de
-los parámetros que nos interesen.
+En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,description,popularity}', con lo cual podremos construir una consulta usando query strings como la siguiente '/shop/products?maxprice=100&description=vampires'. Las URI Template tienen una sintaxis muy rica que nos permiten una gran flexibilidad a la hora de definir nuestro esquema de URIs, para más detalles ver [9]. Aprovechando algunas de las implementaciones que existen[10] de este estándar podemos consumir las URI Template de forma sencilla, y generar la URI que necesitamos para realizar una acción en función de los parámetros que nos interesen.
 
 Si seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'), el documento que nos devolvería sería el siguiente:
-TODO
---------------------------
---------------------------
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "links": [
+    { "href": "/shop/offers", "title": "Special offers (1st page)", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers/page/2?pasesize=10", "title": "Next page", "rel": "next" },
+    { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
+    { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
+  ]
+
+  "products": [
+    {
+      "links": [
+        { "href": "/shop/products/43", "title": "Fantastic book", "rel": "http://www.shop.com/linkrels/self" },
+        { "href": "/shop/products/43/orderform?basket=234255", "title": "Add this product to my shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+      ],
+      "author": "Enrique Gómez Salas",
+      "title": "Desventuras de un informático en Paris",
+      "genre": "scifi",
+      "price": { currency:"€", amount:5}
+    },
+    .... Más productos, hasta completar 10 (tamaño de la página) ...
+  ]
+}
+---------------------------
 Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultados podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
 
 Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
-TODO
---------------------------
---------------------------
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "links": [
+    { "href": "/shop/offers/page/2", "title": "Special offers (2nd page)", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "First page", "rel": "first" },
+    { "href": "/shop/offers", "title": "Previous page", "rel": "prev" },
+    { "href": "/shop/offers/page/3?pasesize=10", "title": "Next page", "rel": "next" },
+    { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
+    { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
+  ]
+
+  "products": [
+    .... Más productos, hasta completar 10 (tamaño de la página) ...
+  ]
+}
+---------------------------
 En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones que sean consistentes con el estado actual.
 
 En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
@@ -1338,7 +1403,9 @@ Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma.
 TODO
 --------------------------
 --------------------------
-Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Como POST no es idempotente si enviamos la siguiente petición:
+Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo.
+
+(añadir más ejemplares y un nuevo libro) Como POST no es idempotente si enviamos la siguiente petición:
 TODO
 --------------------------
 --------------------------
@@ -1347,7 +1414,8 @@ TODO.
 --------------------------
 --------------------------
 Lo cual es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
-TODO
+
+(editar linea de pedido para actualizar numero de ejemplares) TODO
 --------------------------
 --------------------------
 Hemos conseguido cambiar la cantidad de ejemplares que queremos. Si seguimos el enlace de tipo 'linkrek/basket', volvemos al carrito de la compra que queda como:
