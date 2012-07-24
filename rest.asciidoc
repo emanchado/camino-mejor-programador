@@ -1388,8 +1388,8 @@ En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás 
 
 En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
 
-Acciones como enlaces
-^^^^^^^^^^^^^^^^^^^^^
+Controles hipermedia (1): Acciones como enlaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y qué efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP[2b], para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
 
@@ -1482,29 +1482,77 @@ Content-Type: application/x-shop.basket+json
 --------------------------
 Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Si quisiéramos editar la línea de pedido basta con hacer PUT o PATCH a la URL de la línea. No es necesario memorizar dicha URL ya que viene siempre en los enlaces tipo rel="self". Si queremos anular la línea de pedido es tan simple como hacer DELETE.
 
-Ahora sólo nos queda pagar. Tan sencillo como hacer PUT sobre la URL especificada en el enlace "linkrels/basket/payment" con la información de nuestro medio de pago:
-TODO
---------------------------
---------------------------
-El resultado de esta petición es:
-TODO
---------------------------
---------------------------
-El servidor se nos indica que tenemos un recibo de nuestro pedido. Si hacemos GET sobre éste:
-TODO
---------------------------
---------------------------
-Vemos que podemos hacer polling sobre él para saber el estado de nuesto pedido, o cancelarlo y que nos devuelvan el dinero. Cuando en el futuro nuestro pedido esté completo, si volvemos a hacer GET:
-TODO
---------------------------
---------------------------
-Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el dinero, pero sí podemos hacer una devolución del producto.
+Ahora sólo nos queda pagar. Tan sencillo como hacer PUT sobre la URL especificada en el enlace "linkrels/basket/payment" con la información pertinente:
+---------------------------
+PUT /shop/basket/234255/payment HTTP/1.1
+Host: www.shop.com
+Accept: application/x-shop.payment+json
+Content-Type: application/x-shop.payment+json
 
-Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir protegida con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
+{
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  }
+}
+---------------------------
+La respuesta
+---------------------------
+HTTP/1.1 200 Ok
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 05:25:39 GMT
+Cache-Control: max-age=20
+Content-Type: application/x-shop.payment+json
+
+{
+  "links":[
+    { "href": "/shop/basket/234255/payment", "title": "Payment", "rel": "self"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+  ],
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  },
+  "status":"in progress"
+}
+---------------------------
+El pago ha sido aceptado, pero todavía no esta confirmado. A partir de ahí es cuestión de hacer polling sobre el recurso hasta que el pago finalize, para ello nos guiaremos por la cabecera Cache-Control. Finalmente cuando el pago se confirma:
+---------------------------
+HTTP/1.1 200 Ok
+Date: Tue, 27 Dec 2012 05:30:00 GMT
+Expires: Tue, 27 Dec 2012 11:30:00 GMT
+Cache-Control: max-age=21600
+Content-Type: application/x-shop.payment+json
+
+{
+  "links":[
+    { "href": "/shop/basket/234255/payment", "title": "Payment", "rel": "self"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/basket/234255/invoice", "title": "Invoice", "rel": "http://www.shop.com/linkrels/invoice"}
+  ],
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  },
+  "status":"confirmed"
+}
+---------------------------
+Observemos que ahora aparece un enlace "/linkrels/invoice" para obtener la factura. Este es un caso típico en el que podemos usar varios tipos mime, en función del formato en el que el cliente quiera la factura: PDF, HTML, DOC, etc.
+
+Obviamente estoy simplificando. En realidad el workflow de pago es probablemente mucho más complejo, y por supuesto cada petición debería ir protegida con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
 
 
-Acciones como formularios
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Controles hipermedia (2): Acciones como formularios
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Otra forma de añadir un producto al carrito hubiera sido usar el enlace tipo rel="/linkrels/addtobasket". Recordemos el producto 43 tenía la siguiente información:
 --------------------------
