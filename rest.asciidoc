@@ -1220,9 +1220,32 @@ Peticiones asíncronas o de larga duración
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Algunas operaciones pueden representar acciones de larga duración o que desencadenen un workflow. En estos casos puede ser interesante no responder con 201 o 200 a una petición, sino con 202 'Accepted'. Este código indica que la operación ha sido aceptada por el servidor pero que tardará un tiempo en realizarse, y es ideal para modelar peticiones asíncronas. Normalmente en la respuesta se incluye una referencia a una URI que nos indicará el progreso de la operación, y que podremos consultar cada cierto tiempo.
-TODO: ejemplo de esto
---------------------------
---------------------------
+Supongamos el ejemplo anterior sobre el pago:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
+Si la pasarela de pago va a tardar o simplemente se debe producir un workflow interno de aprobación manual, la petición no se puede dar por terminada, asi que lo mejor es avisar al cliente que estamos trabajando en ella:
+---------------------------
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+
+{"status":"verifying"}
+---------------------------
+Las respuestas 202 pueden contener un cuerpo con indicación del estado actual del recurso. En el caso de que fuera una petición de creación (ya sea con PUT o POST) contendrá una cabecera Location.
+
 
 Más allá de CRUD: Hyperdata (HATEOAS) 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
