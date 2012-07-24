@@ -172,13 +172,18 @@ class SpanishIntoEnglishTranslator {
 }
 -----------------------------------------------------------------------------
 
-Cómo desarrollar dirigido por pruebas
--------------------------------------
 Mantener la batería verde
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
 
 Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación -- _cita... continuous deployment, etc._], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; muchos equipos ayudándose además de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
+
+Granularidad
+------------
+Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guia a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sóla responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especificiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
+
+La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: Con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
+
 
 Probar una sola cosa cada vez
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -311,9 +316,9 @@ object Splitter {
 
 El aumento de la granularidad nos ha permitido que la introducción de funcionalidad nueva no afecte a multitud de pruebas. Sin embargo, esto no ha sido gratis; hemos aumentado la complejidad del código y nos hemos quedado con una prueba del traductor bastante sospechosa, en la que casi sólo probamos que el traductor delega a las unidades colaboradoras y la prueba verifica, de hecho, varias delegaciones. Aún podríamos empujar la granularidad un poco más y mover la unión mediante espacios de las palabras traducidas a su propia unidad pero eso incrementaría estos problemas. Además, como veremos en <<_crítica, la sección de crítica>>, incrementar la granularidad antes de tiempo puede guiarnos a un diseño inapropiado... Al final, todas estas decisiones hay que valorarlas una a una y decidir qué es lo más apropiado en cada caso, teniendo en cuenta aspectos como la complejidad, el tiempo de ejecución y la dirección en la que esperamos que vaya el proyecto.
 
-A qué nivel probar
-------------------
-La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y hasta ahora hemos hecho aquí lo mismo. Si bien es probablemente más fácil explicar TDD a nivel unitario, lo cierto es que si llevamos sus motivaciones, como el documentar y verificar, hasta sus últimas consecuencias, las pruebas más importantes son aquellas que ejercitan el conjunto del sistema; lo ideal sería que todas las pruebas verificaran el conjunto del software, ejecutándose en un entorno similar al de explotación o incluso en el entorno de explotación en sí. Lo cierto es normalmente tenemos que transigir, debido a que no nos podamos permitir ejercitar ciertas acciones destructivas en explotación o a que no dispongamos de los recursos necesarios, o a que hayamos optado por ciertas características arquitectónicas de nuestro sistema que lo dificulten. Sin embargo, eso no significa que tengamos que claudicar completamente.
+Probar el conjunto de la aplicación
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y hasta ahora hemos hecho aquí lo mismo. Si bien es probablemente más fácil explicar TDD a nivel unitario, lo cierto es que si llevamos sus motivaciones, como el documentar y verificar, hasta sus últimas consecuencias, las pruebas más importantes son aquellas que ejercitan el conjunto del sistema; desde este punto de vista, lo ideal sería que todas las pruebas verificaran el conjunto del software, ejecutándose en un entorno similar al de explotación o incluso en el entorno de explotación en sí. Lo cierto es normalmente tenemos que transigir, debido a que no nos podamos permitir ejercitar ciertas acciones destructivas en explotación o a que no dispongamos de los recursos necesarios, o a que hayamos optado por ciertas características arquitectónicas de nuestro sistema que lo dificulten. Sin embargo, eso no significa que tengamos que claudicar completamente.
 
 Ejemplo
 ~~~~~~~
@@ -395,7 +400,6 @@ class Converter extends HttpServlet {
   }
 }
 -----------------------------------------------------------------------------
-
 
 
 Crítica
