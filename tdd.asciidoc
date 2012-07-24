@@ -314,7 +314,7 @@ Crítica
 ^^^^^^^
 En el ejemplo anterior hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
 
-El otro extremo de la tensión de la que hablábamos, el uso de pruebas que ejercitan el conjunto de la aplicación, esquiva esta crítica centrándose en el conjunto; sin embargo, no recomendaría basarse exclusivamente en pruebas funcionales, porque resultaría muy difícil mantener un nivel de cobertura suficiente, y, más importante, porque significaría renunciar a su guía en los niveles inferiores de la aplicación.
+A continuación explicamos el otro extremo de la tensión de la que hablábamos, el uso de pruebas que ejercitan el conjunto de la aplicación para guiar el desarrollo; las pruebas funcionales consiguen esquivar la crítica anterior centrándose en la visión de conjunto, sin embargo, no recomendaría basarse exclusivamente en pruebas funcionales, porque resultaría muy difícil mantener un nivel de cobertura suficiente, y, más importante, porque significaría renunciar a la guía de las pruebas en el desarrollo de los niveles inferiores de la aplicación.
 
 
 Probar el conjunto de la aplicación
@@ -333,9 +333,9 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-El método get es aquí un método de ayuda para pruebas, que hace una petición http get y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema particularmente a nivel de aplicación, por ejemplo _¿cómo nos comunicaremos con el sistema?_, y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _ciudadano de primer orden_ de nuestro proyecto.
+El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _ciudadano de primera categoría_ de nuestro proyecto.
 
-Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión casi mínima viene a ser:
+Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión mínima viene a ser:
 
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
@@ -350,7 +350,7 @@ class Converter extends HttpServlet {
 
 Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos a obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
 
-A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
+A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
 [source,scala]
