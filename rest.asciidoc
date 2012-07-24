@@ -1164,14 +1164,36 @@ Si queremos un mayor nivel de seguridad, o incluso prescindir de HTTPS, podemos 
 Autenticación y autorización
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafío/respueste mediante la cabecera WWW-Authenticate.
+El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafío/respuesta mediante la cabecera WWW-Authenticate.
 
 La idea es que cuando se realiza una petición a un recurso REST protegido, y la petición no lleva credenciales adecuadas, el servidor responde con un 401 que contiene una cabecera WWW-Authenticate. En dicha cabecera se detalla el tipo de credenciales que se necesita y el dominio de seguridad.
-TODO. Ejemplo de esto
-El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes
-TODO. ejemplo de esto
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+El servidor respondería:
+---------------------------
+HTTP/1.1 401 Authorization Required
+WWW-Authenticate: Basic realm="catalog"
+
+---------------------------
+En este caso el servidor indica que se necesitan las credenciales para el área de seguridad "catalog", credenciales que han de corresponder al protocolo "Basic"[8]. El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Authorization: Basic Y29udHJhc2XxYTpzZWNyZXRh
+
+---------------------------
 Si el servidor considera que las credenciales son suficientes, permite el acceso al recurso. Si por el contrario considera que el cliente, aunque posee credenciales válidas, no posee permisos suficientes para acceder al recurso, devuelve un 403.
-TODO. ejemplo de esto.
+---------------------------
+HTTP/1.1 403 Forbidden
+Content-Type: application/json
+
+{"reason":"Not enough security level"}
+---------------------------
 Puede ocurrir que el servidor dictamine que la credenciales no identifican a un usuario del sistema. En ese caso debe devolver un 401 con un nuevo WWW-Authenticate.
 
 En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y contraseña en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
