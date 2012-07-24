@@ -1273,17 +1273,17 @@ Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.
 ---------------------------
 GET /home HTTP/1.1
 Host: www.shop.com
-Accept: application/json
+Accept: application/x-shop.home+json,application/json
 
 ---------------------------
 Y la respuesta:
 ---------------------------
 HTTP/1.1 200 Ok
-Content-Type: application/json
+Content-Type: application/x-shop.home+json
 
 {
   "links": [
-    { "href": "/home", "title": "Shop home", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/home", "title": "Shop home", "rel": "self" },
     { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
     { "href": "/shop/orders", "title": "Orders system", "rel": "http://www.shop.com/linkrels/orders" }
   ]
@@ -1308,21 +1308,23 @@ Lo más sencillo de modelar son las consultas. Como se explicó antes, las consu
 Supongamos el ejemplo anterior de la tienda, si seguimos el enlace marcado como 'linkrels/products', llegamos al siguiente documento:
 ---------------------------
 HTTP/1.1 200 Ok
-Content-Type: application/json
+Content-Type: application/x-shop.collection+json
 
 {
   "links": [
-    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "self" },
     { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
     { "href": "/shop/books", "title": "Books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
     { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
     { "href": "/shop/products{?maxprice,minprice,description,popularity}", "title": "Search products", "rel": "http://www.shop.com/linkrels/search", "template": true }
-  ]
+  ],
 
   ... other data ...
 }
 ---------------------------
 En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels/products/search/books', o 'linkrels/products/search/offers'. Basta con hacer un GET a la URI de dichos enlaces para acceder a las consultas de 'libros disponibles en la tienda' y 'productos de oferta'.
+
+Un tipo de enlace curioso es rel="self", que es estándar y que indica la URL del recurso en si. Es útil cuando encontramos el recurso embebido dentro de otro recurso.
 
 Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search', este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
 
@@ -1331,23 +1333,22 @@ En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,de
 Si seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'), el documento que nos devolvería sería el siguiente:
 ---------------------------
 HTTP/1.1 200 Ok
-Content-Type: application/json
+Content-Type: application/x-shop.collection+json
 
 {
   "links": [
-    { "href": "/shop/offers", "title": "Special offers (1st page)", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/offers", "title": "Special offers (1st page)", "rel": "self" },
     { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
     { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
     { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
     { "href": "/shop/offers/page/2?pasesize=10", "title": "Next page", "rel": "next" },
     { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
     { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
-  ]
-
-  "products": [
+  ],
+  "items": [
     {
       "links": [
-        { "href": "/shop/products/43", "title": "Fantastic book", "rel": "http://www.shop.com/linkrels/self" },
+        { "href": "/shop/products/43", "title": "Fantastic book", "rel": "self" },
         { "href": "/shop/products/43/orderform?basket=234255", "title": "Add this product to my shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
       ],
       "author": "Enrique Gómez Salas",
@@ -1364,11 +1365,11 @@ Obsérvese que en vez de devolver una lista de productos, nos devuelve una pági
 Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
 ---------------------------
 HTTP/1.1 200 Ok
-Content-Type: application/json
+Content-Type: application/x-shop.collection+json
 
 {
   "links": [
-    { "href": "/shop/offers/page/2", "title": "Special offers (2nd page)", "rel": "http://www.shop.com/linkrels/self" },
+    { "href": "/shop/offers/page/2", "title": "Special offers (2nd page)", "rel": "self" },
     { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
     { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
     { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
@@ -1377,9 +1378,8 @@ Content-Type: application/json
     { "href": "/shop/offers/page/3?pasesize=10", "title": "Next page", "rel": "next" },
     { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
     { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
-  ]
-
-  "products": [
+  ],
+  "items": [
     .... Más productos, hasta completar 10 (tamaño de la página) ...
   ]
 }
@@ -1388,53 +1388,105 @@ En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás 
 
 En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
 
-Acciones como enlaces o formularios
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Acciones como enlaces
+^^^^^^^^^^^^^^^^^^^^^
 
 Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y qué efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP[2b], para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
 
-El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". Volvamos al ejemplo la búsqueda de productos:
-TODO uri='user/basket/234255/items/45sf245'
-Se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Si sólo queremos añadir productos podemos usar POST. Veamos que ocurre si hacemos GET sobre la cesta:
-TODO
---------------------------
---------------------------
-Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente. Veamos que pasa si hacemos POST:
-TODO
---------------------------
---------------------------
-Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo.
+El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". En el ejemplo anterior se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Veamos que ocurre si hacemos GET sobre la cesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
 
-(añadir más ejemplares y un nuevo libro) Como POST no es idempotente si enviamos la siguiente petición:
-TODO
---------------------------
---------------------------
-Obtenemos la siguiente respuesta:
-TODO.
---------------------------
---------------------------
-Lo cual es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "/shop/basket/234255/items", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/items" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [],
+  "total": { currency: "€", amount: 0 }
+}
+---------------------------
+Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente ya que su representación se puede generar desde cero.
 
-(editar linea de pedido para actualizar numero de ejemplares) TODO
+Para añadir productos a la cesta podemos usar el enlace con rel="/linkrels/basket/items". La documentación nos indica que hagamos un POST para crear una linea de pedido y que después hagamos un PUT indicando el identificador de producto y la cantidad.
+
+Primero pedimos abrir una nueva línea de pedido en la cesta de la compra:
+---------------------------
+POST /shop/basket/234255/items HTTP/1.1
+Host: www.shop.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.shop.com/shop/basket/234255/items/ecafadfj312_dad0348
+
+---------------------------
+Ahora confirmar la línea de pedido, indicando producto y cantidad
+---------------------------
+PUT /shop/basket/234255/items/ecafadfj312_dad0348 HTTP/1.1
+Host: www.shop.com
+Accept: application/json
+Content-Type: application/x-shop.orderitem+json
+
+{
+  "quantity": 2,
+  "product-ref": "http://www.shop.com/shop/products/43"
+}
+---------------------------
+Y la respuesta del servidor, con la linea de pedido creada:
+---------------------------
+HTTP/1.1 200 OK
+Content-Type: application/x-shop.orderitem+json;charset=utf-8
+
+{
+  "links": [
+    { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "this order line", "rel": "self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+  ],
+  "quantity": 2,
+  "product-ref": "http://www.shop.com/shop/products/43"
+}
+---------------------------
+Para ver como queda la lista de la compra seguimos el enlace de tipo rel="/linkrels/basket":
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
+
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "/shop/basket/234255/items", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/items" },
+    { "href": "/shop/basket/234255/payment", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/payment" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [
+    {
+      "links": [
+        { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "this order line", "rel": "self" },
+        { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+      ],
+      "quantity": 2,
+      "product-ref": "http://www.shop.com/shop/products/43"
+    }
+  ],
+  "total": { currency: "€", amount: 10 }
+}
 --------------------------
---------------------------
-Hemos conseguido cambiar la cantidad de ejemplares que queremos. Si seguimos el enlace de tipo 'linkrek/basket', volvemos al carrito de la compra que queda como:
+Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Si quisiéramos editar la línea de pedido basta con hacer PUT o PATCH a la URL de la línea. No es necesario memorizar dicha URL ya que viene siempre en los enlaces tipo rel="self". Si queremos anular la línea de pedido es tan simple como hacer DELETE.
+
+Ahora sólo nos queda pagar. Tan sencillo como hacer PUT sobre la URL especificada en el enlace "linkrels/basket/payment" con la información de nuestro medio de pago:
 TODO
 --------------------------
 --------------------------
-También podemos borrar una línea de pedido completa:
-TODO
---------------------------
---------------------------
-Y el carrito quedaría:
-TODO
---------------------------
---------------------------
-Ahora sólo nos queda pagar. Tan sencillo como hacer PUT con la información de nuestro medio de pago:
-TODO
---------------------------
---------------------------
-De nuevo un ejemplo de "URI desechable". El resultado de esta petición es:
+El resultado de esta petición es:
 TODO
 --------------------------
 --------------------------
@@ -1450,15 +1502,98 @@ Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el diner
 
 Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir protegida con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
 
+
+Acciones como formularios
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Otra forma de añadir un producto al carrito hubiera sido usar el enlace tipo rel="/linkrels/addtobasket". Recordemos el producto 43 tenía la siguiente información:
+--------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.product+json
+
+{
+  "links": [
+    { "href": "/shop/products/43", "title": "Fantastic book", "rel": "self" },
+    { "href": "/shop/products/43/orderform?basket=234255", "title": "Add this product to my shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+  ],
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:5}
+}
+--------------------------
+Si seguimos el enlace rel="/linkrels/addtobasket" usando GET, obtenemos:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.form+json
+
+{
+  "links": [
+    { "href": "/shop/products/43/orderform?basket=234255", "title": "Order product form", "rel": "self"},
+    { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "Order product form target", "rel": "http://www.shop.com/linkrels/target"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products/43", "title": "Product to add", "rel": "http://www.shop.com/linkrels/product"}
+  ],
+  "method": "PUT",
+  "type": "application/x-shop.orderitem+json",
+  "body": {
+    "quantity": 1,
+    "product-ref": "http://www.shop.com/shop/products/43"
+  }
+}
+--------------------------
+El documento resultante no es más que la versión JSON de un formulario ya relleno con información. Veamos de que consta un formulario JSON.
+* Dentro de "links" el enlace de tipo rel="/linkrels/target" nos indica cual es la URL sobre la que debemos la realizar la petición para procesar este "formulario".
+* El campo "method" nos indica el método HTTP a utilizar cuando hagamos la petición a la URL "target"
+* El campo "type" nos indica el tipo mime que debe tener el cuerpo de la petición.
+* El campo "body" nos proporciona una instancia de datos que podemos usar en el cuerpo de la petición.
+
+En este caso el campo "body" y el link "target" aparecen ya informados. De esta forma simplemente sería hacer un PUT a la URL que nos indican con los datos que aparecen en el formulario. De esta manera añadiríamos un ejemplar del producto "43" a la cesta de la compra, tal y como hicimos en el ejemplo de la sección anterior.
+
+El uso de formularios es un poco más avanzado que el uso de links sencillos. Pero a la vez nos permite más potencia. En este ejemplo tenemos dos ventajas:
+* Nos ahorramos hacer un POST a la cesta de la compra para conseguir crear una nueva linea de pedido "virtual". En el propio formulario nos viene la URL de una nueva linea de pedido.
+* Los datos a informar en la petición PUT ya nos vienen completados desde el servidor.
+
+En general el uso de la técnica de formularios nos simplifica el uso de URIs desechables, ya que no necesitamos en ningún momento hacer un POST. También nos ayudan a autodescribir mejor nuestra API.
+
+Veamos un ejemplo más, supongamos que para tomar partido de esta técnica ahora el carrito de la compra es como sigue:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
+
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "#new-order-form", "title": "Add a product to this shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [],
+  "total": { currency: "€", amount: 0 },
+  "new-order-form": {
+    "links": [
+      { "href": "/shop/basket/234255#new-order-form", "title": "Order product form", "rel": "self"},
+      { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "Order product form target", "rel": "http://www.shop.com/linkrels/target"}
+    ],
+    "method": "PUT",
+    "type": "application/x-shop.orderitem+json"
+  }
+}
+---------------------------
+Ahora añadir productos al carrito es mucho más sencillo que antes. No necesitamos hacer un GET a la colección de "items", para después hacer un POST y conseguir una URL desechable. Ahora es tan simple como rellenar el formulario incrustado en el carrito y ejecutarlo. Además de que el procesamiento es más sencillo, ahora nos ahorramos dos llamadas de red.
+
+En este caso el formulario no tiene campo "body", lo que indica que el cliente deberá indicar toda la información. Afortunadamente el campo "type" nos indica el tipo mime apropiado, cuya documentación debemos consultar para saber como implementar el cliente.
+
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
-TODO
+TODO OPTIONS
 --------------------------
 --------------------------
 El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber qué tipos MIME soportamos debemos emitir una petición HEAD:
-TODO
+TODO HEAD
 --------------------------
 --------------------------
 El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y cómo usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe qué tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre cómo usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
