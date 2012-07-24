@@ -873,6 +873,9 @@ HTTP/1.1 200 Ok
 Content-Type: application/json;charset=utf-8
 ETag: W/"9082aff9627ab7cb60"
 Last-Modified: Wed, 01 Sep 2012 13:24:52 GMT
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
 
 {
   "id": "http://www.server.com/rest/libro/465",
@@ -908,6 +911,8 @@ En el caso que se hubiera producido una modificación posterior a la fecha espec
 HTTP/1.1 200 Ok
 Content-Type: application/json;charset=utf-8
 Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
 Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
 
 {
