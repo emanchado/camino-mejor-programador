@@ -856,41 +856,87 @@ Actualmente PATCH está soportado por las APIs públicas de grandes compañías 
 Cache
 ~~~~~
 
-Es importante saber cuándo un cliente, o un nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuándo no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
+Es importante saber cuándo un cliente, nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuando no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Esto es clave si queremos diseñar APIs REST que tengan una alta escalabilidad. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
 
 Una forma de controlar la cache es mediante ETag. La cache puede hacer un GET condicional al servidor mediante la cabecera If-None-Match. De esta forma el servidor puede responder con la nueva información (y la nueva ETag) en el caso de que ésta haya cambiado.
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-None-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
 
-TODO: Un ejemplo con cambio de Etag
---------------------------
---------------------------
+---------------------------
+El recurso sólo será devuelto por el servidor en el caso de que se haya producido algún cambio y el valor de la ETag haya cambiado. Por ejemplo:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+ETag: W/"9082aff9627ab7cb60"
+Last-Modified: Wed, 01 Sep 2012 13:24:52 GMT
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
 En el caso de que el recurso no haya cambiado el servidor respondería lo siguiente.
-TODO: Ejemplo, no hay cambios.
 --------------------------
---------------------------
-De esta manera la cache se asegura que el recurso no ha cambiado, y ahorramos ancho de banda y procesamiento en servidor.
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
 
-Otra variante de esto es usar las cabeceras If-Modified-Since y Last-Modified. Un ejemplo en caso de que los datos no hayan cambiado
-TODO: Ejemplo Last-Modified
 --------------------------
---------------------------
-Si los datos hubieran cambiado sería como sigue.
+El código 304 indica que el recurso que se pide no ha cambiado y realmente el contenido es el mismo. Con la respuesta se pueden enviar más cabeceras HTTP. De esta manera la cache se asegura que el recurso no ha cambiado, y ahorramos ancho de banda y procesamiento en servidor.
+
+Otro método para gestionar la caché es usar las cabeceras If-Modified-Since y Last-Modified. En este caso no se mira ETag, sino sólo la última fecha de modificación del recurso que tenga el servidor (aunque la nueva versión del recurso se semánticamente equivalente a la que tiene el cliente).
+La petición tendría la siguiente forma:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Modified-Since: Wed, 01 Sep 2012 13:24:52 GMT
+Content-Type: application/json
+
+---------------------------
+En el caso que se hubiera producido una modificación posterior a la fecha especificada la respuesta sería:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Si por el contrario los datos siguieran siendo los mismos:
 TODO: Ejemplo Last-Modified, con cambios
 --------------------------
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
+
 --------------------------
-Observese que se devuelve el nuevo valor de Last-Modified. Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
+Observese que se devuelve el nuevo valor de Last-Modified.
+
+Es importante tener en cuenta que la interpretación de la fecha se hace con respecto al reloj del servidor, pudiendo producirse problemas si el cliente y el servidor tienen los relojes muy desincronizados.
+
+Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
 
 Algunos os preguntareis por qué no usar Last-Modified en vez de ETag. Al fin y al cabo parece más simple de calcular en servidor. La razón es que algunas caches, notoriamente la cache de IE, no soportan correctamente If-Modified-Since, pero sí lo hacen bien con If-None-Match. Por otra parte algunos servidores de cache antiguos no soportan ETag. Por lo tanto se aconseja mezclar ETag y Last-Modified para un óptimo control de cache.
 
-Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Veamos un ejemplo.
-TODO: ejemplo cache por tiempo
---------------------------
---------------------------
-De esta forma si volvemos a pedir los datos a la cache, y no han pasado cinco minutos, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando los cinco minutos expiren, la cache volverá a intentar comprobar si los datos han cambiado o no.
-
-También podemos desactivar la cache en el caso de que sepamos positivamente que siempre vamos a tener cambios:
-TODO: ejemplo desactivar cache
---------------------------
---------------------------
+Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Este es el motivo por el que en las respuestas de los anteriores ejemplos se incluyen estas cabeceras. Si pedimos los datos a un nodo de cache, y no se ha cumplido el plazo especificado mediante Cache-Control y/o Expires, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando este tiempo expire, la cache volverá a intentar comprobar si los datos han cambiado o no, normalmente usando tanto If-Match como If-Modified-Since.
 
 Como se ve, el uso combinado de GET condicionales con las cabeceras de control de cache basada en tiempos, nos permiten un control fino de la cache. De esta forma podemos aprovechar la infraestructura de cache de nuestra red, e incluso de internet, pero a la vez asegurarnos que el cliente de nuestro servicio REST no se quede con datos obsoletos y vea los cambios.
 
