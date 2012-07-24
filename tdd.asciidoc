@@ -402,7 +402,7 @@ class Converter extends HttpServlet {
 }
 -----------------------------------------------------------------------------
 
-Mantener la batería verde
+Mantener verde la batería
 -------------------------
 La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
 
