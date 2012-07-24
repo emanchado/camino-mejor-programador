@@ -508,6 +508,12 @@ Content-Type: application/json
 ---------------------------
 La querystring define un subconjunto de recursos sobre la colección, a los cuales se les aplicará la operación PUT. De esta forma conseguimos una manera sencilla de hacer una actualización masiva. ¡ Pero esto haría que todos los libros de ciencia ficción tuvieran los mismos datos ! Realmente esto no es muy útil en este contexto. Pero sí lo es cuando estemos haciendo actualizaciones parciales, como veremos en otra sección.
 
+En algunos casos la actualización no se puede llevar a cabo debido a que el estado del recurso lo impide, tal vez debido a alguna regla de negocio (por ejemplo, no se pueden devolver artículos pasados 3 meses desde la compra). En estos casos lo correcto es responder con un 409.
+--------------------------
+HTTP/1.1 409 Conflict
+
+--------------------------
+
 Borrando
 ^^^^^^^^
 
@@ -1004,7 +1010,7 @@ Content-Type: application/json
   "price": { currency:"€", amount:50}
 }
 ---------------------------
-Y la respuesta:
+Con esta petición el "recurso virtual" representado por la URI se transforma en un recurso con los datos especificados en la petición PUT. La respuesta:
 ---------------------------
 HTTP/1.1 200 OK
 Content-Type: application/json;charset=utf-8
@@ -1017,7 +1023,7 @@ Content-Type: application/json;charset=utf-8
   "price": { currency:"€", amount:50}
 }
 ---------------------------
-De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. 
+De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. De esta forma podemos repetir todas las veces que queramos la petición POST porque generar URIs de "recursos virtuales" no consumen apenas recursos, y por supuesto podemos repetir la petición PUT para transformar el "recurso virtual" en uno real, ya que PUT es idempotente.
 
 Comando
 ^^^^^^^
@@ -1025,25 +1031,80 @@ Comando
 Una forma de modelar operaciones de negocio genéricas es transformar las operaciones en recursos. Por ejemplo, si queremos comprar un libro, en vez de tener una URI https://www.server.com/rest/comprar, la URI debería ser https://www.server.com/rest/compra. Nótese la diferencia entre el verbo y el nombre.
 
 ¿Como haríamos una compra? Primero haríamos un POST al recurso "compra" para que nos asignase un identificador de nueva compra en forma de URI:
-TODO: ejemplo
---------------------------
---------------------------
+---------------------------
+POST /rest/compra HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f
+
+---------------------------
 
 Después podemos confirmar la compra mediante un PUT a dicha URI, indicando los datos de compra en el cuerpo del PUT.
-TODO: ejemplo
---------------------------
---------------------------
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
 
 Lo interesante es que podríamos consultar el estado de la compra haciendo un GET a dicha URI.
-TODO: ejemplo
---------------------------
---------------------------
-O incluso solicitar la anulación de la compra haciendo un nuevo PUT:
-TODO: ejemplo
---------------------------
---------------------------
+---------------------------
+GET /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
 
-No es el caso de la "compra", pero a veces la operación se puede deshacer por completo sin ningún problema. Si se puede hacer esto o no depende del dominio de negocio. Para deshacer un comando basta con borrarlo mediante DELETE.
+---------------------------
+Y la respuesta indicando que la compra está en fase de aprobación:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "verifying"
+}
+---------------------------
+
+También podríamos solicitar la anulación de la compra haciendo un nuevo PUT:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "canceled"
+}
+---------------------------
+El si se puede o no cancelar la compra y que implica eso depende de la lógica de negocio. Otra forma de cancelar la compra sería usar una actualización parcial del campo "status", ya sea usando PATCH o POST. En cualquier caso si la compra ya no se pudiera cancelar o modificar alguno de sus detalles, se debería devolver 409 (Conflict).
+
+No es el caso de la "compra", pero a veces la operación se puede deshacer por completo sin ningún problema. Si se puede hacer esto o no depende del dominio de negocio. En estos casos lo más simple sería usar DELETE para borrar el comando.
 
 Como vemos el patrón comando, implementado con una combinación de PUT y POST, nos da una gran flexibilidad no sólo a la hora de implementar operaciones arbitrarias, sino también procesos de negocio.
 
