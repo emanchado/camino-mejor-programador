@@ -14,7 +14,7 @@ Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la mod
 
 Ejemplo
 ~~~~~~~
-Probablemente la forma más fácil de explicar TDD es a nivel unitario. Supongamos que nuestra aplicación necesita convertir millas a kilómetros; empezamos con una prueba:
+Probablemente la forma más fácil de explicar TDD es con un ejemplo a nivel unitario. Supongamos que nuestra aplicación necesita convertir millas a kilómetros; empezamos con una prueba:
 
 Rojo
 ^^^^
@@ -48,9 +48,9 @@ java.lang.RuntimeException: Not yet implemented
 
 Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisiones importantes:
 
-Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del _objeto_ (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado, las millas están expresadas con tipo +Double+, etc.
+Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del objeto (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado; las millas están expresadas con tipo +Double+; etc.
 
-Segundo y más fundamental, hemos comenzado a definir la funcionalidad de la unidad, con un ejemplo que nos protege en cierta manera de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
+Segundo y más fundamental, la prueba constituye un ejemplo que comienza a definir la funcionalidad de la unidad; que al estar expresado en un lenguaje de programación nos protege de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
 ______________
 Cuando dijimos millas, ¿eran millas internacionales (1,609km)? ¿Millas náuticas (1,852km)? ¿Millas nórdicas (10km)?
 ______________
