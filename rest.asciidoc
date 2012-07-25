@@ -69,7 +69,36 @@ El mensaje de petición en HTTP consta de una primera línea de texto indicando 
 
 Los mensajes de respuesta HTTP siguen el mismo formato que los de petición, excepto en la primera línea, donde se indica el código de respuesta y una explicación textual de dicha respuesta. El código de respuesta indica si la petición tuvo éxito o no y por qué razón.
 
-(TODO: insertar ejemplo de petición/respuesta)
+Un ejemplo de petición HTTP sería:
+------------------------------
+POST /server/payment HTTP/1.1
+Host: www.myserver.com
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+Accept-Encoding:gzip,deflate,sdch
+Accept-Language:en-US,en;q=0.8
+Cache-Control:max-age=0
+Connection:keep-alive
+
+orderId=34fry423&payment-method=visa&card-number=2345123423487648&sn=345
+------------------------------
+
+Y como respuesta:
+------------------------------
+HTTP/1.1 201 Created
+Content-Type: application/json;charset=utf-8
+Location: https://www.myserver.com/services/payment/3432
+Cache-Control:max-age=21600
+Connection:close
+Date:Mon, 23 Jul 2012 14:20:19 GMT
+ETag:"2cc8-3e3073913b100"
+Expires:Mon, 23 Jul 2012 20:20:19 GMT
+
+{
+  "id":"https://www.myserver.com/services/payment/3432",
+  "status": "pending"
+}
+------------------------------
 
 Las URIs
 ^^^^^^^^
@@ -77,13 +106,8 @@ Las URIs
 Las URI[5] son los identificadores globales de recursos en la web, y actúan de manera efectiva como UUIDs REST. Las URIs tiene el siguiente formato:
 
 ------------------------------
-<esquema>:<parte específica esquema>/<path><querystring><fragmento>
+<esquema>:<parte específica esquema>/<ruta><querystring><fragmento>
 ------------------------------
-
-[NOTE]
-=================================
-Esteban: ¿cambiar «path» por «ruta» y «querystring» por «parámetros»?
-=================================
 
 El esquema, en el caso de una URL(\*), indica qué protocolo se debe usar para acceder al recurso. En el caso que nos ocupa podría ser "http", o "https" si usamos transporte seguro. Si es una URN(*) el esquema es "urn". En nuestro caso nos interesan las URLs, e ignoraremos las URNs en el resto de la discusión.
 
@@ -91,11 +115,19 @@ Tras el esquema, viene la parte específica del esquema. En las URLs sería la d
 
 A continuación viene la ruta del recurso dentro del servidor. Tiene la forma de un conjunto de segmentos separados por "/"(**).
 
-De forma opcional tenemos la "query string", que indica parámetros adicionales de la URI a ser procesados en el servidor por la aplicación. Su uso más común es el de especificar criterios de búsqueda o filtrado o bien añadir parámetros o tokens de control. La "query string" se separa del path mediante el carácter "?" y consiste en una serie de pares clave/valor separados por "&". Dentro de cada para la clave y el valor se separa por "=".
+De forma opcional tenemos la "query string", que indica parámetros adicionales de la URI a ser procesados en el servidor por la aplicación. Su uso más común es el de especificar criterios de búsqueda o filtrado o bien añadir parámetros o tokens de control. La "query string" se separa de la ruta mediante el carácter "?" y consiste en una serie de pares clave/valor separados por "&". Dentro de cada para la clave y el valor se separa por "=".
 
 Finalmente y también de forma opcional tenemos el fragmento, que se separa del resto de la URI mediante "#". Al contrario que la "query string" el fragmento no se procesa en servidor, sino que está pensado para ser procesado por la aplicación cliente. Por lo tanto no tiene impacto en el diseño de servicios web.
 
-(TODO:insertar un par de ejemplos de URIs)
+Las siguientes son todas URIs:
+
+------------------------------
+http://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5.2
+https://www.myserver.com/rest/books?author=vega
+ftp://user@ftp.server.com/dir/somefile.txt
+urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+urn:uuid:a74fc10b-58cc-4379-f5c7-1e02b2a3d479
+------------------------------
 
 (*) Las URLs y URNs son casos concretos de URIs. Las primeras identifican un recurso de red mediante una IP o un DNS, las segundas son simples UUIDs lógicos con un espacio de nombres asociados. Para más detalle ver [5]
 
@@ -127,7 +159,7 @@ En general el uso de cada método es bastante explicativo, y más adelante verem
 
 El método OPTIONS se usa para determinar las opciones de comunicación de un recurso, tales como qué métodos HTTP podemos usar contra esa URI. El resultado de OPTIONS no es _cacheable_, ya que el conjunto de métodos que podemos usar puede cambiar con el estado en el que se encuentre el recurso. Junto con HEAD nos permiten descubrir automáticamente cómo podemos comunicarnos con el servidor.
 
-(\*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
+(*) Los métodos HTTP también son llamados verbos HTTP en multitud de fuentes.
 (**) Existen otros métodos que no suelen ser muy usados en servicios REST, como CONNECT o TRACE.
 
 Los tipos MIME
@@ -135,12 +167,7 @@ Los tipos MIME
 
 Otro aspecto muy apropiado para el desarrollo de servicios REST con el protocolo HTTP es su soporte para negociar distantos formatos (representaciones) a usar en la transferencia del estado entre servidor y cliente (y viceversa).
 
-En HTTP cada uno de estos formatos se constituye lo que se llama un tipo MIME distinto y existen muchos tipos MIME estandarizados[6]. Cada tipo MIME tiene el formato de <tipo>/<subtipo>. Algunos tipos MIME muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/plain", "text/rtf", "text/html", "audio/vorbis", "audio/ac3", "image/png", "image/gif", "image/jpeg", "video/H264", "video/ogg", y "video/mpeg".
-
-[NOTE]
-==================================
-Hacer la lista más corta. Podría ser simplemente: «"application/json", "application/xml", "application/atom+xml", "application/javascript", "text/html" y "audio/vorbis"».
-==================================
+En HTTP cada uno de estos formatos se constituye lo que se llama un tipo MIME distinto y existen muchos tipos MIME estandarizados[6]. Cada tipo MIME tiene el formato de <tipo>/<subtipo>. Algunos tipos MIME muy usados: "application/json", "application/xml", "application/atom+xml", "application/javascript", "text/html" y "audio/vorbis".
 
 A veces en el subtipo suele aparecer el caracter "+". Esto indica que el tipo MIME es una variante de otro tipo principal. Por ejemplo "application/atom+xml", indica que el tipo MIME es una variante del más genérico "application/xml" pero siguiendo el XML schema de atom. Otra convención común es que si el subtipo empieza por "x-" entonces el tipo MIME no es estándar, sino propietario.
 
@@ -163,7 +190,6 @@ Un "media range" no sólo especifica una lista de tipos MIME aceptables, sino ta
  c. La expresión \*/*
 
 Pongamos un ejemplo, la siguiente cabecera:
-
 ---------------------------
 Accept: text/*;q=0.3, text/html;q=0.7, text/html;level=1, */*;q=0.5
 ---------------------------
@@ -201,12 +227,7 @@ El uso de muchos de estos códigos de estado es bastante evidente. Más adelante
 QoS en HTTP
 ^^^^^^^^^^^
 
-Existen cabeceras en HTTP que tienen que ver con mejorar la eficiencia de la comunicación. 
-
-[NOTE]
-============================
-¿Quizás convertir todo este apartado en una lista de ejemplos?
-============================
+Existen cabeceras en HTTP que tienen que ver con mejorar la eficiencia de la comunicación.
 
 Por ejemplo, las cabeceras "Content-Encoding" y "Accept-Encoding" nos permiten modificar la codificación del cuerpo de los mensajes. Un caso práctico de esto es comprimir el cuerpo de los mensajes con el algoritmo GZIP para ahorrar ancho de banda.
 
@@ -216,13 +237,7 @@ La cabecera "Upgrade", nos permite cambiar a otro protocolo. Ahora está siendo 
 
 Una cabecera muy usada es "Transfer-Encoding", que nos permite enviar mensajes de longitud variable, lo que es indispensable para hacer streaming.
 
-Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo más adelante veremos aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que sí impactan en el diseño de servicios.
-
-[NOTE]
-=============================
-Cuidado con la expresión «más adelante» si al final partimos el artículo en
-dos...
-=============================
+Afortunadamente como desarrolladores es improbable que tengamos que preocuparnos de todo esto, ya que se gestiona de forma casi transparente a través de la infraestructura. Sin embargo sí que hay aspectos de HTTP relacionados con la calidad de servicio, como la gestión de caché, la seguridad o la concurrencia optimista, que impactan en el diseño de servicios.
 
 HTTP y REST
 ^^^^^^^^^^^
@@ -300,11 +315,6 @@ En general se suele seguir la convención de concatenar el nombre del detalle a 
 
 Volviendo al problema de tener una entidad con un gran volumen de datos, existe otra solución en la que no es necesario descomponerla en varios recursos. Se trata simplemente de hacer un GET a la URI de la entidad pero añadiendo una querystring. Por ejemplo, si queremos ir al capítulo número 3, podemos hacer GET sobre http://www.server.com/rest/libro/23424-dsdff?capitulo=3. De esta forma hacemos una lectura parcial de la entidad, donde el servidor devuelve la entidad libro, pero con sólo el campo relativo al capítulo 3. A esta técnica la llamo "slicing". El usar "slicing" nos lleva a olvidarnos de esta separación tan fuerte entre entidad y colección, ya que un recurso sobre el que podemos hacer "slicing" es, en cierta medida, una entidad y una colección al mismo tiempo.
 
-[NOTE]
-=========================
-¿"una querystring" -> "parámetros GET"?
-=========================
-
 Como se aprecia REST es bastante flexible y nos ofrece diferentes alternativas de diseño, el usar una u otra depende sólo de lo que pensemos que será más interoperable en cada caso. Un criterio sencillo para decidir si hacer "slicing" o descomponer la entidad en recursos de detalle, es cuantos niveles de anidamiento vamos a tener. En el caso del libro, ¿se accederá a cada capítulo como un todo o por el contrario el cliente va a necesitar acceder a las secciones de cada capítulo de forma individual? En el primer caso el "slicing" parece un buen diseño, en el segundo no lo parece tanto. Si hacemos "slicing", para acceder a la sección 4 del capítulo 3, tendríamos que hacer: http://www.server.com/rest/libro/23424-dsdff?capitulo=3&seccion=4. Este esquema de URI es menos semántico, y además nos crea el problema de que puede confundir al cliente y pensar que puede hacer cosas como esta: http://www.server.com/rest/libro/23424-dsdff?seccion=4 ¿Qué devolvemos? ¿Una lista con todas las secciones 4 de todos los capítulos? ¿Un 404 no encontrado? Sin embargo en el diseño orientado a subrecursos es claro, un GET sobre http://www.server.com/rest/libro/23424-dsdff/capitulo/3/seccion/4 nos devuelve la sección 4 del capítulo 3, y sobre http://www.server.com/rest/libro/23424-dsdff/seccion/4 nos debería devolver 404 no encontrado, ya que un libro no tiene secciones por dentro, sino capítulos. Otra desventaja del "slicing" es que la URI no es limpia, y el posicionamiento en buscadores de nuestro recurso puede ser afectado negativamente por esto (sí, un recurso REST puede tener SEO, ya lo veremos más adelante).
 
 A veces no tenemos claro cual va a ser el uso de nuestra API REST. En estos casos es mejor optar por el modelo más flexible de URIs, de forma que podamos evolucionar el sistema sin tener que romper el esquema de URIs, cosa que rompería a todos los clientes. En este caso el sistema más flexible es descomponer la entidad en recursos de detalle, usando colecciones intermedias si es necesario.
@@ -314,49 +324,124 @@ Recordad que se tome la decisión que se tome, esta no debe afectar al diseño i
 Consultas
 ^^^^^^^^^
 
-La operación más común sobre una colección es la consulta o query. Si queremos obtener todos los miembros de una colección, simplemente hay que realizar un GET sobre la URI de la colección. En el ejemplo de los libros sería: http://www.server.com/rest/libro. Yo he puesto "libro" en singular, pero realmente es una colección. ¿Qué nos devolvería esta llamada? Realmente hay dos opciones: una lista con enlaces a todos los libros o una lista de libros, con todos sus datos.
+La operación más común sobre una colección es la consulta. Si queremos obtener todos los miembros de una colección, simplemente hay que realizar un GET sobre la URI de la colección. En el ejemplo de los libros sería: http://www.server.com/rest/libro. Yo he puesto "libro" en singular, pero realmente es una colección. ¿Qué nos devolvería esta llamada? Realmente hay dos opciones: una lista con enlaces a todos los libros o una lista de libros, con todos sus datos.
 
-[NOTE]
-=========================
-¿Podemos quitar el «o query», o quizás dejar «query» en cursiva?
-=========================
+La petición podría ser algo así:
+---------------------------
+GET /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
 
-Un ejemplo del primer caso sería:
-(TODO: Añadir ejemplo select all)
+---------------------------
+
+Una respuesta, donde se devuelvan sólo enlaces:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+
+["http://www.server.com/rest/libro/45",
+ "http://www.server.com/rest/libro/465",
+ "http://www.server.com/rest/libro/4342"]
+---------------------------
+
 Un ejemplo del segundo sería:
-(TODO: Añadir ejemplo select all con datos incrustados)
+
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+
+[ {
+    "id": "http://www.server.com/rest/libro/45",
+    "author": "Rober Jones",
+    "title": "Living in Spain",
+    "genre": "biographic",
+    "price": { currency:"$", amount:33.2}
+  },
+  {
+    "id": "http://www.server.com/rest/libro/465",
+    "author": "Enrique Gómez",
+    "title": "Desventuras de un informático en Paris",
+    "genre": "scifi",
+    "price": { currency:"€", amount:10}
+  },
+  {
+    "id": "http://www.server.com/rest/libro/4342",
+    "author": "Jane Doe",
+    "title": "Anonymous",
+    "genre": "scifi",
+    "price": { currency:"$", amount:4}
+  }]
+---------------------------
 Observen como vienen todos los datos del libro, pero además viene un campo extra "id", con la URI de cada libro.
 
 ¿Qué es mejor? En el primer diseño la respuesta ocupa menos espacio y ahorramos ancho de banda. En el segundo se usa mayor ancho de banda, pero evitamos tener que volver a llamar a las URIs cada vez que queramos traernos los datos de cada entidad, es decir ahorramos en llamadas de red y por lo tanto en latencia. En general sólo uso la primera cuando las entidades son muy grandes, pero como hemos visto en la sección anterior, podemos descomponer las entidades grandes en recursos hijos de detalle. Por lo tanto, el uso de la segunda alternativa para modelar la respuesta a una consulta es más eficiente si lo combinamos con la descomposición de entidades grandes en recursos hijos. Por esta razón, la técnica de "slicing" se usa menos frecuentemente que la otra.
 
-Lo normal en todo caso, no es traerse todos los miembros de una colección, sino sólo los que cumplan unos criterios de búsqueda. La forma más sencilla es definir los criterios de búsqueda en la query string. De esta forma, un GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi, devolvería:
-(TODO: Añadir ejemplo select con parámetros)
+Lo normal en todo caso, no es traerse todos los miembros de una colección, sino sólo los que cumplan unos criterios de búsqueda. La forma más sencilla es definir los criterios de búsqueda en la query string.
 
-Fijaros en el detalle de que los resultados viene ordenados por precio. Normalmente el servidor debería ordenar los resultados de alguna manera en función de la consulta. Si quisiéramos que el cliente definiera en un orden diferente al que proporcionamos por defecto, deberíamos dar soporte a consultas como esta: http://www.server.com/rest/libro?precio_max=20&genero=scifi&ordenarPor=genero&ascendiente=false
+Petición para buscar libros de ciencia ficción con un precio máximo de 20euros
+---------------------------
+GET /rest/libro?precio_max=20eur&genero=scifi HTTP/1.1
+Host: www.server.com
+Accept: application/json
 
-[NOTE]
-===========================
-¿«Fijaros en» -> «Fijaos en»? O, en mi opinión mejor, «Nótese».
-===========================
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
 
-¿Y si queremos buscar una entidad por identificador...? No, eso no se hace, simplemente hay que hacer un GET sobre la URI de la entidad, por lo que consultas por "clave primaria" no tienen sentido dentro de una colección REST.
+[ {
+    "id": "http://www.server.com/rest/libro/4342",
+    "author": "Jane Doe",
+    "title": "Anonymous",
+    "genre": "scifi",
+    "price": { currency:"€", amount:5}
+  },
+  {
+    "id": "http://www.server.com/rest/libro/465",
+    "author": "Enrique Gómez",
+    "title": "Desventuras de un informático en Paris",
+    "genre": "scifi",
+    "price": { currency:"€", amount:10}
+  }]
+---------------------------
 
-Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring. GET sobre http://www.server.com/rest/libro?precio_max=20&genero=scifi&ultimo_precio=12&numero_resultados=10. Fijaos que estamos aprovechando el hecho de que recibimos los datos en orden ascendente de precio, para decirle al servidor mediante "ultimo_precio", que el último resultado que recibimos tenía ese precio, con lo que debe continuar la consulta a partir de ahí. Estamos jugando con la ordenación de los datos para conseguir la paginación. El parámetro "numero_resultados" indica al servidor cuantos resultados queremos como máximo. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
+Nótese el detalle de que los resultados viene ordenados por precio. Normalmente el servidor debería ordenar los resultados de alguna manera en función de la consulta. Si quisiéramos que el cliente definiera en un orden diferente al que proporcionamos por defecto, deberíamos dar soporte a consultas como esta: http://www.server.com/rest/libro?precio_max=20&genero=scifi&ordenarPor=genero&ascendiente=false
 
-[NOTE]
-===========================
-¿«a la querystring» -> «, p.ej.»?
-===========================
+¿Y si queremos buscar una entidad por identificador...? Simplemente hay que hacer un GET sobre la URI de la entidad, por lo que consultas por "clave primaria" no tienen sentido dentro de una colección REST.
+Petición para un libro en particular:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:10}
+}
+---------------------------
+
+Es muy común que una consulta devuelva demasiados datos. Para evitarlo podemos usar paginación. La forma más directa es añadir parámetros de paginación a la querystring. Por ejemplo:
+---------------------------
+GET /rest/libro?precio_max=40eur&genero=romance&ultimo_precio=12&ultimo_id=561f3&numero_resultados=10 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Nótese el parámetro "numero_resultados", que indica al servidor cuantos resultados queremos como máximo. La paginación en si la hacemos usando los parámetros "ultimo_precio" y "ultimo_id", que indican cuál es el último resultado que se ha recibido. De esta forma el servidor debe realizar la consulta de forma que excluya dicho resultado y devuelva los siguientes 10 libros a partir de ése. Estamos jugando con la ordenación de los datos para conseguir la paginación. Existe otra variante para implementar la paginación y consiste en modelar directamente las páginas de resultados como recursos REST. Más adelante se hablará sobre ello.
 
 Tal como se han diseñado las consultas anteriormente, el servidor tiene que estar preparado para interpretar correctamente los parámetros de la querystring. La ventaja es que es muy simple. La desventaja es que el cliente tiene que entender que parámetros hay disponibles y su significado, con lo que es menos interoperable. Existe otra forma de diseñar consultas, que consiste en modelarlas directamente como recursos REST. De esta forma podemos tener consultas que son recursos hijos de la colección principal. Se puede entender este enfoque como crear consultas predefinidas, filtros o vistas sobre la colección principal. En este enfoque podríamos hacer http://www.server.com/rest/libro/novedades y http://www.server.com/rest/libro/scifi para consultar las novedades y los libros de ciencia ficción respectivamente. Sobre estas colecciones hijas podemos añadir parámetros en la querystring para restringirlas más o para hacer paginación. Alternativamente podemos tener colecciones hijas anidadas hasta el nivel que necesitemos.
 
-[NOTE]
-===========================
-¿Quitar «en la querystring», o cambiar por «GET»? Pero, en fin, que yo quitaría
-todos los «querystring» que haya en el artículo.
-===========================
-
-Esta forma de modelar consultas nos da una API mucho más limpia, y como ya veremos más adelante nos permite mayor interoperabilidad. Como mayor inconveniente está que es un enfoque menos flexible, ya que se necesita pensar por adelantado que consultas va a tener el sistema. Por lo tanto suele ser un diseño muy apropiado en aplicaciones de negocio donde normalmente sabemos las consultas que vamos a tener, pero no es muy apropiado en aplicaciones donde el usuario define sus propias consultas en tiempo de uso de la aplicación.
+Esta forma de modelar consultas nos da una API mucho más limpia, y nos permite mayor interoperabilidad. Como mayor inconveniente está que es un enfoque menos flexible, ya que se necesita pensar por adelantado que consultas va a tener el sistema. Por lo tanto suele ser un diseño muy apropiado en aplicaciones de negocio donde normalmente sabemos las consultas que vamos a tener, pero no es muy apropiado en aplicaciones donde el usuario define sus propias consultas en tiempo de uso de la aplicación.
 
 La tendencia de diseño es mezclar ambas opciones. Por un lado modelar explícitamente la consultas que se puedan detectar como colecciones hijas. Por otro lado permitir una consulta genérica, normalmente de texto libre, mediante querystring.
 
@@ -366,48 +451,162 @@ Actualizando
 A la hora de actualizar los datos en el servidor podemos usar dos métodos, PUT y POST. Según HTTP, PUT tiene una semántica de UPSERT, es decir, actualizar el contenido de un recurso, y si éste no existe crear un nuevo recurso con dicha información en la URI especificada. POST por el contrario puede usarse para cualquier operación que no sea ni segura ni idempotente, normalmente para añadir un trozo de información a un recurso o bien crear un nuevo recurso.
 
 Si queremos actualizar una entidad lo más sencillo es realizar PUT sobre la URI de la entidad, e incluir en el cuerpo de la petición HTTP los nuevos datos. Por ejemplo:
-(TODO: Añadir ejemplo de PUT)
-Esto tiene como consecuencia que el nuevo estado del recurso en el servidor es exactamente el mismo que el que mandamos en el cuerpo de la petición. Es decir, la semántica de PUT es una actualización donde reemplazamos por completo los datos del servidor con los que enviamos en la petición.
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Y la respuesta es muy escueta:
+---------------------------
+HTTP/1.1 204 No Content
+
+---------------------------
+Esto tiene como consecuencia que el nuevo estado del recurso en el servidor es exactamente el mismo que el que mandamos en el cuerpo de la petición. La respuesta puede ser 204 o 200, en función de si el servidor decide enviarnos como respuesta el nuevo estado del recurso. Generalmente sólo se usa 204 ya que se supone que los datos en el servidor han quedado exactamente igual en el servidor que en el cliente. Con la respuesta 204 se pueden incluir otras cabeceras HTTP con metainformación, tales como "ETag" o "Expires". Sin embargo en algunos casos, en los que el recurso tenga propiedades de sólo lectura que deban ser recalculadas por el servidor, puede ser interesante devolver un 200 con el nuevo estado del recurso completo, incluyendo las propiedades de solo lectura.
+
+Es decir, la semántica de PUT es una actualización donde reemplazamos por completo los datos del servidor con los que enviamos en la petición.
 
 También podemos usar PUT para actualizar una colección ya existente. Veamos un ejemplo:
-(TODO: PUT simple sobre una colección, para reescribirla)
-En este caso PUT ha sobreescrito los contenidos de la colección por completo, borrando los contenidos anteriores, e insertando los nuevos.
+---------------------------
+PUT /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
 
-En los casos en los que queramos actualizar sólo algunos miembros de la colección y no otros podríamos usar una querystring para delimitar que miembros van a ser actualizados. Veamos un ejemplo:
-(TODO: PUT con querystring sobre una colección)
-La querystring define un subconjunto de recursos sobre la colección, a los cuales se les aplicará la operación PUT. De esta forma conseguimos una manera sencilla de hacer una actualización masiva.
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 204 No Content
+
+---------------------------
+En este caso PUT ha sobreescrito los contenidos de la colección por completo, borrando los contenidos anteriores, e insertando los nuevos. Este tipo de uso de PUT no es algo que se recomiende ya que es bastante peligroso.
+
+En los casos en los que queramos actualizar sólo algunos miembros de la colección y no otros podríamos usar una querystring para delimitar que miembros van a ser actualizados.
+---------------------------
+PUT /rest/libro?genero=scifi HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+La querystring define un subconjunto de recursos sobre la colección, a los cuales se les aplicará la operación PUT. De esta forma conseguimos una manera sencilla de hacer una actualización masiva. ¡ Pero esto haría que todos los libros de ciencia ficción tuvieran los mismos datos ! Realmente esto no es muy útil en este contexto. Pero sí lo es cuando estemos haciendo actualizaciones parciales, como veremos en otra sección.
+
+En algunos casos la actualización no se puede llevar a cabo debido a que el estado del recurso lo impide, tal vez debido a alguna regla de negocio (por ejemplo, no se pueden devolver artículos pasados 3 meses desde la compra). En estos casos lo correcto es responder con un 409.
+--------------------------
+HTTP/1.1 409 Conflict
+
+--------------------------
 
 Borrando
 ^^^^^^^^
 
-Para borrar una entidad o una colección, simplemente debemos hacer DELETE contra la URI del recurso. Veamos algunos ejemplos:
-(TODO: Borrado de entidad dispara borrado entidades hijas)
-(TODO: Añadir ejemplo de borrado de colección)
+Para borrar una entidad o una colección, simplemente debemos hacer DELETE contra la URI del recurso.
+---------------------------
+DELETE /rest/libro/465 HTTP/1.1
+Host: www.server.com
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 204 No Content
+
+---------------------------
+Normalmente basta con un 204, pero en algunos casos puede ser útil un 200 para devolver algún tipo de información adicional.
+
 Hay que tener en cuenta que borrar una entidad, debe involucrar un borrado en cascada en todas las entidades hijas. De la misma forma, si borramos una colección se deben borrar todas las entidades que pertenezcan a ella.
 
 Otro uso interesante es usar una querystring para hacer un borrado selectivo. Por ejemplo:
-(TODO: Añadir ejemplo de borrado masivo)
-Mediante este método podemos borrar sólo los miembros de la colección que cumplen la querystring.
+---------------------------
+DELETE /rest/libro?genero=scifi HTTP/1.1
+Host: www.server.com
+
+---------------------------
+Borraría todos los libros de ciencia ficción. Mediante este método podemos borrar sólo los miembros de la colección que cumplen la querystring.
 
 Creando
 ^^^^^^^
 
 Una forma de crear nuevos recursos es mediante PUT. Simplemente hacemos PUT a una URI que no existe, con los datos iniciales del recurso y el servidor creará dicho recurso en la URI especificada.
-
 Por ejemplo, para crear un nuevo libro:
-(TODO: Añadir ejemplo de creación con PUT)
-También podemos crear una nueva colección, especificando sus datos iniciales:
-(TODO: Añadir ejemplo de creación de colecciones con PUT)
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
 
-También podemos crear nuevos recursos usando POST. En este caso hacemos POST no sobre la URI del nuevo recurso, sino sobre la URI del recurso padre.
-(TODO: Añadir ejemplo de creación con POST)
-También podemos crear colecciones subordinadas:
-(TODO: Añadir ejemplo de creación de colecciones con POST)
-Nótese como el servidor siempre responde con la cabecera Location, indicando la URI del nuevo recurso. Es el servidor quien decide la nueva URI del recurso, no el cliente. Además cuando creamos un nuevo recurso con POST, éste siempre queda subordinado al recurso padre.
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Nótese que la petición es indistinguible de una actualización. El hecho de que se produzca una actualización o se cree un nuevo recurso depende únicamente de si dicho recurso, identificado por la URL, existe ya o no en el servidor. La respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/libro/465
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/465"
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Nótese que el código de respuesta no es ni 200 ni 204, sino 201, indicando que el recurso se creó con éxito. Opcionalmente, como en el caso del ejemplo, se suele devolver el contenido completo del recurso recien creado. Es importante fijarse en la cabecera "Location" que indica, en este caso de forma redundante, la URL donde se ha creado el nuevo recurso.
+
+Otro método para crear nuevos recursos usando POST. En este caso hacemos POST no sobre la URI del nuevo recurso, sino sobre la URI del recurso padre.
+---------------------------
+POST /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/libro/3d7ef
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/3d7ef"
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+En este caso la cabecera "Location" no es superflua, ya que es el servidor quien decide la URL del nuevo recurso, no el cliente como en el caso de PUT. Además cuando creamos un nuevo recurso con POST, éste siempre queda subordinado al recurso padre. Esto no tendría porque ser así con PUT.
 
 ¿Qué es mejor? POST tiene como ventaja que la lógica de creación URIs no está en el cliente, sino bajo el control del servidor. Esto hace a nuestros servicios REST más interoperables, ya que el servidor y el cliente no se tienen que poner de acuerdo en que URIs son válidas y cuáles no, y en el algoritmo de generación de URIs. Por otro lado POST no es idempotente, mientra que PUT sí. Esto hace que PUT sea muy útil para poder recuperarnos de problemas de conectividad. Si el cliente tiene dudas sobre si su petición de creación se realizó o no, sólo tiene que repetirla. Sin embargo esto no es posible con POST, ya que duplicaríamos el recurso en el caso de que el servidor sí atendió a nuestra petición y nosotros no lo supiéramos.
-
-Más adelante veremos como mezclar lo mejor de POST y PUT para conseguir crear recursos de forma eficiente e interoperable.
 
 ¡ No uses CRUD !
 ^^^^^^^^^^^^^^^^
@@ -444,23 +643,62 @@ En servicios REST podemos implementar la concurrencia optimista mediante el uso 
 
 Existen dos tipos de ETag, las fuertes y las débiles. Si el estado del recurso cambia en al menos un bit, una ETag fuerte también cambia de valor. Nos permiten hacer una hash o fingerprint a nivel binario. Las ETag fuertes también tienen en cuenta los valores de las cabeceras HTTP y el formato concreto del documento. Por lo tanto si añadiésemos un espacio a un documento JSON, una ETag fuerte cambiaría, aunque la semántica del JSON no haya cambiado. Para solucionar esto existen las ETag débiles. Las ETag débiles no deberían cambiar con la mínima alteración del contenido de un mensaje HTTP, sino sólo si la semántica del estado del recurso ha cambiado. Sintácticamente podemos distinguir a una ETag fuerte de una débil, ya que la débil debe tener concatenado "W/" como prefijo.Por ejemplo, una ETag fuerte sería: "sdl1kfj3FA", y una débil W/"sdl1kfj3FA".
 
-[NOTE]
-===========================
-¿No debería ser «"W/sdl1kfj3FA"»?
-===========================
-
 Para hacer concurrencia optimista nos basta con ETag débiles. Como ya se dijo, podemos usar en el servidor una hash resistente a colisiones o un número de versión, que se actualizan cada vez que se modifiquen o cree un recurso. Es importante que el cálculo de la ETag sea consistente entre todas las máquinas servidoras en las que está distribuido nuestros servicios REST. Es decir, la ETag debería ser la misma independientemente de que servidor responda a la petición. El valor de la ETag así generado podría persistirse junto con el estado del recurso, para futura referencia.
 
 ¿Y qué tiene todo esto que ver con la concurrencia optimista? Es simple, podemos usar la ETag para detectar los conflictos, y hacer peticiones HTTP condicionales.
 
 Supongamos que hemos recibido lo siguiente del servidor al hacer una petición GET:
-TODO. ejemplo, GET con ETag débil
-El cliente inspeccionando la ETag puede saber la "versión" de los datos y usarlo posteriormente en peticiones condicionales HTTP. Supongamos que el cliente desea realizar una actualización de la entidad recibida, y por lo tanto envía un PUT.
-TODO. PUT con éxito
-En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente. El mensaje de respuesta sería:
-TODO. PUT sin éxito
-El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos desde el servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
 
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+ETag: W/"686897696a7c876b7e"
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:10}
+}
+---------------------------
+
+El cliente inspeccionando la ETag puede saber la "versión" de los datos y usarlo posteriormente en peticiones condicionales HTTP. Supongamos que el cliente desea realizar una actualización de la entidad recibida, y por lo tanto envía un PUT.
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente.
+El mensaje de respuesta, en caso de éxito sería:
+---------------------------
+HTTP/1.1 204 No Content
+ETag: W/"9082aff9627ab7cb60"
+
+---------------------------
+Obsérvese que se devuelve la nueva ETag del recurso modificado. Sin embargo podría haber ocurrido que el recurso hubiera sido modificado antes de que se realice nuestra petición de modificación. Estaríamos ante un conflicto de versiones. En este caso la respuesta sería diferente:
+---------------------------
+HTTP/1.1 412 Precondition Failed
+
+---------------------------
+La respuesta 412 puede ir acompañada de más cabeceras HTTTP.
+
+El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos al servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
 
 Actualizaciones parciales
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -472,27 +710,85 @@ Si lo que queremos hacer realmente es una actualización parcial, la mejor prác
 Sin embargo, pueden existir algunos casos de uso donde este enfoque no sea práctico. Supongamos que por motivos de rendimiento queremos intercambiar entre el cliente y el servidor únicamente los cambios que se produzcan en el recurso, y ahorrar así ancho de banda.
 
 En estos casos estaríamos tentados de usar PUT para mandar sólo esos cambios, algo como lo que sigue:
-(TODO: Añadir ejemplo malo de PUT)
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
+
+{
+  "price": { currency:"€", amount:100},
+  "author": [ "Enrique Gómez Salas", "Juan Pérez" ]
+}
+---------------------------
 Como vemos en este ejemplo, sólo enviamos un documento parcial, con sólo los campos a actualizar. El servidor interpretaría que los campos que no se encuentren en la petición debe dejarlos intacto. Esta forma de usar PUT no es REST, ya que la especificación HTTP dice que el contenido del cuerpo de la petición pasa a ser el nuevo estado del recurso, es decir, el estado del recurso se debe sobreescribir por completo con lo que viene en la petición. Por lo tanto debemos buscar otra alternativa.
 
 Esa alternativa sería POST. Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación sólo nos indica que esa es una de las posibles acciones que se pueden admitir. El método POST sobre una URI se puede interpretar según el estándar de otras formas. En el caso que nos ocupa se puede usar la interpretación de "añadir" en vez de crear un recurso subordinado. La idea es que podemos ir "añadiendo" información al recurso poco a poco. El truco para hacer una actualización parcial es usar un tipo MIME que representa un cambio de estado, o "diff", que se "añade" al estado del servidor. Si mandamos varios de estos "diff" al servidor, éste los va "sumando" y el recurso se va actualizando incrementalmente.
-(TODO: añadir un comentario y un capítulo)
-Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición de actualizar un capítulo?
-(TODO: capítulo duplicado)
-En este caso hemos enviado el mismo "diff" de forma duplicada. Esto hace que la segunda petición sea inconsistente, ya que al haberse procesado el primer "diff" (sin que el cliente lo supiera), el segundo no tiene sentido. En estos casos el servidor debería fallar, con un 409.
-(TODO: fallo con 409)
-Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en qué consiste este conflicto, ya que 409 es un código de error bastante genérico. Es mejor ser más explícito y usar las cabeceras ETag e If-Match para realizar peticiones condicionales:
-(TODO: diff con Etag, ifmatch)
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición pensando que no se ejecutó correctamente en el servidor? Una implementación poco sofisticada del servidor podría volver a aplicar los cambios:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": [ "Enrique Gómez Salas", "Juan Pérez", "Juan Pérez" ],
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:100}
+}
+---------------------------
+En este caso hemos enviado el mismo "diff" de forma duplicada. Esto hace que la segunda petición sea inconsistente, ya que al haberse procesado el primer "diff" (sin que el cliente lo supiera), el segundo no tiene sentido. En estos casos el servidor debería fallar, con un 409, y no duplicar la petición.
+--------------------------
+HTTP/1.1 409 Conflict
+
+--------------------------
+Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en qué consiste este conflicto, ya que 409 es un código de error bastante genérico. Otro problema es que a veces el servidor no podría detectar que la petición es duplicada inspeccionando sólo el cuerpo de esta. En este caso es sencillo, ya que el autor está duplicado, pero en otros casos la cosa no sería tan sencilla.
+
+Debido a estos problemas es mejor usar peticiones condicionales mediante ETag e If-Match cuando hagamos actualizaciones parciales. Por un lado es más explícito y por otro el servidor puede detectar las peticiones duplicadas de forma más sencilla.
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
 Y si existe una duplicación o un problema de carrera el servidor responde con:
-(TODO)
-Que es mucho más explícito y sencillo de depurar.
+---------------------------
+HTTP/1.1 412 Precondition Failed
 
-Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no, nuestra API sería confusa. Ya existen tipos MIME, basados en XPath que representan "diff" en proceso de estandarización[13] y también en formato JSON[14]. 
+---------------------------
+Que es mucho más explícito, sencillo de implementar y de depurar.
 
-[NOTE]
-============================
-Aclarar la redacción de la última frase. No queda claro si el del formato JSON está basado en XPath o no, y si está en proceso de estandarización o no. También me suena un poco raro como está escrito (poniendo tanto la referencia a XPath y al proceso de estandarización en la misma frase).
-============================
+Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no nuestra API sería confusa. Ya existen tipos MIME en proceso de estandarización para representar "diff" entre documentos. Algunos están basados en XPath[13], y otros en formato JSON[14].
 
 Método PATCH
 ^^^^^^^^^^^^
@@ -502,38 +798,154 @@ El problema del sistema anteriormente descrito para realizar actualizaciones par
 Para solucionar este problema se ha propuesto añadir un nuevo método, el método PATCH, que todavía se encuentra en proceso de estandarización[12]. Al igual que POST es un método no seguro y no idempotente, pero tiene una semántica explícita de actualización parcial y sólo admite tipos MIME que representen "diffs". Al ser más explícito la API es más clara.
 
 Todo lo explicado anteriormente sobre actualizaciones parciales se aplica a PATCH. Así el ejemplo anterior quedaría:
-(TODO: ejemplo PATCH)
+--------------------------
+PATCH /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
 
-Sin embargo al ser un método nuevo que todavía no está estandarizado podemos tener problemas de interoperabilidad. Para evitar esto podemos usar la cabecera X-HTTP-Method-Override. Esta cabecera es ignorada por los nodos y servidores antiguos, pero permite indicar a los servidores más modernos que queremos usar un método diferente del especificado en la petición HTTP. Así, el ejemplo anterior quedaría como:
-(TODO: ejemplo con X-HTTP-Method-Override)
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Es exactamente igual que POST pero usando PATCH que es mucho más explícito y deja menos a la interpretación.
+
+Una forma de saber si un recurso admite el método PATCH es hacer una petición con el método OPTIONS:
+--------------------------
+OPTIONS /rest/libro/465 HTTP/1.1
+Host: www.server.com
+
+--------------------------
+Y la respuesta:
+--------------------------
+HTTP/1.1 200 OK
+Allow: GET, PUT, POST, OPTIONS, HEAD, DELETE, PATCH
+Accept-Patch: application/book-diff+json
+Content-Length: 0
+
+--------------------------
+La respuesta indica los métodos aceptables por el recurso. En el caso de que se soporte PATCH, se debe incluir la cabecera "Accept-Patch" que indica que formatos mime se pueden usar con el método PATCH.
+
+Sin embargo al ser un método nuevo que todavía no está estandarizado podemos tener problemas de interoperabilidad. Puede ser que el servidor no lo implemente, o que algún firewall bloquee dicho método. Para evitar esto podemos usar la cabecera "X-HTTP-Method-Override". Esta cabecera es ignorada por los nodos y servidores antiguos, pero permite indicar a los servidores más modernos que queremos usar un método diferente del especificado en la petición HTTP. Así, el ejemplo anterior quedaría como:
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+X-HTTP-Method-Override: PATCH
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
 Como se observa, para cualquier servidor o nodo que no entienda PATCH, la petición sería un POST. Pero en los casos en los que el servidor sí entienda PATCH, ignorará POST.
+
+Actualmente PATCH está soportado por las APIs públicas de grandes compañías como Google o GitHub.
 
 Cache
 ~~~~~
 
-Es importante saber cuándo un cliente, o un nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuándo no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
+Es importante saber cuándo un cliente, nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuando no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Esto es clave si queremos diseñar APIs REST que tengan una alta escalabilidad. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
 
 Una forma de controlar la cache es mediante ETag. La cache puede hacer un GET condicional al servidor mediante la cabecera If-None-Match. De esta forma el servidor puede responder con la nueva información (y la nueva ETag) en el caso de que ésta haya cambiado.
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-None-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
 
-TODO: Un ejemplo con cambio de Etag
+---------------------------
+El recurso sólo será devuelto por el servidor en el caso de que se haya producido algún cambio y el valor de la ETag haya cambiado. Por ejemplo:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+ETag: W/"9082aff9627ab7cb60"
+Last-Modified: Wed, 01 Sep 2012 13:24:52 GMT
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
 En el caso de que el recurso no haya cambiado el servidor respondería lo siguiente.
-TODO: Ejemplo, no hay cambios.
-De esta manera la cache se asegura que el recurso no ha cambiado, y ahorramos ancho de banda y procesamiento en servidor.
+--------------------------
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
 
-Otra variante de esto es usar las cabeceras If-Modified-Since y Last-Modified. Un ejemplo en caso de que los datos no hayan cambiado
-TODO: Ejemplo Last-Modified
-Si los datos hubieran cambiado sería como sigue.
-TODO: Ejemplo Last-Modified, con cambios
-Observese que se devuelve el nuevo valor de Last-Modified. Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
+--------------------------
+El código 304 indica que el recurso que se pide no ha cambiado y realmente el contenido es el mismo. Con la respuesta se pueden enviar más cabeceras HTTP. De esta manera la cache se asegura que el recurso no ha cambiado, y ahorramos ancho de banda y procesamiento en servidor.
+
+Otro método para gestionar la caché es usar las cabeceras If-Modified-Since y Last-Modified. En este caso no se mira ETag, sino sólo la última fecha de modificación del recurso que tenga el servidor (aunque la nueva versión del recurso se semánticamente equivalente a la que tiene el cliente).
+La petición tendría la siguiente forma:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Modified-Since: Wed, 01 Sep 2012 13:24:52 GMT
+Content-Type: application/json
+
+---------------------------
+En el caso que se hubiera producido una modificación posterior a la fecha especificada la respuesta sería:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Si por el contrario los datos siguieran siendo los mismos:
+--------------------------
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
+
+--------------------------
+Observese que se devuelve el nuevo valor de Last-Modified.
+
+Es importante tener en cuenta que la interpretación de la fecha se hace con respecto al reloj del servidor, pudiendo producirse problemas si el cliente y el servidor tienen los relojes muy desincronizados.
+
+Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
 
 Algunos os preguntareis por qué no usar Last-Modified en vez de ETag. Al fin y al cabo parece más simple de calcular en servidor. La razón es que algunas caches, notoriamente la cache de IE, no soportan correctamente If-Modified-Since, pero sí lo hacen bien con If-None-Match. Por otra parte algunos servidores de cache antiguos no soportan ETag. Por lo tanto se aconseja mezclar ETag y Last-Modified para un óptimo control de cache.
 
-Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Veamos un ejemplo.
-TODO: ejemplo cache por tiempo
-De esta forma si volvemos a pedir los datos a la cache, y no han pasado cinco minutos, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando los cinco minutos expiren, la cache volverá a intentar comprobar si los datos han cambiado o no.
-
-También podemos desactivar la cache en el caso de que sepamos positivamente que siempre vamos a tener cambios:
-TODO: ejemplo desactivar cache
+Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Este es el motivo por el que en las respuestas de los anteriores ejemplos se incluyen estas cabeceras. Si pedimos los datos a un nodo de cache, y no se ha cumplido el plazo especificado mediante Cache-Control y/o Expires, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando este tiempo expire, la cache volverá a intentar comprobar si los datos han cambiado o no, normalmente usando tanto If-Match como If-Modified-Since.
 
 Como se ve, el uso combinado de GET condicionales con las cabeceras de control de cache basada en tiempos, nos permiten un control fino de la cache. De esta forma podemos aprovechar la infraestructura de cache de nuestra red, e incluso de internet, pero a la vez asegurarnos que el cliente de nuestro servicio REST no se quede con datos obsoletos y vea los cambios.
 
@@ -550,37 +962,68 @@ La forma de solucionar esto es haciendo trabajar juntos a PUT y a POST. En este 
 
 Resumiendo:
 
-* El cliente hace POST a un recurso "factoría", encargado de crear recursos "virtuales".
-* El servidor devuelve la URI de ese nuevo recurso "virtual"
-* El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
-* El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
-
-[NOTE]
-===========================
-Yo cambiaría esta lista a numerada.
-===========================
+1. El cliente hace POST a un recurso "factoría", encargado de crear recursos "virtuales".
+2. El servidor devuelve la URI de ese nuevo recurso "virtual"
+3. El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
+4. El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
 
 Como se aprecia el truco consiste en que el recurso no se crea realmente hasta que no se recibe el PUT. Sin embargo queda un problema por resolver: si no almacenamos nada ni en memoria ni en soporte persistente, ¿cómo puede el servidor saber que la URI que le llega en el PUT es legítima? Al fin y al cabo no queremos que el cliente genere las URIs, sino que el servidor controle tal cosa. Lo ideal sería que si el cliente nos manda un PUT a una URI que no existe devolvamos un código 403, indicando que el cliente no tiene permiso para generar recursos en URIs que no sean asignadas por el servidor.
 
 Una solución inocente sería almacenar en algún sitio, en memoria tal vez, las URIs de los recursos, y chequear contra esta información la URI de la petición PUT. Sin embargo esto contradice el principio de que los recursos "virtuales" no deben ocupar espacio en servidor. De lo contrario el cliente no podría reintentar el POST con la seguridad de que no va a pasar nada malo.
 
-La solución consiste en generar una URI desechable. Las URIs desechables pueden ser reconocidas como legítimas por el servidor a simple vista, y no pueden ser falsificadas por el cliente. De esta forma no se se necesita almacenar la URI ni en memoria ni en soporte persistente. ¿Cómo generar una URI desechable? La forma más simple es tener en el servidor una clave secreta y un generador de UUID. La idea sería que cada vez que el servidor reciba un POST, genere un nuevo UUID, le concatene la clave secreta y el resultado lo pase por una función hash criptográfica. El resultado de este proceso es una firma de la URI. Esta firma es concatenada con el UUID anteriormente generado. Esto termina generando un identificador que se transforma en el último segmento del path de la URI.
+La solución consiste en generar una URI desechable. Las URIs desechables pueden ser reconocidas como legítimas por el servidor a simple vista, y no pueden ser falsificadas por el cliente. De esta forma no se se necesita almacenar la URI ni en memoria ni en soporte persistente. ¿Cómo generar una URI desechable? La forma más simple es tener en el servidor una clave secreta y un generador de UUID. La idea sería que cada vez que el servidor reciba un POST, genere un nuevo UUID, le concatene la clave secreta y el resultado lo pase por una función hash criptográfica. El resultado de este proceso es una firma de la URI. Esta firma es concatenada con el UUID anteriormente generado. Esto termina generando un identificador que se transforma en el último segmento de la ruta de la URI.
 
   FIRMA = HASH(UUID+SECRETO)
   URI = URI_RECURSO_PADRE + "/" + UUID + "_" + FIRMA
 
-Cuando el servidor reciba un PUT, es tan sencillo como extraer el UUID del último segmento del path de la URI, calcularle la firma, y ver si coinciden. Si es así la URI es legítima, si no, debemos devolver 403. Esta lógica puede hacerse genérica a todas las peticiones PUT e implementarse en un filtro común a todas las URIs.
+Cuando el servidor reciba un PUT, es tan sencillo como extraer el UUID del último segmento de la ruta de la URI, calcularle la firma, y ver si coinciden. Si es así la URI es legítima, si no, debemos devolver 403. Esta lógica puede hacerse genérica a todas las peticiones PUT e implementarse en un filtro común a todas las URIs.
 
 Veamos un par de ejemplos de uso de esta técnica.
 
 Crear recursos
 ^^^^^^^^^^^^^^
 
-Primero el cliente hace un POST al recurso colección:
-TODO: ejemplo
+Primero el cliente hace un POST al recurso colección, sin datos:
+---------------------------
+POST /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34
+
+---------------------------
 El cliente, usando la URI que le ha sido devuelta en la cabecera location, realiza un PUT con los datos de la nueva entidad.
-TODO: ejemplo
-De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. 
+---------------------------
+PUT /rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Con esta petición el "recurso virtual" representado por la URI se transforma en un recurso con los datos especificados en la petición PUT. La respuesta:
+---------------------------
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34"
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. De esta forma podemos repetir todas las veces que queramos la petición POST porque generar URIs de "recursos virtuales" no consumen apenas recursos, y por supuesto podemos repetir la petición PUT para transformar el "recurso virtual" en uno real, ya que PUT es idempotente.
 
 Comando
 ^^^^^^^
@@ -588,17 +1031,80 @@ Comando
 Una forma de modelar operaciones de negocio genéricas es transformar las operaciones en recursos. Por ejemplo, si queremos comprar un libro, en vez de tener una URI https://www.server.com/rest/comprar, la URI debería ser https://www.server.com/rest/compra. Nótese la diferencia entre el verbo y el nombre.
 
 ¿Como haríamos una compra? Primero haríamos un POST al recurso "compra" para que nos asignase un identificador de nueva compra en forma de URI:
-TODO: ejemplo
+---------------------------
+POST /rest/compra HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f
+
+---------------------------
 
 Después podemos confirmar la compra mediante un PUT a dicha URI, indicando los datos de compra en el cuerpo del PUT.
-TODO: ejemplo
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
 
 Lo interesante es que podríamos consultar el estado de la compra haciendo un GET a dicha URI.
-TODO: ejemplo
-O incluso solicitar la anulación de la compra haciendo un nuevo PUT:
-TODO: ejemplo
+---------------------------
+GET /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
 
-No es el caso de la "compra", pero a veces la operación se puede deshacer por completo sin ningún problema. Si se puede hacer esto o no depende del dominio de negocio. Para deshacer un comando basta con borrarlo mediante DELETE.
+---------------------------
+Y la respuesta indicando que la compra está en fase de aprobación:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "verifying"
+}
+---------------------------
+
+También podríamos solicitar la anulación de la compra haciendo un nuevo PUT:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "canceled"
+}
+---------------------------
+El si se puede o no cancelar la compra y que implica eso depende de la lógica de negocio. Otra forma de cancelar la compra sería usar una actualización parcial del campo "status", ya sea usando PATCH o POST. En cualquier caso si la compra ya no se pudiera cancelar o modificar alguno de sus detalles, se debería devolver 409 (Conflict).
+
+No es el caso de la "compra", pero a veces la operación se puede deshacer por completo sin ningún problema. Si se puede hacer esto o no depende del dominio de negocio. En estos casos lo más simple sería usar DELETE para borrar el comando.
 
 Como vemos el patrón comando, implementado con una combinación de PUT y POST, nos da una gran flexibilidad no sólo a la hora de implementar operaciones arbitrarias, sino también procesos de negocio.
 
@@ -623,9 +1129,10 @@ Mediante la cabecera Accept-Charset el cliente puede especificar al servidor los
 Lo mismo podemos hacer con la cabecera Accept-Language, definir una lista por orden de preferencia de los lenguajes que desea el usuario. El servidor debe incluir en la respuesta la cabecera Content-Language indicando el idioma escogido.
 
 Ejemplos:
-
-  Accept-Charset: iso-8859-5, unicode-1-1;q=0.8
-  Accept-Language: da, en-gb;q=0.8, en;q=0.7
+--------------------------
+Accept-Charset: iso-8859-5, unicode-1-1;q=0.8
+Accept-Language: da, en-gb;q=0.8, en;q=0.7
+--------------------------
 
 Seguridad
 ~~~~~~~~~
@@ -657,24 +1164,41 @@ Si queremos un mayor nivel de seguridad, o incluso prescindir de HTTPS, podemos 
 Autenticación y autorización
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafío/respueste mediante la cabecera WWW-Authenticate.
+El primer paso a implementar es un esquema de autenticación. Para ello HTTP nos proporciona un mecanismos desafío/respuesta mediante la cabecera WWW-Authenticate.
 
 La idea es que cuando se realiza una petición a un recurso REST protegido, y la petición no lleva credenciales adecuadas, el servidor responde con un 401 que contiene una cabecera WWW-Authenticate. En dicha cabecera se detalla el tipo de credenciales que se necesita y el dominio de seguridad.
-TODO. Ejemplo de esto
-El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes
-TODO. ejemplo de esto
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+El servidor respondería:
+---------------------------
+HTTP/1.1 401 Authorization Required
+WWW-Authenticate: Basic realm="catalog"
+
+---------------------------
+En este caso el servidor indica que se necesitan las credenciales para el área de seguridad "catalog", credenciales que han de corresponder al protocolo "Basic"[8]. El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Authorization: Basic Y29udHJhc2XxYTpzZWNyZXRh
+
+---------------------------
 Si el servidor considera que las credenciales son suficientes, permite el acceso al recurso. Si por el contrario considera que el cliente, aunque posee credenciales válidas, no posee permisos suficientes para acceder al recurso, devuelve un 403.
-TODO. ejemplo de esto.
+---------------------------
+HTTP/1.1 403 Forbidden
+Content-Type: application/json
+
+{"reason":"Not enough security level"}
+---------------------------
 Puede ocurrir que el servidor dictamine que la credenciales no identifican a un usuario del sistema. En ese caso debe devolver un 401 con un nuevo WWW-Authenticate.
 
-En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y password en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
+En la especificación [8] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y contraseña en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
 
 El otro algoritmo, "Digest", es más seguro y usa unas credenciales que no contienen la password en claro, como es el caso de "Basic". Esto permite autenticarse con seguridad sobre HTTP, sin necesidad de usar HTTPS. Detalles en [8].
-
-[NOTE]
-======================
-¿No se debería usar «contraseña» en vez de «password»?
-======================
 
 ¿Necesito una sesión HTTP?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -696,21 +1220,41 @@ Peticiones asíncronas o de larga duración
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Algunas operaciones pueden representar acciones de larga duración o que desencadenen un workflow. En estos casos puede ser interesante no responder con 201 o 200 a una petición, sino con 202 'Accepted'. Este código indica que la operación ha sido aceptada por el servidor pero que tardará un tiempo en realizarse, y es ideal para modelar peticiones asíncronas. Normalmente en la respuesta se incluye una referencia a una URI que nos indicará el progreso de la operación, y que podremos consultar cada cierto tiempo.
-TODO: ejemplo de esto
+Supongamos el ejemplo anterior sobre el pago:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
+Si la pasarela de pago va a tardar o simplemente se debe producir un workflow interno de aprobación manual, la petición no se puede dar por terminada, asi que lo mejor es avisar al cliente que estamos trabajando en ella:
+---------------------------
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+
+{"status":"verifying"}
+---------------------------
+Las respuestas 202 pueden contener un cuerpo con indicación del estado actual del recurso. En el caso de que fuera una petición de creación (ya sea con PUT o POST) contendrá una cabecera Location.
+
 
 Más allá de CRUD: Hyperdata (HATEOAS) 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-[NOTE]
-========================
-¿Quizás esto debería ir en el artículo de CRUD, si lo separamos?
-========================
 
 Es muy tentador cuando se comienza a trabajar con REST el definir APIs que modelan interfaces CRUD. Cada URI representa una tabla, o entidad de negocio, y mediante los verbos HTTP definimos las operaciones de edición y lectura. Como ya se comentado, este enfoque puede ser peligroso ya que podemos acoplar nuestra API web a la implementación concreta de nuestro modelo de persistencia.
 
 Sin embargo el principal problema es que con el enfoque CRUD, en realidad no estamos diseñando una web de recursos de información, sino un conjunto de operaciones desconectadas entre sí que no representa realmente nuestro negocio. En este sentido, al diseñar CRUD, lo que estamos haciendo es exponer nuestra capa de datos mediante una API pública, y hacemos que todo el peso de interpretar e implementar la lógica de negocio caiga en el consumidor de nuestra API, con los lógicos problemas que esto acarrea. La API de nuestros servicios web deberían exponer los distintos casos de uso de nuestra aplicación, y no una mera interfaz de persistencia de datos. Es exactamente la misma diferencia que hay entre una aplicación de mantenimiento de tablas, y una aplicación con una UX orientada a que los usuarios completen casos de uso de nuestro negocio de la forma más efectiva posible.
 
-Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: HATEOAS. No es que realmente HATEOAS sea una cosa diferente de REST, sino que más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de esta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
+Durante la primera fase de adopción de REST la mayoría de los proyectos definieron interfaces CRUD para sus recursos. Esto provocó que numerosos autores acuñara un nuevo término para REST: Hypermedia As The Engine Of Application State (HATEOAS). No es que realmente HATEOAS sea una cosa diferente de REST, sino que más bien es una aclaración al concepto de REST, haciéndo énfasis en el desarrollo de una web de servicios en contraposición a diseñar un conjunto inconexo de fuentes de datos. Pero realmente la visión original de REST[1] no se distingue de HATEOAS, aunque lamentablemente la parte más importante de esta filosofía, el crear una web de recursos de información interrelacionadas, fue ampliamente ignorada en un principio.
 
 La web de servicios
 ^^^^^^^^^^^^^^^^^^^
@@ -723,19 +1267,30 @@ Decimos que una API REST cumple HATEOAS, cuando:
 * Cada recurso debería poder ser servido en tantos formatos (tipos MIME) como tenga sentido.
 * Las operaciones sobre cada recurso deberían estar codificadas en forma de enlaces dentro de éste. De esta forma no podremos cambiar el estado del sistema si no es siguiendo un enlace.
 
-La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto, por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema. Por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
-
-[NOTE]
-====================
-Yo cambiaría las dos frases que empiezan por «Las reglas de HATEOAS [...]» por «Las reglas de HATEOAS hacen precisamente esto: por un lado [...]; por otro lado no es [...]».
-
-Otra cosa: ¿qué demonios significa HATEOAS? :-)
-====================
+La idea general es aumentar al máximo la interoperabilidad disminuyendo la cantidad de información que necesitamos documentar para que un posible programador implemente un cliente para nuestra API. Esto sólo se puede conseguir si las capacidades de nuestro sistema se pueden descubrir siguiendo un conjunto sencillo de reglas o convenciones. Las reglas de HATEOAS hacen precisamente esto: por un lado no es necesario documentar todas las URIs de tu sistema, sino sólo una URI principal, desde la cual puedes descubrir el resto del sistema; por otro lado no hay que describir si para un determinado recurso la inserción o la actualización se realiza con PUT o con POST, o si para borrarlo basta hacer DELETE o hay que seguir otro proceso más complejo. Simplemente hay que examinar el documento obtenido por la anterior petición, y buscar que enlaces hay presentes. Estos enlaces son los que me indican qué conjunto de operaciones y recursos puedo hacer a continuación.
 
 Por ejemplo en una tienda, podríamos tener una URI principal, 'http://www.shop.com/home', con enlaces a todos los subsistemas que ofrezcamos mediante REST.
-TODO: ejemplo,
- <link uri="/shop/products" rel="http://www.shop.com/linkrels/products" title="Product catalog"/>
- <link uri="/shop/orders" rel="http://www.shop.com/linkrels/orders" title="Orders"/>
+---------------------------
+GET /home HTTP/1.1
+Host: www.shop.com
+Accept: application/x-shop.home+json,application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.home+json
+
+{
+  "links": [
+    { "href": "/home", "title": "Shop home", "rel": "self" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/orders", "title": "Orders system", "rel": "http://www.shop.com/linkrels/orders" }
+  ]
+
+  ... other data ...
+}
+---------------------------
 En este ejemplo la página principal actúa como directorio, y consiste principalmente en una lista de enlaces a los distintos subsistemas. En este ejemplo seguimos la convención de especificar en el atributo 'title' una descripción para humanos de lo que representa el enlace. Esto es interesante si el consumidor del recurso es realmente una UI, ya que podría generar una representación, tal vez un botón o un enlace HTML, de la acción representada por el enlace. Sin embargo el atributo realmente importante es 'rel'. En este atributo es donde se especifica el significado de seguir ese link. Son los posibles valores que puede tomar 'rel' dentro de nuestro sistema lo que tendremos que documentar. Ya existen algunos valores estandarizados[11], pero en este caso se ha optado por usar valores propietarios del sistema, indicándolo mediante el prefijo 'http://www.shop.com/linkrels'. Se ha usado una URL y no una URN, porque el significada de cada tipo de enlace debe ser documentado. Al usar una URL podemos indicar no sólo el tipo de enlace, sino la página web donde se encuentra la documentación sobre ese tipo de enlace. En dicha  documentación deberíamos especificar el significado exacto de la relación, y que métodos HTTP son admisibles.
 
 Para resumir, en el enfoque HATEOAS la interfaz de nuestra API, que es lo que tenemos que documentar, consta de:
@@ -751,98 +1306,388 @@ Consultas autodescubribles
 Lo más sencillo de modelar son las consultas. Como se explicó antes, las consultas se realizan mediante una petición que use el método GET a la URI del recurso colección. Sin embargo, el enfoque HATEOAS nos dice que en vez de tener que especificar una URI para cada colección, éstas deberían ser descubribles como enlaces dentro de otro recurso.
 
 Supongamos el ejemplo anterior de la tienda, si seguimos el enlace marcado como 'linkrels/products', llegamos al siguiente documento:
-TODO
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.collection+json
+
+{
+  "links": [
+    { "href": "/shop/products", "title": "Product catalog", "rel": "self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/books", "title": "Books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+    { "href": "/shop/products{?maxprice,minprice,description,popularity}", "title": "Search products", "rel": "http://www.shop.com/linkrels/search", "template": true }
+  ],
+
+  ... other data ...
+}
+---------------------------
 En este documento existen enlaces a algunas consultas frecuentes, como 'linkrels/products/search/books', o 'linkrels/products/search/offers'. Basta con hacer un GET a la URI de dichos enlaces para acceder a las consultas de 'libros disponibles en la tienda' y 'productos de oferta'.
 
-Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search',
-este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso
-no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que
-parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está
-trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que
-existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
+Un tipo de enlace curioso es rel="self", que es estándar y que indica la URL del recurso en si. Es útil cuando encontramos el recurso embebido dentro de otro recurso.
 
-En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,description,popularity}', con lo cual podremos construir una
-consulta usando query strings como la siguiente '/shop/products?maxprice=100&description=vampires'. Las URI Template
-tienen una sintaxis muy rica que nos permiten una gran flexibilidad a la hora de definir nuestro esquema de URIs,
-para más detalles ver [9]. Aprovechando algunas de las implementaciones que existen[10] de este estándar podemos
-consumir las URI Template de forma sencilla, y generar la URI que necesitamos para realizar una acción en función de
-los parámetros que nos interesen.
+Otro caso más interesante lo constituye los enlace de tipo '/linkrels/products/search', este tipo de enlace es una consulta genérica que admite parámetros. Si nos fijamos la URI es algo rara. En este caso no se trata de una URI en sí, sino de una URI Template[9]. Las URIs Template nos permiten averiguar las reglas según las cuales podemos construir una URI en función a los valores de una serie de parámetros. En este caso nos resultan muy útiles para saber que parámetros de consulta están disponibles y cómo construir una URI de consulta a partir de éstos. Actualmente se está trabajando en la estandarización de las URI Template[9], y si usamos una de las múltiples implementaciones que existen de este mecanismo[10], podemos aprovecharnos de este incipiente estándar sin apenas esfuerzo.
+
+En el caso del ejemplo, la uri template es '/shop/products{?maxprice,minprice,description,popularity}', con lo cual podremos construir una consulta usando query strings como la siguiente '/shop/products?maxprice=100&description=vampires'. Las URI Template tienen una sintaxis muy rica que nos permiten una gran flexibilidad a la hora de definir nuestro esquema de URIs, para más detalles ver [9]. Aprovechando algunas de las implementaciones que existen[10] de este estándar podemos consumir las URI Template de forma sencilla, y generar la URI que necesitamos para realizar una acción en función de los parámetros que nos interesen.
 
 Si seguimos el enlace para buscar las ofertas (rel='linkrels/products/search/offers'), el documento que nos devolvería sería el siguiente:
-TODO
-Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultado podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.collection+json
 
-[NOTE]
-====================
-No estoy seguro de si el «de resultado» debería ser «de resultados» o si fue queriendo...
-====================
+{
+  "links": [
+    { "href": "/shop/offers", "title": "Special offers (1st page)", "rel": "self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers/page/2?pasesize=10", "title": "Next page", "rel": "next" },
+    { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
+    { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
+  ],
+  "items": [
+    {
+      "links": [
+        { "href": "/shop/products/43", "title": "Fantastic book", "rel": "self" },
+        { "href": "/shop/products/43/orderform?basket=234255", "title": "Add this product to my shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+      ],
+      "author": "Enrique Gómez Salas",
+      "title": "Desventuras de un informático en Paris",
+      "genre": "scifi",
+      "price": { currency:"€", amount:5}
+    },
+    .... Más productos, hasta completar 10 (tamaño de la página) ...
+  ]
+}
+---------------------------
+Obsérvese que en vez de devolver una lista de productos, nos devuelve una página de resultados. En esta página de resultados podemos ver que tenemos más enlaces: a la siguiente página (rel='next'), saltar directamente a una página (rel='linkrels/goto') usando una URI template, o cambiar el orden en el que se nos presentan los datos (rel='linkrels/orderby'). Además cada entrada de resultados viene anotado con sus propios enlaces, que nos permiten realizar acciones sobre éstos.
 
 Si seguimos el enlace (rel='next') se nos presenta el siguiente documento:
-TODO
-En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones consistentes con el estado actual.
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.collection+json
 
-[NOTE]
-====================
-En este contexto prefiero «coherente» a «consistente», pero lo dejo a tu elección...
-====================
+{
+  "links": [
+    { "href": "/shop/offers/page/2", "title": "Special offers (2nd page)", "rel": "self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "First page", "rel": "first" },
+    { "href": "/shop/offers", "title": "Previous page", "rel": "prev" },
+    { "href": "/shop/offers/page/3?pasesize=10", "title": "Next page", "rel": "next" },
+    { "href": "/shop/offers/page/{n}?pagesize=10", "title": "Go to page", "rel": "http://www.shop.com/linkrels/goto", "template": true },
+    { "href": "/shop/offers{?orderby}", "title": "Offers ordered by", "rel": "http://www.shop.com/linkrels/orderby", "template": true }
+  ],
+  "items": [
+    .... Más productos, hasta completar 10 (tamaño de la página) ...
+  ]
+}
+---------------------------
+En este documento aparecen nuevos enlaces, como la posibilidad de volver atrás (rel='prev') o a la primera página (rel='first'). Estos enlaces no aparecían en el anterior documento, ya que éste representaba la primera página de resultados. En el enfoque HATEOAS no se deben incluir enlaces que representen acciones no admisibles por el estado actual del sistema, únicamente aparecerán los enlaces para las acciones que sean consistentes con el estado actual.
 
 En el enfoque HATEOAS las consultas y la paginación vienen integradas. Los resultados de las búsquedas son más que meros contenedores pasivos de datos, sino que incluyen posibles acciones sobre éstos en forma de links. Por lo tanto es prácticamente gratis añadir enlaces que soporten un modelo de consultas paginadas.
 
-Acciones como enlaces o formularios
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Controles hipermedia (1): Acciones como enlaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Parece que la parte de consulta de nuestro sistema es bastante intuitiva, pero, ¿cómo modelamos acciones que puedan cambiar el estado del sistema? Es simple, siguiendo los enlaces adecuados usando un verbo HTTP que represente un cambio de estado como PUT, POST y DELETE. Qué verbo usar, y qué efecto se produce, debería estar documentado para cada tipo de enlace. En cualquier caso yo recomiendo respetar la semántica original de los verbos HTTP[2b], para ello podemos seguir las indicaciones dadas en secciones anteriores sobre cuando usar cada verbo.
 
-El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". Volvamos al ejemplo la búsqueda de productos:
-TODO uri='user/basket/234255/items/45sf245'
-Se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Si sólo queremos añadir productos podemos usar POST. Veamos que ocurre si hacemos GET sobre la cesta:
-TODO
-Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente. Veamos que pasa si hacemos POST:
-TODO
-Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Como POST no es idempotente si enviamos la siguiente petición:
-TODO
-Obtenemos la siguiente respuesta:
-TODO.
-Lo cual es totalmente consistente con el hecho de que la semántica de POST es aditiva. En este caso hemos añadido más ejemplares del libro y otro libro nuevo. En el caso de cada línea de pedido tenemos enlaces que nos permiten editar. Por ejemplo si hacemos la siguiente petición siguiendo el enlace de la primera línea de pedido:
-TODO
-Hemos conseguido cambiar la cantidad de ejemplares que queremos. Si seguimos el enlace de tipo 'linkrek/basket', volvemos al carrito de la compra que queda como:
-TODO
-También podemos borrar una línea de pedido completa:
-TODO
-Y el carrito quedaría:
-TODO
-Ahora sólo nos queda pagar. Tan sencillo como hacer PUT con la información de nuestro medio de pago:
-TODO
-De nuevo un ejemplo de "URI desechable". El resultado de esta petición es:
-TODO
-El servidor se nos indica que tenemos un recibo de nuestro pedido. Si hacemos GET sobre éste:
-TODO
-Vemos que podemos hacer polling sobre él para saber el estado de nuesto pedido, o cancelarlo y que nos devuelvan el dinero. Cuando en el futuro nuestro pedido esté completo, si volvemos a hacer GET:
-TODO
-Con lo cual se ve que una vez enviado, no es tan sencillo como devolver el dinero, pero sí podemos hacer una devolución del producto.
+El diseño de APIs HATEOAS trabaja especialmente bien con la técnica anteriormente explicada de "URIs desechables". En el ejemplo anterior se observa que el resultado incluye un enlace de tipo 'linkrels/basket'. No sólo eso sino que cada producto tiene además un enlace de tipo 'linkrels/addtobasket'. Si consultamos la documentación sobre este tipo de enlaces, vemos que el primero representa la cesta de la compra del usuario. Se puede consultar con GET, y sobreescribir por completo con PUT. Veamos que ocurre si hacemos GET sobre la cesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
 
-Obviamente estoy simplificando. En realidad el workflow es probable que sea más complejo, y por supuesto cada petición debería ir securizada con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "/shop/basket/234255/items", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/items" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [],
+  "total": { currency: "€", amount: 0 }
+}
+---------------------------
+Obtenemos una cesta vacía. No hemos tenido que crear la cesta de ninguna forma. Es un caso claro de uso de "URIs desechables". Mientras no rellenemos la cesta, esta seguirá siendo un recurso vacío y no necesitaríamos almacenarla de forma persistente ya que su representación se puede generar desde cero.
 
-[NOTE]
-====================
-¿«asegurada» o «protegida» en vez de «securizada»?
-====================
+Para añadir productos a la cesta podemos usar el enlace con rel="/linkrels/basket/items". La documentación nos indica que hagamos un POST para crear una linea de pedido y que después hagamos un PUT indicando el identificador de producto y la cantidad.
+
+Primero pedimos abrir una nueva línea de pedido en la cesta de la compra:
+---------------------------
+POST /shop/basket/234255/items HTTP/1.1
+Host: www.shop.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.shop.com/shop/basket/234255/items/ecafadfj312_dad0348
+
+---------------------------
+Ahora confirmar la línea de pedido, indicando producto y cantidad
+---------------------------
+PUT /shop/basket/234255/items/ecafadfj312_dad0348 HTTP/1.1
+Host: www.shop.com
+Accept: application/json
+Content-Type: application/x-shop.orderitem+json
+
+{
+  "quantity": 2,
+  "product-ref": "http://www.shop.com/shop/products/43"
+}
+---------------------------
+Y la respuesta del servidor, con la linea de pedido creada:
+---------------------------
+HTTP/1.1 200 OK
+Content-Type: application/x-shop.orderitem+json;charset=utf-8
+
+{
+  "links": [
+    { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "this order line", "rel": "self" },
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+  ],
+  "quantity": 2,
+  "product-ref": "http://www.shop.com/shop/products/43"
+}
+---------------------------
+Para ver como queda la lista de la compra seguimos el enlace de tipo rel="/linkrels/basket":
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
+
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "/shop/basket/234255/items", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/items" },
+    { "href": "/shop/basket/234255/payment", "title": "Products in the shopping list", "rel": "http://www.shop.com/linkrels/basket/payment" },
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [
+    {
+      "links": [
+        { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "this order line", "rel": "self" },
+        { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+      ],
+      "quantity": 2,
+      "product-ref": "http://www.shop.com/shop/products/43"
+    }
+  ],
+  "total": { currency: "€", amount: 10 }
+}
+--------------------------
+Como veis hemos añadido 2 ejemplares de un libro. Lo más importante es que ha aparecido un enlace de tipo 'linkrels/payment' que nos permitirá comprar. Más adelante veremos cómo. Si quisiéramos editar la línea de pedido basta con hacer PUT o PATCH a la URL de la línea. No es necesario memorizar dicha URL ya que viene siempre en los enlaces tipo rel="self". Si queremos anular la línea de pedido es tan simple como hacer DELETE.
+
+Ahora sólo nos queda pagar. Tan sencillo como hacer PUT sobre la URL especificada en el enlace "linkrels/basket/payment" con la información pertinente:
+---------------------------
+PUT /shop/basket/234255/payment HTTP/1.1
+Host: www.shop.com
+Accept: application/x-shop.payment+json
+Content-Type: application/x-shop.payment+json
+
+{
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  }
+}
+---------------------------
+La respuesta
+---------------------------
+HTTP/1.1 200 Ok
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 05:25:39 GMT
+Cache-Control: max-age=20
+Content-Type: application/x-shop.payment+json
+
+{
+  "links":[
+    { "href": "/shop/basket/234255/payment", "title": "Payment", "rel": "self"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"}
+  ],
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  },
+  "status":"in progress"
+}
+---------------------------
+El pago ha sido aceptado, pero todavía no esta confirmado. A partir de ahí es cuestión de hacer polling sobre el recurso hasta que el pago finalize, para ello nos guiaremos por la cabecera Cache-Control. Finalmente cuando el pago se confirma:
+---------------------------
+HTTP/1.1 200 Ok
+Date: Tue, 27 Dec 2012 05:30:00 GMT
+Expires: Tue, 27 Dec 2012 11:30:00 GMT
+Cache-Control: max-age=21600
+Content-Type: application/x-shop.payment+json
+
+{
+  "links":[
+    { "href": "/shop/basket/234255/payment", "title": "Payment", "rel": "self"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/basket/234255/invoice", "title": "Invoice", "rel": "http://www.shop.com/linkrels/invoice"}
+  ],
+  "method":"visa",
+  "card": {
+    "cardnumber": 1234567812345678,
+    "secnumber":333,
+    "expiration": "08/2016",
+    "cardholder": "Pepe Pérez",
+  },
+  "status":"confirmed"
+}
+---------------------------
+Observemos que ahora aparece un enlace "/linkrels/invoice" para obtener la factura. Este es un caso típico en el que podemos usar varios tipos mime, en función del formato en el que el cliente quiera la factura: PDF, HTML, DOC, etc.
+
+Obviamente estoy simplificando. En realidad el workflow de pago es probablemente mucho más complejo, y por supuesto cada petición debería ir protegida con las técnicas explicadas en las secciones anteriores (al menos HTTPS con autenticación digest).
+
+
+Controles hipermedia (2): Acciones como formularios
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Otra forma de añadir un producto al carrito hubiera sido usar el enlace tipo rel="/linkrels/addtobasket". Recordemos el producto 43 tenía la siguiente información:
+--------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.product+json
+
+{
+  "links": [
+    { "href": "/shop/products/43", "title": "Fantastic book", "rel": "self" },
+    { "href": "/shop/products/43/orderform?basket=234255", "title": "Add this product to my shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+  ],
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:5}
+}
+--------------------------
+Si seguimos el enlace rel="/linkrels/addtobasket" usando GET, obtenemos:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.form+json
+
+{
+  "links": [
+    { "href": "/shop/products/43/orderform?basket=234255", "title": "Order product form", "rel": "self"},
+    { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "Order product form target", "rel": "http://www.shop.com/linkrels/target"},
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "http://www.shop.com/linkrels/basket"},
+    { "href": "/shop/products/43", "title": "Product to add", "rel": "http://www.shop.com/linkrels/product"}
+  ],
+  "method": "PUT",
+  "type": "application/x-shop.orderitem+json",
+  "body": {
+    "quantity": 1,
+    "product-ref": "http://www.shop.com/shop/products/43"
+  }
+}
+--------------------------
+El documento resultante no es más que la versión JSON de un formulario ya relleno con información. Veamos de que consta un formulario JSON.
+* Dentro de "links" el enlace de tipo rel="/linkrels/target" nos indica cual es la URL sobre la que debemos la realizar la petición para procesar este "formulario".
+* El campo "method" nos indica el método HTTP a utilizar cuando hagamos la petición a la URL "target"
+* El campo "type" nos indica el tipo mime que debe tener el cuerpo de la petición.
+* El campo "body" nos proporciona una instancia de datos que podemos usar en el cuerpo de la petición.
+
+En este caso el campo "body" y el link "target" aparecen ya informados. De esta forma simplemente sería hacer un PUT a la URL que nos indican con los datos que aparecen en el formulario. De esta manera añadiríamos un ejemplar del producto "43" a la cesta de la compra, tal y como hicimos en el ejemplo de la sección anterior.
+
+El uso de formularios es un poco más avanzado que el uso de links sencillos. Pero a la vez nos permite más potencia. En este ejemplo tenemos dos ventajas:
+* Nos ahorramos hacer un POST a la cesta de la compra para conseguir crear una nueva linea de pedido "virtual". En el propio formulario nos viene la URL de una nueva linea de pedido.
+* Los datos a informar en la petición PUT ya nos vienen completados desde el servidor.
+
+En general el uso de la técnica de formularios nos simplifica el uso de URIs desechables, ya que no necesitamos en ningún momento hacer un POST. También nos ayudan a autodescribir mejor nuestra API.
+
+Veamos un ejemplo más, supongamos que para tomar partido de esta técnica ahora el carrito de la compra es como sigue:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/x-shop.basket+json
+
+{
+  "links": [
+    { "href": "/shop/basket/234255", "title": "My shopping list", "rel": "self"},
+    { "href": "#new-order-form", "title": "Add a product to this shopping list", "rel": "http://www.shop.com/linkrels/addtobasket" }
+    { "href": "/shop/products", "title": "Product catalog", "rel": "http://www.shop.com/linkrels/products" },
+    { "href": "/shop/books", "title": "Search books available in the shop", "rel": "http://www.shop.com/linkrels/products/search/books" },
+    { "href": "/shop/offers", "title": "Special offers", "rel": "http://www.shop.com/linkrels/products/search/offers" }
+  ],
+  "items": [],
+  "total": { currency: "€", amount: 0 },
+  "new-order-form": {
+    "links": [
+      { "href": "/shop/basket/234255#new-order-form", "title": "Order product form", "rel": "self"},
+      { "href": "/shop/basket/234255/items/ecafadfj312_dad0348", "title": "Order product form target", "rel": "http://www.shop.com/linkrels/target"}
+    ],
+    "method": "PUT",
+    "type": "application/x-shop.orderitem+json"
+  }
+}
+---------------------------
+Ahora añadir productos al carrito es mucho más sencillo que antes. No necesitamos hacer un GET a la colección de "items", para después hacer un POST y conseguir una URL desechable. Ahora es tan simple como rellenar el formulario incrustado en el carrito y ejecutarlo. Además de que el procesamiento es más sencillo, ahora nos ahorramos dos llamadas de red.
+
+En este caso el formulario no tiene campo "body", lo que indica que el cliente deberá indicar toda la información. Afortunadamente el campo "type" nos indica el tipo mime apropiado, cuya documentación debemos consultar para saber como implementar el cliente.
 
 WSDL no es necesario: Servicios web autodescriptivos
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS:
-TODO
-El servidor nos responde con los métodos admisibles por dicha URI. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Para saber qué tipos MIME soportamos debemos emitir una petición HEAD:
-TODO
-El servidor nos ha respondido con información, como los tipos MIME soportados. Dichos tipos MIME y cómo usarlos forman parte de la documentación de nuestra API, con lo cual el cliente sabe qué tipo de información mandar. Como vemos no es necesario documentar mucho, únicamente los tipos MIME soportados y las convenciones sobre cómo usar los verbos HTTP para consumirlos. El resto es seguir enlaces.
+Como se aprecia en el ejemplo anterior cada documento nos va dando los siguientes pasos, y es cuestión de seguir los enlaces usando los métodos adecuados según la semántica HTTP[2b]. Pero, ¿cómo sabemos que información enviar y en qué formatos? Una cosa interesante sería hacer una petición con el método OPTIONS. Recordemos el ejemplo que apareció anteriormente:
+--------------------------
+OPTIONS /rest/libro/465 HTTP/1.1
+Host: www.server.com
 
-Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para parsear y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio. Mediante HATEOAS las reglas a nivel sintáctico son las mismas para todas las aplicaciones, con lo cual basta un único framework para todas las APIs que sigan la filosofía HATEOAS. Lo único que puede variar entre un sistema y otro son los formatos concretos de documentos a intercambiar (XML, JSON, ATOM…), pero para ello basta tener una librería de parseo y generación de dichos formatos. Si encima los formatos a usar son estándar, podemos usar una librería de terceros o de la plataforma para procesar los documentos.
+--------------------------
+Y la respuesta:
+--------------------------
+HTTP/1.1 200 OK
+Allow: GET, PUT, POST, OPTIONS, HEAD, DELETE, PATCH
+Accept-Patch: application/book-diff+json
+Content-Length: 0
 
-[NOTE]
-==================
-¿«lectura», «consumo» o «análisis» en vez de «parseo»?
-==================
+--------------------------
+El servidor nos responde con los métodos admisibles por dicha URI, si soporta o no el método PATCH. Siguiendo la semántica HTTP, y quizás algunas convenciones sobre éstos que habría que documentar, el cliente puede averiguar de forma automática las operaciones disponibles. Adicionalmente OPTIONS nos permite un cuerpo en la respuesta, donde se especificarían detalles adicionales a nivel de aplicación.
+
+Otro método útil es HEAD. El método HEAD es idéntico a GET, excepto que el servidor no devuelve datos y por lo tanto no intenta acceder a información ni realizar ninguna consulta. La utilidad de HEAD está en que nos devuelve exactamente las misma cabeceras y respuestas HTTP que como si hubiéramos hecho un GET.
+Por ejemplo:
+--------------------------
+HEAD /rest/libro/465 HTTP/1.1
+Host: www.server.com
+If-None-Match: W/"686897696a7c876b7e"
+If-Modified-Since: Wed, 01 Sep 2012 13:24:52 GMT
+Accept: application/json
+
+--------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
+ETag: W/"9082aff9627ab7cb60"
+
+---------------------------
+Con lo que sabemos si el recurso ha cambiado o no y su nuevo ETag. HEAD es muy útil para comprobar si un link funciona como el cliente espera. Pero también nos permite averiguar que tipos mime soporta. Si la respuesta hubiera sido:
+---------------------------
+HTTP/1.1 406 Not acceptable
+
+---------------------------
+Entonces sabríamos si dicho recurso soporta el tipo mime o no por adelantado.
+
+Usando una mezcla de HEAD y OPTIONS podemos inspeccionar las capacidades de un recurso REST
+
+Siguiendo esta filosofía se puede entender por qué en el diseño de APIs REST no se usa nada equivalente al WSDL de los servicios web clásicos. Los documentos WSDL nos proporcionan un medio de automatizar los aspectos sintácticos de interoperabilidad entre servicios. Con un generador de código podíamos procesar un WSDL para generar el código necesario para analizar y construir los mensajes SOAP y realizar las llamadas a los correspondientes puntos de servicio.
+
+Sin embargo la dificultad de consumir una API pública no está en la sintaxis de los formatos de datos, sino en la semántica de éstos. HATEOAS nos proporciona unas reglas y patrones mínimos y de bajo acoplamiento que nos permiten homogeneizar la forma de consumir nuestros servicios. La parte importante queda en la documentación y en la definición de los tipos mime a utilizar. Lo único que se necesita para desarrollar un cliente que pueda consumir una API HATEOAS es:
+* Una primera URL como punto de entrada a nuestro sistema.
+* Una documentación describiendo la semántica de los tipos mime específicos de nuestra API. Esto no sólo incluye las entidades, sino también los formularios. Se recomienda basar dichos tipos en otros formatos ya existentes (JSON, XML, ATOM, HTML). La descripción de la estructura sintáctica la podemos dejar en mános de herramientas que consuman XML Schema o Relax NG o algo similar.
+* Una documentación describiendo como consumir cada tipo de enlace (métodos a usar, tipos mime aceptables, patrones de uso).
 
 No es de extrañar que los intentos de acercar WSDL a REST[15] o de crear equivalentes a WSDL en REST, como es el caso de WADL[16], no hayan tenido realmente mucho éxito. Al fin y al cabo no aportan mucho a lo que ya te da la filosofía HATEOAS de diseño de APIs REST.
 
