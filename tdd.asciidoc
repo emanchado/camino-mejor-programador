@@ -2,13 +2,13 @@ Desarrollo dirigido por pruebas
 ===============================
 Joaquín Caraballo
 
-Desarrollo dirigido por pruebas
--------------------------------
+Qué
+---
 El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; de forma incremental, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de:
 
-__________________________
-rojo - verde - refactoriza
-__________________________
+______________________________
+rojo - verde - refactorización
+______________________________
 
 Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que satisface la prueba y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta. footnote:[mencionar el diseño incremental un poco más]
 
@@ -26,7 +26,7 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno, la función de _arreglo_ hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra --por ejemplo devolviendo +0+ o +null+--]
+A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno de desarrollo, la función de _arreglo_ hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra --por ejemplo, devolviendo +0+ o +null+--.]
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -74,6 +74,11 @@ object MilesToKilometersConverter {
 Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así. footnote:[Más despacio: con http://www.informit.com/articles/article.aspx?p=30641[triangulación]; más deprisa: saltándose el paso verde inicial. Recortes:
 Y a continuación ejecutar la prueba, añadir otra prueba con otro valor, ejecutarla y a continuación refactorizar la implementación para que cumpla varias pruebas y la funcionalidad general. Esto es lo que Kent Beck llama triangulación y es la versión más conservadora de la programación dirigida por pruebas. La mayoría de los programadores, cuando lo que desarrollan con TDD está claro, como es el caso, se saltan la triangulación (e incluso el paso verde, pero eso es más delicado)]
 
+¿Refactorización?
+^^^^^^^^^^^^^^^^^
+En esta iteración es pronto para refactorizar. Pasamos al siguiente paso.
+
+
 Rojo
 ^^^^
 Antes de saltar a la implementación general, merece la pena que consideremos otras condiciones de entrada: ¿aceptamos distancias negativas? Como en este caso sí las aceptamos, lo expresamos con otra prueba.
@@ -107,7 +112,7 @@ object MilesToKilometersConverter {
 
 Refactorización
 ^^^^^^^^^^^^^^^
-Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que quermos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
+Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
 
 
 Por qué y para qué
@@ -121,7 +126,7 @@ Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento c
 
 Ejemplos
 ~~~~~~~~
-Por ejemplo el siguiente traductor es muy difícil de probar, y por lo tanto, de desarrollar con TDD.
+El uso del TDD influye en el código que escribimos; por ejemplo, el traductor siguiente es difícil de probar, por lo que probablemente no es el resultado de un desarrollo guiado por pruebas:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
 [source,scala]
@@ -132,7 +137,7 @@ class SpanishIntoEnglishTranslator {
       case "yo" => "I"
       case "soy" => "am"
       case _ => "mmmeh"
-    }).reduceLeft(_ + " " + _))
+    }).mkString(" "))
   }
 }
 -----------------------------------------------------------------------------
@@ -174,9 +179,9 @@ class SpanishIntoEnglishTranslator {
 
 Granularidad
 ------------
-Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guia a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sóla responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especificiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
+Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guía a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sola responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especifiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
 
-La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: Con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
+La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
 
 
 Probar una sola cosa cada vez
@@ -184,8 +189,8 @@ Probar una sola cosa cada vez
 El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; una de técnicas que puede ayudarnos a mantener este esfuerzo manejable es reducir el alcance de cada prueba. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
 
 * si es posible un cierto funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; 
-* si falla más de una, la batería tiene código redundante, lo que hace que su coste de mantenimiento sea más elevado de la cuenta; 
-* si la prueba que falla incluye la verficación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea más compleja de la cuenta, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
+* si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento
+* si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
 
 Ejemplo footnote:[¿Incluir inicialización o paso previo común?]
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -200,9 +205,9 @@ test("splits by change of line") {
 
 El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; lo que documentamos con este ejemplo sería más inteligible si pudiéramos expresar la entrada como +"xx\nxx"+; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.
 
-Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría cada una de las pruebas de +SpanishIntoEnglishTranslatorTest+, pero, ¿por qué debería verse afectada una prueba como +test("splits by change of line")+, cuyo propósito es probar la separación en palabras?
+Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría a cada una de las pruebas de +SpanishIntoEnglishTranslatorTest+, pero, ¿por qué debería verse afectada una prueba como +test("splits by change of line")+, cuyo propósito es probar la separación en palabras?
 
-Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada: una sola prueba está verificando varias cosas: que nuestro traductor separa frases en palabras, que las traduce y que las junta otra vez. La solución podría estar en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
+Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: que nuestro traductor separa frases en palabras, que las traduce y que las junta otra vez. La solución podría estar en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/TranslatorTest.scala[example3/TranslatorTest.scala]
 [source,scala]
@@ -312,18 +317,18 @@ El aumento de la granularidad nos ha permitido que la introducción de funcional
 
 Crítica
 ^^^^^^^
-En el ejemplo anterior hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: Para poder probar la clase de traducción satisfactoriamente la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras, pero si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada: el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
+En el ejemplo anterior hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
 
 A continuación explicamos el otro extremo de la tensión de la que hablábamos, el uso de pruebas que ejercitan el conjunto de la aplicación para guiar el desarrollo; las pruebas funcionales consiguen esquivar la crítica anterior centrándose en la visión de conjunto, sin embargo, no recomendaría basarse exclusivamente en pruebas funcionales, porque resultaría muy difícil mantener un nivel de cobertura suficiente, y, más importante, porque significaría renunciar a la guía de las pruebas en el desarrollo de los niveles inferiores de la aplicación.
 
 
 Probar el conjunto de la aplicación
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y hasta ahora hemos hecho aquí lo mismo. Si bien es probablemente más fácil explicar TDD a nivel unitario, lo cierto es que si llevamos sus motivaciones de guiarnos manteniendo el enfoque en los objetivos del software así como de documentación y verificación hasta sus últimas consecuencias, las pruebas más importantes son aquellas que ejercitan el conjunto del sistema; desde este punto de vista, lo ideal sería que todas las pruebas verificaran el conjunto del software, ejecutándose en un entorno similar al de explotación o incluso en el entorno de explotación en sí. Lo cierto es normalmente tenemos que transigir, debido a que no nos podamos permitir ejercitar en explotación ciertas acciones destructivas o a que no dispongamos de los recursos necesarios, o a que hayamos optado por ciertas características arquitectónicas de nuestro sistema que lo dificulten. Sin embargo, eso no significa que tengamos que claudicar completamente.
+La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y hasta ahora hemos hecho aquí lo mismo. No obstante, si llevamos hasta sus últimas consecuencias los principios que hemos visto --guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar--, deberemos considerar que las pruebas más importantes son aquellas que ejercitan el conjunto del sistema; desde este punto de vista, lo ideal sería que todas las pruebas verificaran el conjunto del software, ejecutándose en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. Lo cierto es que normalmente acabamos transigiendo, debido al coste de ejercitar ciertas acciones destructivas en explotación, a la falta de recursos necesarios, o a decisiones arquitectónicas previas que no hayan tenido en cuenta la facilidad de prueba. Sin embargo, eso no significa que tengamos que claudicar completamente.
 
 Ejemplo
 ~~~~~~~
-Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer un servicio de conversión de unidades nuestros clientes a través de un servicio web, porque hemos decidido que no hay suficientes conversores Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
+Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer un servicio de conversión de unidades nuestros clientes a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
 [source,scala]
@@ -348,7 +353,7 @@ class Converter extends HttpServlet {
 }
 -----------------------------------------------------------------------------
 
-Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos a obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
+Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos ha obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
 
 A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
 
@@ -406,10 +411,10 @@ Mantener verde la batería
 -------------------------
 La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
 
-Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación -- _cita... continuous deployment, etc._], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; muchos equipos ayudándose además de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
+Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación --_cita... continuous deployment, etc._], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; además, muchos equipos se ayudan de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
 
-A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar, lo que incrementa el coste del desarrollo y motiva a los desarrolladores a no siempre satisfacer la batería completa o a espaciar los envios de cambios al repositorio común; ambos efectos muy perniciosos. Para mantener la programación dirigida por pruebas de forma viable deberemos esforzarnos en mantener reducido este tiempo; la manera de lograrlo va más allá de un artículo introductorio, pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida.footnote:[Otra forma de reducir el tiepo es transigiendo en alguna medida, es decir, no cumpliendo en ocasiones todo lo que describimos en este artículo]
+A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar, lo que incrementa el coste del desarrollo y motiva a los desarrolladores a no siempre satisfacer la batería completa o a espaciar los envios de cambios al repositorio común; ambos efectos muy perniciosos. Para mantener la programación dirigida por pruebas de forma viable deberemos esforzarnos en mantener reducido este tiempo; la manera de lograrlo va más allá de un artículo introductorio, pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida.footnote:[Otra forma de reducir el tiempo es transigiendo en alguna medida, es decir, no cumpliendo en ocasiones todo lo que describimos en este artículo]
 
-Otro problema relacionado con el coste de la batería son los fallos intermitentes, que necesitarán un esfuerzo importante de mantenimiento; hemos de invertir el esfuerzo necesario para entender la raíz de cada fallo y resolverlo. Las fuentes típicas de fallos intermitentes son los aspectos no derministas del software: Por ejemplo, cuando lo que verificamos es naturaleza asíncrona, necesitamos controlar el estado de la aplicación mediante puntos de sincronización. Algunas condiciones son imposibles de verificar per se, como la ausencia comportamiento; en estos casos a menudo la solución pasa por alterar la aplicación desvelando su estado lo suficiente como para que las pruebas puedan sincrozarse con la aplicación y sepan cuándo debería haber tenido lugar el evento que estemos verificando. Otros aspectos que típicamente causan fallos intermitentes suelen depender de elementos fuera del control de la prueba, como el reloj del sistema; y su solución pasa normalmente por la inclusión y el control de dicho elemento desde la prueba, por ejemplo, alterando la percepción del tiempo de la aplicación mediante un proxy controlable desde las pruebas.
+Otro problema relacionado con el coste de la batería son los fallos intermitentes, que necesitarán un esfuerzo importante de mantenimiento; hemos de invertir el esfuerzo necesario para entender la raíz de cada fallo y resolverlo. Las fuentes típicas de fallos intermitentes son los aspectos no deterministas del software: Por ejemplo, cuando lo que verificamos es naturaleza asíncrona, necesitamos controlar el estado de la aplicación mediante puntos de sincronización. Algunas condiciones son imposibles de verificar per se, como la ausencia de comportamiento; en estos casos a menudo la solución pasa por alterar la aplicación desvelando su estado lo suficiente como para que las pruebas puedan sincrozarse con la aplicación y sepan cuándo debería haber tenido lugar el evento que estemos verificando. También suelen causar fallos intermitentes las dependencias de elementos fuera del control de la prueba, como el reloj del sistema; y su solución pasa normalmente por la inclusión y el control de dicho elemento desde la prueba, por ejemplo, alterando la percepción del tiempo de la aplicación mediante un _proxy_ controlable desde las pruebas.
 
 
