@@ -328,7 +328,7 @@ La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y 
 
 Ejemplo
 ~~~~~~~
-Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer un servicio de conversión de unidades nuestros clientes a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
+Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
 [source,scala]
