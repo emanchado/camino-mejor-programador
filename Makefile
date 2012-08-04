@@ -80,3 +80,6 @@ book.tex: $(SOURCE_FILES)
 	# Also, set secnumdepth to -1 so those pesky "Chapter X" are
 	# not show at all
 	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n\\setcounter{secnumdepth}{-1}\n\\renewcommand\\contentsname{\\'"'"'Indice}\n&/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
+	# Fix a pathetic TeX formatting problem with double quotes
+	# (possibly only when using Spanish)
+	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
