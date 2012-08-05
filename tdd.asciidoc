@@ -124,8 +124,125 @@ Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, escribir c�
 Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento con una batería de pruebas al día, que documenta la intención de cada unidad del software, de combinaciones de unidades y del software en su totalidad. Además, las pruebas, si bien no la garantizan, dan una buena indicación de la corrección del software; lo que reduce el miedo a romper algo, y lo sustituye por un hábito diligente de refactorizar con frecuencia y mejorar el diseño progresivamente.
 
 
-Ejemplos
-~~~~~~~~
+Granularidad
+------------
+
+Probar el conjunto de la aplicación
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hasta ahora nos hemos centrado en las pruebas unitarias; no obstante, si llevamos hasta sus últimas consecuencias los principios que hemos visto --guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar--, deberemos considerar fundamental guiar el desarrollo de cada parte de la funcionalidad mediante una prueba que la ejercite en su conjunto. Lo ideal será que todas las pruebas funcionales verifiquen el conjunto del software, en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. Lo cierto es que normalmente acabamos transigiendo, debido al coste de ejercitar ciertas acciones destructivas en explotación, a la falta de recursos necesarios, o a decisiones arquitectónicas previas que no hayan tenido en cuenta la facilidad de prueba. Sin embargo, eso no significa que tengamos que claudicar completamente.
+
+Ejemplo
+~~~~~~~
+Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, incluso antes de las que vimos en la introducción, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+test("Converts miles into kilometers"){
+  get("http://localhost:8080/1.0") should be (1.609)
+}
+-----------------------------------------------------------------------------
+
+El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _ciudadano de primera categoría_ de nuestro proyecto.
+
+Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. En el mundo de Java/Scala, la forma típica de resolver esto es con un Servlet. De nuevo comenzamos con una prueba, esta vez a nivel unitario.
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/ConverterTest.scala[step1/ConverterTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class ConverterTest extends FunSuite {
+  test("Responds to get requests converting miles into kilometers") {
+    val response = mock(classOf[HttpServletResponse])
+    val printWriter = mock(classOf[PrintWriter])
+    when(response.getWriter).thenReturn(printWriter)
+
+    new Converter().doGet(mock(classOf[HttpServletRequest]), response)
+
+    verify(printWriter).print("1.609")
+  }
+}
+-----------------------------------------------------------------------------
+
+
+
+El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión mínima viene a ser:
+
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class Converter extends HttpServlet {
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
+    resp.getWriter.print("1.609")
+  }
+}
+-----------------------------------------------------------------------------
+
+Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos ha obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
+
+A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+test("Converts negative miles into kilometers") {
+  get("http://localhost:8080/-2.0") should be("-3.218")
+}
+-----------------------------------------------------------------------------
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step2/Converter.scala[step2/Converter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class Converter extends HttpServlet {
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
+    val miles = req.asInstanceOf[Request].getUri.getPath.substring(1).toDouble
+    resp.getWriter.print(miles * 1.609)
+  }
+}
+-----------------------------------------------------------------------------
+
+A continuación el manejo de los casos de error, como cantidades de millas que no sean numéricas
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala[step3/functional/ConversionTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amounts of miles") {
+  statusCode("http://localhost:8080/blah") should be(HttpServletResponse.SC_BAD_REQUEST)
+  get("http://localhost:8080/blah") should be("Unparseable amount of miles: 'blah'\n")
+}
+-----------------------------------------------------------------------------
+
+.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step3/Converter.scala[step3/Converter.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class Converter extends HttpServlet {
+  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
+    val milesAsString = req.asInstanceOf[Request].getUri.getPath.substring(1)
+    try {
+      val miles = milesAsString.toDouble
+      resp.getWriter.print(miles * 1.609)
+    }
+    catch {
+      case _: NumberFormatException => {
+        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
+        resp.getWriter.println("Unparseable amount of miles: '" + milesAsString + "'")
+      }
+    }
+  }
+}
+-----------------------------------------------------------------------------
+
+
+Probar una sola cosa cada vez
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; una de técnicas que puede ayudarnos a mantener este esfuerzo manejable es reducir el alcance de cada prueba. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
+
+* si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas que hemos visto aquí documentan el comportamiento con buenos ejemplos, pero normalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse (+if(input==15) throw new EasterEgg("!!")+), una buena cobertura está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que las pruebas fallen.]
+* si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento;
+* si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
+
+Ejemplo
+~~~~~~~
 El uso del TDD influye en el código que escribimos; por ejemplo, el traductor siguiente es difícil de probar, por lo que probablemente no es el resultado de un desarrollo guiado por pruebas:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
@@ -177,23 +294,6 @@ class SpanishIntoEnglishTranslator {
 }
 -----------------------------------------------------------------------------
 
-Granularidad
-------------
-Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guía a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sola responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especifiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
-
-La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
-
-
-Probar una sola cosa cada vez
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; una de técnicas que puede ayudarnos a mantener este esfuerzo manejable es reducir el alcance de cada prueba. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
-
-* si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas que hemos visto aquí documentan el comportamiento con buenos ejemplos, pero normalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse (+if(input==15) throw new EasterEgg("!!")+), una buena cobertura está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que las pruebas fallen.]
-* si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento;
-* si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
-
-Ejemplo footnote:[¿Incluir inicialización o paso previo común?]
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Volvamos a <<_ejemplos, donde dejamos>> el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
 
 [source,scala]
@@ -317,95 +417,15 @@ El aumento de la granularidad nos ha permitido que la introducción de funcional
 
 Crítica
 ^^^^^^^
+
+Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guía a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sola responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especifiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
+
+La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
+
 En el ejemplo anterior hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
 
 A continuación explicamos el otro extremo de la tensión de la que hablábamos, el uso de pruebas que ejercitan el conjunto de la aplicación para guiar el desarrollo; las pruebas funcionales consiguen esquivar la crítica anterior centrándose en la visión de conjunto, sin embargo, no recomendaría basarse exclusivamente en pruebas funcionales, porque resultaría muy difícil mantener un nivel de cobertura suficiente, y, más importante, porque significaría renunciar a la guía de las pruebas en el desarrollo de los niveles inferiores de la aplicación.
 
-
-Probar el conjunto de la aplicación
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-La mayoría de las introducciones al TDD se centran en las pruebas unitarias, y hasta ahora hemos hecho aquí lo mismo. No obstante, si llevamos hasta sus últimas consecuencias los principios que hemos visto --guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar--, deberemos considerar que las pruebas más importantes son aquellas que ejercitan el conjunto del sistema; desde este punto de vista, lo ideal sería que todas las pruebas verificaran el conjunto del software, ejecutándose en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. Lo cierto es que normalmente acabamos transigiendo, debido al coste de ejercitar ciertas acciones destructivas en explotación, a la falta de recursos necesarios, o a decisiones arquitectónicas previas que no hayan tenido en cuenta la facilidad de prueba. Sin embargo, eso no significa que tengamos que claudicar completamente.
-
-Ejemplo
-~~~~~~~
-Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Converts miles into kilometers"){
-  get("http://localhost:8080/1.0") should be (1.609)
-}
------------------------------------------------------------------------------
-
-El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _ciudadano de primera categoría_ de nuestro proyecto.
-
-Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión mínima viene a ser:
-
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    resp.getWriter.print("1.609")
-  }
-}
------------------------------------------------------------------------------
-
-Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos ha obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
-
-A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Converts negative miles into kilometers") {
-  get("http://localhost:8080/-2.0") should be("-3.218")
-}
------------------------------------------------------------------------------
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step2/Converter.scala[step2/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val miles = req.asInstanceOf[Request].getUri.getPath.substring(1).toDouble
-    resp.getWriter.print(miles * 1.609)
-  }
-}
------------------------------------------------------------------------------
-
-A continuación el manejo de los casos de error, como cantidades de millas que no sean numéricas
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala[step3/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amounts of miles") {
-  statusCode("http://localhost:8080/blah") should be(HttpServletResponse.SC_BAD_REQUEST)
-  get("http://localhost:8080/blah") should be("Unparseable amount of miles: 'blah'\n")
-}
------------------------------------------------------------------------------
-
-.https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step3/Converter.scala[step3/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val milesAsString = req.asInstanceOf[Request].getUri.getPath.substring(1)
-    try {
-      val miles = milesAsString.toDouble
-      resp.getWriter.print(miles * 1.609)
-    }
-    catch {
-      case _: NumberFormatException => {
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
-        resp.getWriter.println("Unparseable amount of miles: '" + milesAsString + "'")
-      }
-    }
-  }
-}
------------------------------------------------------------------------------
 
 Mantener verde la batería
 -------------------------
