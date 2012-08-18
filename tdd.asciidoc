@@ -123,16 +123,68 @@ Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, escribir c�
 
 Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento con una batería de pruebas al día, que documenta la intención de cada unidad del software, de combinaciones de unidades y del software en su totalidad. Además, las pruebas, si bien no la garantizan, dan una buena indicación de la corrección del software; lo que reduce el miedo a romper algo, y lo sustituye por un hábito diligente de refactorizar con frecuencia y mejorar el diseño progresivamente.
 
+Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamiento
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+El traductor siguiente es difícil de probar, por lo que es poco probable que haya sido desarrollado guiado por pruebas:
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class SpanishIntoEnglishTranslator {
+  def translate(spanish: String) {
+    println(spanish.split(' ').map(_ match {
+      case "yo" => "I"
+      case "soy" => "am"
+      case _ => "mmmeh"
+    }).mkString(" "))
+  }
+}
+-----------------------------------------------------------------------------
+
+Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta clase, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala[example2/SpanishIntoEnglishTranslatorTest.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+var translator: SpanishIntoEnglishTranslator = _
+
+before {
+  translator = new SpanishIntoEnglishTranslator()
+}
+
+test("translates what it can") {
+  translator.translate("yo soy") should be("I am")
+}
+
+test("mmmehs what it can't") {
+  translator.translate("dame argo") should be("mmmeh mmmeh")
+}
+-----------------------------------------------------------------------------
+
+Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
+
+[[example2_SpanishIntoEnglishTranslator_scala]]
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala[example2/SpanishIntoEnglishTranslator.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class SpanishIntoEnglishTranslator {
+  def translate(spanish: String): String =
+    spanish.split(' ').map(_ match {
+      case "yo" => "I"
+      case "soy" => "am"
+      case _ => "mmmeh"
+    }).mkString(" ")
+}
+-----------------------------------------------------------------------------
 
 Granularidad
 ------------
-
 Probar el conjunto de la aplicación
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Hasta ahora nos hemos centrado en las pruebas unitarias; no obstante, si llevamos hasta sus últimas consecuencias los principios que hemos visto --guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar--, deberemos considerar fundamental guiar el desarrollo de cada parte de la funcionalidad mediante una prueba que la ejercite en su conjunto. Lo ideal será que todas las pruebas funcionales verifiquen el conjunto del software, en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. Lo cierto es que normalmente acabamos transigiendo, debido al coste de ejercitar ciertas acciones destructivas en explotación, a la falta de recursos necesarios, o a decisiones arquitectónicas previas que no hayan tenido en cuenta la facilidad de prueba. Sin embargo, eso no significa que tengamos que claudicar completamente.
 
 Ejemplo
-~~~~~~~
+^^^^^^^
 Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, incluso antes de las que vimos en la introducción, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
@@ -235,66 +287,15 @@ class Converter extends HttpServlet {
 
 Probar una sola cosa cada vez
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; una de técnicas que puede ayudarnos a mantener este esfuerzo manejable es reducir el alcance de cada prueba. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
+El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; hacer que cada prueba verifique únicamente un aspecto de la aplicación nos ayudará a mantener este esfuerzo manejable y además las hará más fáciles de entender, y por lo tanto más eficientes. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
 
 * si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas que hemos visto aquí documentan el comportamiento con buenos ejemplos, pero normalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse (+if(input==15) throw new EasterEgg("!!")+), una buena cobertura está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que las pruebas fallen.]
 * si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento;
 * si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
 
-Ejemplo
-~~~~~~~
-El uso del TDD influye en el código que escribimos; por ejemplo, el traductor siguiente es difícil de probar, por lo que probablemente no es el resultado de un desarrollo guiado por pruebas:
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslator {
-  def translate(spanish: String) {
-    println(spanish.split(' ').map(_ match {
-      case "yo" => "I"
-      case "soy" => "am"
-      case _ => "mmmeh"
-    }).mkString(" "))
-  }
-}
------------------------------------------------------------------------------
-
-Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta clase, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala[example2/SpanishIntoEnglishTranslatorTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-var translator: SpanishIntoEnglishTranslator = _
-
-before {
-  translator = new SpanishIntoEnglishTranslator()
-}
-
-test("translates what it can") {
-  translator.translate("yo soy") should be("I am")
-}
-
-test("mmmehs what it can't") {
-  translator.translate("dame argo") should be("mmmeh mmmeh")
-}
------------------------------------------------------------------------------
-
-Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala[example2/SpanishIntoEnglishTranslator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslator {
-  def translate(spanish: String): String =
-    spanish.split(' ').map(_ match {
-      case "yo" => "I"
-      case "soy" => "am"
-      case _ => "mmmeh"
-    }).mkString(" ")
-}
------------------------------------------------------------------------------
-
-Volvamos a <<_ejemplos, donde dejamos>> el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
+Ejemplo de pruebas centradas
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Volvamos a <<example2_SpanishIntoEnglishTranslator_scala, donde dejamos>> el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
 
 [source,scala]
 -----------------------------------------------------------------------------
@@ -303,7 +304,7 @@ test("splits by change of line") {
 }
 -----------------------------------------------------------------------------
 
-El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; lo que documentamos con este ejemplo sería más inteligible si pudiéramos expresar la entrada como +"xx\nxx"+; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.
+El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; la idea que queremos transmitir con este ejemplo estaría más clara si pudiéramos expresar la entrada como +"xx\nxx"+; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.
 
 Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría a cada una de las pruebas de +SpanishIntoEnglishTranslatorTest+, pero, ¿por qué debería verse afectada una prueba como +test("splits by change of line")+, cuyo propósito es probar la separación en palabras?
 
@@ -339,7 +340,7 @@ class Translator(val dictionary: (String) => String) {
 }
 -----------------------------------------------------------------------------
 
-La refactorización nos permite expresar la división del texto original por saltos de línea con una prueba más centrada:
+La refactorización nos permite expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Translator.scala[example3/Translator.scala]
 [source,scala]
@@ -349,83 +350,7 @@ test("splits by change of line"){
 }
 -----------------------------------------------------------------------------
 
-Lo cierto es que esta prueba aún tiene muchos elementos que nos distraen de la funcionalidad que realmente queremos documentar. Si lo que queremos expresar es la división en palabras de forma exclusiva, algo así como:
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example4/SplitterTest.scala[example4/SplitterTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("splits by space") {
-  split("xxx xx") should be(Seq("xxx", "xx"))
-}
-
-test("splits by change of line") {
-  split("xxx\nxx") should be(Seq("xxx", "xx"))
-}
------------------------------------------------------------------------------
-
-
-Podemos introducir un método de ayuda en el código de prueba que nos permita esconder un poco los elementos que no son pertinentes:
-
-[source,scala]
------------------------------------------------------------------------------
-def split(source: String): Seq[String] = new Translator((s: String) => s).translate(source)
------------------------------------------------------------------------------
-
-Pero esa técnica tiene el problema de _esconder_ el sistema que estamos probando. En caso del ejemplo, probablemente sea mejor inyectar en el traductor una unidad con la responsabilidad de separar en palabras el texto origen.
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example4/TranslatorTest.scala[example4/TranslatorTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-class TranslatorTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
-  var translator: Translator = _
-
-  before {
-    val dictionary: (String => String) = _ match {
-      case "xx" => "yy"
-      case _ => throw new IllegalStateException
-    }
-    translator = new Translator(_ split ' ', dictionary)
-  }
-
-  test("splits according to splitter, translates word by word according to dictionary and joins everything toghether with spaces") {
-    translator.translate("xx xx") should be("yy yy")
-  }
-}
------------------------------------------------------------------------------
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example4/Translator.scala[example4/Translator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Translator(val splitter: (String) => Seq[String], val dictionary: (String) => String) {
-  def translate(spanish: String): String =
-    splitter(spanish) map dictionary mkString " "
-}
------------------------------------------------------------------------------
-
-
-La nueva unidad, tendrá el método split en el código de explotación, por lo que no necesitamos _esconder_ nada en nuestras pruebas.
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example4/Splitter.scala[example4/Splitter.scala]
-[source,scala]
------------------------------------------------------------------------------
-object Splitter {
-  def split(s: String): Seq[String] = s split """[ \n]"""
-}
------------------------------------------------------------------------------
-
-El aumento de la granularidad nos ha permitido que la introducción de funcionalidad nueva no afecte a multitud de pruebas. Sin embargo, esto no ha sido gratis; hemos aumentado la complejidad del código y nos hemos quedado con una prueba del traductor bastante sospechosa, en la que casi sólo probamos que el traductor delega a las unidades colaboradoras y la prueba verifica, de hecho, varias delegaciones. Aún podríamos empujar la granularidad un poco más y mover la unión mediante espacios de las palabras traducidas a su propia unidad pero eso incrementaría estos problemas. Además, como veremos en <<_crítica, la sección de crítica>>, incrementar la granularidad antes de tiempo puede guiarnos a un diseño inapropiado... Al final, todas estas decisiones hay que valorarlas una a una y decidir qué es lo más apropiado en cada caso, teniendo en cuenta aspectos como la complejidad, el tiempo de ejecución y la dirección en la que esperamos que vaya el proyecto.
-
-Crítica
-^^^^^^^
-
-Al trabajar orientados por las pruebas, nos encontraremos pronto con la tensión entre dos impulsos a menudo contradictorios. Por un lado, queremos que nuestras pruebas sean extremadamente claras, queremos que documenten y verifiquen exactamente un aspecto de nuestro software. Esta tendencia nos empuja a aumentar la granularidad, es decir, el nivel de detalle de las pruebas y para lograrlo de manera efectiva con frecuencia nos guía a aumentar la granularidad de la aplicación en sí, descomponiéndola en unidades centradas en una sola responsabilidad y por lo tanto muy cohesivas. Por otro lado queremos que las pruebas especifiquen el comportamiento de la aplicación en su conjunto, porque es el comportamiento de la aplicación en sí lo que realmente importa, lo que justifica la inversión de dinero, recursos o esfuerzo necesaria para su materialización.
-
-La respuesta clásica a este dilema sería que el público para el que documentamos las pruebas unitarias son los desarrolladores del equipo, mientras que el de las pruebas funcionales es el cliente o quien haya encargado el desarrollo de la aplicación, es decir, quien paga. Sin embargo en la práctica esta distinción es muy difusa: con frecuencia el cliente en sí no llega a ver nuestras pruebas funcionales, que se convierten en una documentación que ayuda a desarrolladores y quizá a otros roles más o menos técnicos (técnicos de calidad, analistas funcionales) a crear un lenguaje con el que comunicarse con el cliente, pero que básicamente sigue teniendo a los desarrolladores como público principal. También encontramos contradicciones en el otro extremo, donde a menudo las pruebas unitarias más valiosas son aquellas que documentan y verifican una parte crucial de la lógica de la aplicación, como puedan ser reglas o cálculos, que se han ido descubriendo durante la vida del proyecto a partir del diálogo con el cliente, y por lo tanto, en las que el cliente va a estar muy interesado.
-
-En el ejemplo anterior hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta? Yo diría que una cosa no quita la otra: como mencionamos antes, el TDD no nos exime de diseñar nuestro software; en este caso podría considerarse que la distinción de abstracciones ha sido prematura, que no hemos tenido en cuenta la dirección general en la que vamos... O incluso que siempre podemos empezar con una visión simplista y evolucionar el diseño a medida que nuestro modelo y compresión del problema se vuelven más sofisticados; con la confianza que nos da nuestra batería de pruebas, resultará más fácil evolucionar nuestro diseño incrementalmente, pasando de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
-
-A continuación explicamos el otro extremo de la tensión de la que hablábamos, el uso de pruebas que ejercitan el conjunto de la aplicación para guiar el desarrollo; las pruebas funcionales consiguen esquivar la crítica anterior centrándose en la visión de conjunto, sin embargo, no recomendaría basarse exclusivamente en pruebas funcionales, porque resultaría muy difícil mantener un nivel de cobertura suficiente, y, más importante, porque significaría renunciar a la guía de las pruebas en el desarrollo de los niveles inferiores de la aplicación.
-
+El aumento de la granularidad nos ha permitido que la introducción de funcionalidad nueva no afecte a multitud de pruebas. Sin embargo, esto no ha sido gratis; hemos aumentado la complejidad del código. Al final, todas estas decisiones hay que valorarlas una a una y decidir qué es lo más apropiado en cada caso, teniendo en cuenta aspectos como la complejidad, el tiempo de ejecución y la dirección en la que esperamos y queremos que vaya el proyecto.
 
 Mantener verde la batería
 -------------------------
@@ -437,4 +362,17 @@ A medida que crece la aplicación, el tiempo que requiere la batería completa t
 
 Otro problema relacionado con el coste de la batería son los fallos intermitentes, que necesitarán un esfuerzo importante de mantenimiento; hemos de invertir el esfuerzo necesario para entender la raíz de cada fallo y resolverlo. Las fuentes típicas de fallos intermitentes son los aspectos no deterministas del software: Por ejemplo, cuando lo que verificamos es naturaleza asíncrona, necesitamos controlar el estado de la aplicación mediante puntos de sincronización. Algunas condiciones son imposibles de verificar per se, como la ausencia de comportamiento; en estos casos a menudo la solución pasa por alterar la aplicación desvelando su estado lo suficiente como para que las pruebas puedan sincrozarse con la aplicación y sepan cuándo debería haber tenido lugar el evento que estemos verificando. También suelen causar fallos intermitentes las dependencias de elementos fuera del control de la prueba, como el reloj del sistema; y su solución pasa normalmente por la inclusión y el control de dicho elemento desde la prueba, por ejemplo, alterando la percepción del tiempo de la aplicación mediante un _proxy_ controlable desde las pruebas.
 
+Críticas
+--------
+Diseño prematuro
+~~~~~~~~~~~~~~~~
+En el <<_ejemplo_de_pruebas_centradas,Ejemplo de pruebas centradas>> hemos ilustrado también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta?
+
+Como dijimos antes, desarrollar dirigidos por pruebas significa considerar las pruebas como ciudadanos de primera categoría de nuestro, añadiendo, así, un coste en cantidad de código y en la complejidad del diseño que elegimos pagar para beneficiarnos de la guía de las pruebas. Advocar por el TDD es considerar que este coste vale la pena. Sería menos costoso si supiésemos exactamente cuáles son los requisitos e incluso qué código escribir desde el principio. El TDD se opone a esta visión considerando el desarrollo como un proceso progresivo en el que el equipo va descubriéndolo a medida crea la aplicación, evolucionándola incrementalmente, pasando siempre de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
+
+Volviendo a la prematuridad del diseño, si bien es cierto que las pruebas a veces adelantan la necesidad de descomponer el código, estas decisiones se vuelven más baratas dado que los cambios en el diseños son menos costosos gracias a la protección que nos da nuestra batería. Y, además, esto se ve también compensado por las innumerables ocasiones en las que no añadiremos complejidad al código de explotación porque esa complejidad no es necesaria para satisfacer las pruebas, probablemente porque no lo es en absoluto para lo que requerimos de nuestra aplicación en ese momento.
+
+Guiar sólo mediante pruebas funcionales
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Algunos equipos experimentados deciden utilizar las pruebas para guiar el desarrollo a nivel funcional, pero no a nivel unitario, sólo escribiendo pruebas unitarias cuando no resulta práctico cubrir con pruebas funcionales ciertas partes del código. Esto lo hacen porque ven las pruebas unitarias más como un lastre que como una guía útil en el diseño interno de la aplicación, quizá porque consideran que su criterio es suficiente para lograr un buen diseño interno. Recomendamos comenzar guiando todas las unidades por pruebas y progresar hacia un equilibrio en el que no guiemos mediante pruebas unitarias un código obvio, pero donde seamos capaces de reconocer que el código que no merece la pena guiar mediante pruebas por ser obvio es probablemente poco útil footnote:[Quizá el resultado de una convención sospechosa o de las limitaciones de nuestro lenguaje de programación --por ejemplo, los métodos _set_ y _get_ en Java--.], y el que es difícil de probar probablemente peca de acoplado. La recomendación es, en definitiva, aplicar el sentido común pero no renunciar a la guía que nos proporcionan las pruebas en el desarrollo de los niveles inferiores de la aplicación.
 
