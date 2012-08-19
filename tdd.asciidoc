@@ -28,7 +28,6 @@ test("Converts miles into kilometers"){
 
 A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno de desarrollo, la función de _arreglo_ hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra --por ejemplo, devolviendo +0+ o +null+--.]
 
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 object MilesToKilometersConverter {
@@ -63,7 +62,6 @@ Verde
 ^^^^^
 A continuación acrecentamos el código de explotación. Lo más purista es escribir sólo el código imprescindible para superar la prueba: 
 
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 object MilesToKilometersConverter {
@@ -342,7 +340,7 @@ class Translator(val dictionary: (String) => String) {
 
 La refactorización nos permite expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:
 
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Translator.scala[example3/Translator.scala]
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example4/TranslatorTest.scala[example4/TranslatorTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
 test("splits by change of line"){
