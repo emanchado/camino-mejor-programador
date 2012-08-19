@@ -306,7 +306,7 @@ El problema que tiene esto es que la prueba mezcla la separación del texto orig
 
 Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría a cada una de las pruebas de +SpanishIntoEnglishTranslatorTest+, pero, ¿por qué debería verse afectada una prueba como +test("splits by change of line")+, cuyo propósito es probar la separación en palabras?
 
-Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: que nuestro traductor separa frases en palabras, que las traduce y que las junta otra vez. La solución podría estar en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
+Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: separación, traducción y reunión de palabras. La solución podría estar en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/TranslatorTest.scala[example3/TranslatorTest.scala]
 [source,scala]
