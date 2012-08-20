@@ -190,7 +190,7 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un usuario de pleno derecho de nuestro proyecto.
+El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _usuario de pleno derecho_ de nuestro proyecto.
 
 Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. En el mundo de Java/Scala, la forma típica de resolver esto es con un Servlet. De nuevo comenzamos con una prueba, esta vez a nivel unitario.
 
