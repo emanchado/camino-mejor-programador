@@ -110,7 +110,7 @@ object MilesToKilometersConverter {
 
 Refactorización
 ^^^^^^^^^^^^^^^
-Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación, evolucionándolo a lo que sea más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
+Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación y lo transformemos en lo más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
 
 
 Por qué y para qué
@@ -161,7 +161,6 @@ test("mmmehs what it can't") {
 
 Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
 
-[[example2_SpanishIntoEnglishTranslator_scala]]
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala[example2/SpanishIntoEnglishTranslator.scala]
 [source,scala]
 -----------------------------------------------------------------------------
@@ -175,14 +174,12 @@ class SpanishIntoEnglishTranslator {
 }
 -----------------------------------------------------------------------------
 
-Granularidad
-------------
 Probar el conjunto de la aplicación
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------
 Hasta ahora nos hemos centrado en las pruebas unitarias; no obstante, si llevamos hasta sus últimas consecuencias los principios que hemos visto --guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar--, deberemos considerar fundamental guiar el desarrollo de cada parte de la funcionalidad mediante una prueba que la ejercite en su conjunto. Lo ideal será que todas las pruebas funcionales verifiquen el conjunto del software, en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. Lo cierto es que normalmente acabamos transigiendo, debido al coste de ejercitar ciertas acciones destructivas en explotación, a la falta de recursos necesarios, o a decisiones arquitectónicas previas que no hayan tenido en cuenta la facilidad de prueba. Sin embargo, eso no significa que tengamos que claudicar completamente.
 
 Ejemplo
-^^^^^^^
+~~~~~~~
 Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, incluso antes de las que vimos en la introducción, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
@@ -193,7 +190,7 @@ test("Converts miles into kilometers"){
 }
 -----------------------------------------------------------------------------
 
-El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un [[ciudadano_de_primera]] _ciudadano de primera categoría_ de nuestro proyecto.
+El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un usuario de pleno derecho de nuestro proyecto.
 
 Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. En el mundo de Java/Scala, la forma típica de resolver esto es con un Servlet. De nuevo comenzamos con una prueba, esta vez a nivel unitario.
 
@@ -283,8 +280,8 @@ class Converter extends HttpServlet {
 -----------------------------------------------------------------------------
 
 
-Probar una sola cosa cada vez
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Probar una sola cosa a la vez
+-----------------------------
 El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; hacer que cada prueba verifique únicamente un aspecto de la aplicación nos ayudará a mantener este esfuerzo manejable y además las hará más fáciles de entender, y por lo tanto más eficientes. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
 
 * si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas que hemos visto aquí documentan el comportamiento con buenos ejemplos, pero normalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse (+if(input==15) throw new EasterEgg("!!")+), una buena cobertura está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que las pruebas fallen.]
@@ -292,8 +289,8 @@ El mantenimiento de la batería de pruebas, que crece con la aplicación, requie
 * si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
 
 Ejemplo de pruebas centradas
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Volvamos a <<example2_SpanishIntoEnglishTranslator_scala, donde dejamos>> el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Volvamos a donde dejamos el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
 
 [source,scala]
 -----------------------------------------------------------------------------
@@ -364,9 +361,9 @@ Críticas
 --------
 Diseño prematuro
 ~~~~~~~~~~~~~~~~
-El <<_ejemplo_de_pruebas_centradas,ejemplo de pruebas centradas>> ilustra también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta?
+El ejemplo de pruebas centradas ilustra también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta?
 
-Como dijimos <<ciudadano_de_primera,antes>>, desarrollar dirigidos por pruebas significa considerar las pruebas como ciudadanos de primera categoría de nuestro, añadiendo, así, un coste en cantidad de código y en la complejidad del diseño que elegimos pagar para beneficiarnos de la guía de las pruebas. Advocar por el TDD es considerar que este coste vale la pena. Sería menos costoso desarrollar sin la guía de las pruebas si supiésemos exactamente cuáles son los requisitos e incluso qué código escribir desde el principio. El TDD se opone a esta visión considerando el desarrollo como un proceso progresivo en el que el equipo va descubriendo _qué_ y _cómo_ desarrollar a medida crea la aplicación, evolucionándola paso a paso, pasando siempre de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
+Como dijimos antes, desarrollar dirigidos por pruebas significa considerar las pruebas como usuarios de pleno derecho de nuestro código, añadiendo, así, un coste en cantidad de código y en la complejidad del diseño que elegimos pagar para beneficiarnos de la guía de las pruebas; optar por el TDD es considerar que este coste vale la pena. Sería menos costoso desarrollar sin la guía de las pruebas si supiésemos exactamente cuáles son los requisitos e incluso qué código escribir desde el principio. El TDD se opone a esta visión considerando el desarrollo como un proceso progresivo en el que el equipo va descubriendo _qué_ y _cómo_ desarrollar, a medida crea la aplicación y la va poco a poco transformando, enriqueciendo y simplificando, pasando siempre de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.
 
 Volviendo a la prematuridad del diseño, si bien es cierto que las pruebas a veces adelantan la necesidad de descomponer el código, estas decisiones se vuelven más baratas dado que los cambios en el diseños son menos costosos gracias a la protección que nos da nuestra batería. Y, además, esto se ve también compensado por las innumerables ocasiones en las que no añadiremos complejidad al código de explotación porque esa complejidad no es necesaria para satisfacer las pruebas, probablemente porque no lo es en absoluto para lo que requerimos de nuestra aplicación en ese momento.
 
