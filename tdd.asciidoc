@@ -311,7 +311,7 @@ class Converter extends HttpServlet {
 }
 -----------------------------------------------------------------------------
 
-
+Además de los pasos _rojos_ y _verdes_ que hemos visto en el ejemplo hasta ahora, a medida que la aplicación va creciendo, debemos tanto refactorizar a nivel unitario como ir mejorando el diseño; por ejemplo, si en los próximos pasos la aplicación necesitase responder a distintas rutas con distintas conversiones, probablemente decidiríamos extraer el análisis de las URIs a una unidad independiente e introduciríamos distintos objetos a los que delegar dependiendo del tipo de conversión.
 
 
 Probar una sola cosa a la vez
