@@ -327,7 +327,7 @@ El mantenimiento de la batería de pruebas, que crece con la aplicación, requie
 
 Ejemplo de pruebas centradas
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Volvamos a donde dejamos el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos una prueba a +SpanishIntoEnglishTranslatorTest+ que verifique el nuevo funcionamiento.
+Volvamos a donde dejamos el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos a +SpanishIntoEnglishTranslatorTest+ una prueba que verifique el nuevo funcionamiento.
 
 [source,scala]
 -----------------------------------------------------------------------------
@@ -336,49 +336,70 @@ test("splits by change of line") {
 }
 -----------------------------------------------------------------------------
 
-El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; la idea que queremos transmitir con este ejemplo estaría más clara si pudiéramos expresar la entrada como +"xx\nxx"+; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.
+El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; la idea que queremos transmitir con este ejemplo estaría más clara si pudiéramos expresar la entrada como +"xxx\nxx"+ y la condición a cumplir como +should be(Seq("xxx", "xx"))+; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.
 
 Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría a cada una de las pruebas de +SpanishIntoEnglishTranslatorTest+, pero, ¿por qué debería verse afectada una prueba como +test("splits by change of line")+, cuyo propósito es probar la separación en palabras?
 
-Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: separación, traducción y reunión de palabras. La solución podría estar en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
+Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: separación, traducción y reunión de palabras. La solución consistiría en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?
 
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/TranslatorTest.scala[example3/TranslatorTest.scala]
+Extraemos la división de palabras a su propia unidad, con lo que podemos expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/SplitterTest.scala[example3/SplitterTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-var translator: Translator = _
-
-before {
-  val dictionary: (String => String) = _ match {
-    case "bueno" => "scorchio"
-    case "cerveza" => "pissed"
-    case _ => "changeplease"
+class SplitterTest extends FunSuite with ShouldMatchers {
+  test("splits by space") {
+    Splitter("xxx xx") should be(Seq("xxx", "xx"))
   }
-  translator = new Translator(dictionary)
-}
 
-test("translates word by word according to dictionary") {
-  translator.translate("soy bueno") should be("changeplease scorchio")
+  test("splits by change of line") {
+    Splitter("xxx\nxx") should be(Seq("xxx", "xx"))
+  }
 }
 -----------------------------------------------------------------------------
 
-El traductor que nos queda está más centrado en descomponer y componer, y es independiente del diccionario.
-
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Translator.scala[example3/Translator.scala]
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/Splitter.scala[example3/Splitter.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-class Translator(val dictionary: (String) => String) {
-  def translate(spanish: String): String =
-    spanish.split(' ').map(dictionary).mkString(" ")
+object Splitter extends ((String) => Seq[String]) {
+  def apply(s: String): Seq[String] = s split """[ \n]"""
 }
 -----------------------------------------------------------------------------
 
-La refactorización nos permite expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:
+El traductor lo recibe como una dependencia inyectada mediante el constructor. footnote:[En este ejemplo nos hemos quedado con pruebas que ejercitan las unidades unidades independientemente; perdiendo la cobertura de la combinación de ambas unidades. Sin embargo, en la práctica, este código formaría parte de un proyecto mayor que contaría con baterías de pruebas de mayor ámbito, que incluirían la verificación del comportamiento conjunto.]
 
-.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example4/TranslatorTest.scala[example4/TranslatorTest.scala]
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/test/scala/org/casa/translation/example3/SpanishIntoEnglishTranslatorTest.scala[example3/SpanishIntoEnglishTranslatorTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-test("splits by change of line"){
-  new Translator(s => s).translate("xxx\nxx") should be("xxx xx")
+class SpanishIntoEnglishTranslatorTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
+  var translator: SpanishIntoEnglishTranslator = _
+
+  before {
+    translator = new SpanishIntoEnglishTranslator(_ split ' ')
+  }
+
+  test("translates what it can") {
+    translator.translate("yo soy") should be("I am")
+  }
+
+  test("mmmehs what it can't") {
+    translator.translate("dame argo") should be("mmmeh mmmeh")
+  }
+}
+-----------------------------------------------------------------------------
+
+.https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example3/SpanishIntoEnglishTranslator.scala[example3/SpanishIntoEnglishTranslator.scala]
+[source,scala]
+-----------------------------------------------------------------------------
+class SpanishIntoEnglishTranslator(val splitter: (String) => Seq[String]) {
+  def translate(spanish: String): String = {
+    val split = splitter(spanish)
+    split.map(_ match {
+      case "yo" => "I"
+      case "soy" => "am"
+      case _ => "mmmeh"
+    }).mkString(" ")
+  }
 }
 -----------------------------------------------------------------------------
 
