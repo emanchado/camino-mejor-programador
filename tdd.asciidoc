@@ -123,7 +123,7 @@ Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento c
 
 Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamiento
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-El traductor siguiente es difícil de probar, por lo que es poco probable que haya sido desarrollado guiado por pruebas:
+En clase siguiente, el método +translate+ traduce un texto del español a una especie de inglés, mostrando por pantalla el resultado; este código es poco probable que haya sido desarrollado guiado por pruebas, dado que el resultado principal, la traducción, no se pone a disposición del codigo externo de ninguna manera que sea fácil de incluir en una prueba, sino que se manifiesta llamando al método +println+ que da acceso a la consola, es decir, mediante un _efecto secundario_, lo que dificulta la verificación desde una prueba.
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
 [source,scala]
