@@ -185,8 +185,24 @@ Volvamos al ejemplo inicial de conversión de distancias, y supongamos que neces
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
 [source,scala]
 -----------------------------------------------------------------------------
-test("Converts miles into kilometers"){
-  get("http://localhost:8080/1.0") should be (1.609)
+class ConversionTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
+  test("Converts miles into kilometers") {
+    get("http://localhost:8080/1.0") should be("1.609")
+  }
+
+  def get(url: String): String = {
+    Request.Get(url).execute().returnContent().asString()
+  }
+
+  var converter: Server = _
+
+  before {
+    converter = Converter.start(8080)
+  }
+
+  after {
+    converter.stop()
+  }
 }
 -----------------------------------------------------------------------------
 
@@ -211,9 +227,7 @@ class ConverterTest extends FunSuite {
 -----------------------------------------------------------------------------
 
 
-
-El proyecto completo se puede encontrar en los enlaces, pero el conversor en su versión mínima viene a ser:
-
+Un conversor más o menos mínimo usando Jetty viene a ser:
 
 .https://www.assembla.com/code/unitconvert/git/nodes/master/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
 [source,scala]
@@ -221,6 +235,24 @@ El proyecto completo se puede encontrar en los enlaces, pero el conversor en su 
 class Converter extends HttpServlet {
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
     resp.getWriter.print("1.609")
+  }
+}
+
+object Converter {
+  def main(args: Array[String]){
+    start(8080)
+  }
+
+  def start(port: Int): Server = {
+    val context = new ServletContextHandler()
+    context.setContextPath("/")
+    context.addServlet(new ServletHolder(new Converter()), "/*")
+
+    val converter = new Server(port)
+    converter.setHandler(context)
+
+    converter.start()
+    converter
   }
 }
 -----------------------------------------------------------------------------
@@ -242,7 +274,7 @@ test("Converts negative miles into kilometers") {
 -----------------------------------------------------------------------------
 class Converter extends HttpServlet {
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val miles = req.asInstanceOf[Request].getUri.getPath.substring(1).toDouble
+    val miles = req.getRequestURI.substring(1).toDouble
     resp.getWriter.print(miles * 1.609)
   }
 }
@@ -255,7 +287,7 @@ A continuación el manejo de los casos de error, como cantidades de millas que n
 -----------------------------------------------------------------------------
 test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amounts of miles") {
   statusCode("http://localhost:8080/blah") should be(HttpServletResponse.SC_BAD_REQUEST)
-  get("http://localhost:8080/blah") should be("Unparseable amount of miles: 'blah'\n")
+  get("http://localhost:8080/blah") should be("Miles incorrectly specified in URI: '/blah'")
 }
 -----------------------------------------------------------------------------
 
@@ -264,7 +296,7 @@ test("Responds with SC_BAD_REQUEST (400) and error message to unparseable amount
 -----------------------------------------------------------------------------
 class Converter extends HttpServlet {
   override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val milesAsString = req.asInstanceOf[Request].getUri.getPath.substring(1)
+    val milesAsString = req.getRequestURI.substring(1)
     try {
       val miles = milesAsString.toDouble
       resp.getWriter.print(miles * 1.609)
@@ -272,12 +304,14 @@ class Converter extends HttpServlet {
     catch {
       case _: NumberFormatException => {
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
-        resp.getWriter.println("Unparseable amount of miles: '" + milesAsString + "'")
+        resp.getWriter.print("Miles incorrectly specified in URI: '" + req.getRequestURI + "'")
       }
     }
   }
 }
 -----------------------------------------------------------------------------
+
+
 
 
 Probar una sola cosa a la vez
