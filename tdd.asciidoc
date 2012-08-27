@@ -69,8 +69,8 @@ object MilesToKilometersConverter {
 }
 -----------------------------------------------------------------------------
 
-Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así. footnote:[Más despacio: con http://www.informit.com/articles/article.aspx?p=30641[triangulación]; más deprisa: saltándose el paso verde inicial. Recortes:
-Y a continuación ejecutar la prueba, añadir otra prueba con otro valor, ejecutarla y a continuación refactorizar la implementación para que cumpla varias pruebas y la funcionalidad general. Esto es lo que Kent Beck llama triangulación y es la versión más conservadora de la programación dirigida por pruebas. La mayoría de los programadores, cuando lo que desarrollan con TDD está claro, como es el caso, se saltan la triangulación (e incluso el paso verde, pero eso es más delicado)]
+Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así.
+
 
 ¿Refactorización?
 ^^^^^^^^^^^^^^^^^
@@ -98,7 +98,7 @@ org.scalatest.TestFailedException: 1.609 was not equal to -3.218
 
 Verde
 ^^^^^
-Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama _triangulación_. No estoy seguro de que me guste el término, porque la triangulación a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que no sólo satisfaga estas dos pruebas, sino que también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
+Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama http://www.informit.com/articles/article.aspx?p=30641[_triangulación_]. No estoy seguro de que me guste el término, porque la triangulación geométrica a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que no sólo satisfaga estas dos pruebas, sino que también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
 [source,scala]
@@ -107,6 +107,9 @@ object MilesToKilometersConverter {
   def convert(miles: Double): Double = miles * 1.609
 }
 -----------------------------------------------------------------------------
+
+Podríamos haber pasado a la solución general directamente, y a menudo haremos exactamente eso, sin embargo, como vimos en el anterior paso verde, empezar por la solución más simple y dejar la generalización para el siguiente ciclo, nos ayuda a centrarnos primero en definir qué funcionalidad vamos a añadir y cuál va a ser el contrato de la unidad que estamos probando, resolviendo ambigüedades y desvelando suposiciones erróneas. Esto será particularmente útil cuando menos claro tengamos lo que queremos hacer y cómo queremos implementarlo.
+
 
 Refactorización
 ^^^^^^^^^^^^^^^
@@ -318,7 +321,7 @@ Probar una sola cosa a la vez
 -----------------------------
 El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; hacer que cada prueba verifique únicamente un aspecto de la aplicación nos ayudará a mantener este esfuerzo manejable y además las hará más fáciles de entender, y por lo tanto más eficientes. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle; o dicho de otra manera:
 
-* si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas que hemos visto aquí documentan el comportamiento con buenos ejemplos, pero normalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse (+if(input==15) throw new EasterEgg("!!")+), una buena cobertura está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que las pruebas fallen.]
+* si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; footnote:[El tipo de pruebas con las que guiamos el desarrollo en este artículo documentan el comportamiento con buenos ejemplos, pero generalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse --por ejemplo, con algo como +if(input==15) throw new EasterEgg("!!")+--; una buena cobertura en TDD está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que fallen las pruebas.]
 * si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento;
 * si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
 
@@ -385,9 +388,9 @@ Mantener verde la batería
 -------------------------
 La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio. 
 
-Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación --_cita... continuous deployment, etc._], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; además, muchos equipos se ayudan de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
+Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento footnote:[De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación.], con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; además, muchos equipos se ayudan de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.
 
-A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar, lo que incrementa el coste del desarrollo y motiva a los desarrolladores a no siempre satisfacer la batería completa o a espaciar los envios de cambios al repositorio común; ambos efectos muy perniciosos. Para mantener la programación dirigida por pruebas de forma viable deberemos esforzarnos en mantener reducido este tiempo; la manera de lograrlo va más allá de un artículo introductorio, pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida.footnote:[Otra forma de reducir el tiempo es transigiendo en alguna medida, es decir, no cumpliendo en ocasiones todo lo que describimos en este artículo]
+A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar, lo que incrementa el coste del desarrollo y motiva a los desarrolladores a no siempre satisfacer la batería completa o a espaciar los envios de cambios al repositorio común; ambos efectos muy perniciosos. Para mantener viable la programación dirigida por pruebas, debemos esforzarnos en mantener reducido este tiempo; la manera de lograrlo va más allá de un artículo introductorio, pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida.footnote:[Otra forma de reducir el tiempo es transigiendo en alguna medida, es decir, no cumpliendo en ocasiones todo lo que describimos en este artículo.]
 
 Otro problema relacionado con el coste de la batería son los fallos intermitentes, que necesitarán un esfuerzo importante de mantenimiento; hemos de invertir el esfuerzo necesario para entender la raíz de cada fallo y resolverlo. Las fuentes típicas de fallos intermitentes son los aspectos no deterministas del software: Por ejemplo, cuando lo que verificamos es naturaleza asíncrona, necesitamos controlar el estado de la aplicación mediante puntos de sincronización. Algunas condiciones son imposibles de verificar per se, como la ausencia de comportamiento; en estos casos a menudo la solución pasa por alterar la aplicación desvelando su estado lo suficiente como para que las pruebas puedan sincronizarse con la aplicación y sepan cuándo debería haber tenido lugar el evento que estemos verificando. También suelen causar fallos intermitentes las dependencias de elementos fuera del control de la prueba, como el reloj del sistema; y su solución pasa normalmente por la inclusión y el control de dicho elemento desde la prueba, por ejemplo, alterando la percepción del tiempo de la aplicación mediante un _proxy_ controlable desde las pruebas.
 
@@ -414,5 +417,6 @@ Si bien no hay un concenso absoluto en la idoineidad del desarrollo guiado por p
 [bibliography]
 Bibliografía
 ------------
-- Kent Beck. 'Test Driven Development: By example'. Addison Wesley. 1 edition. 8 Nov 2002.
+- Kent Beck. 'Test Driven Development: By example'. Addison Wesley. 1a edición. 8 de noviembre de 2002.
+- Kent Beck. 'Test Driven Development: Equality for All'. InformIT. 24 de junio de 2003. http://www.informit.com/articles/article.aspx?p=30641
 - Steve Freeman, Nat Pryce. 'Growing Object-Oriented Software Guided by Tests'. Addison-Wesley Professional. 1 edition. October 22, 2009.
