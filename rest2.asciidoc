@@ -1,0 +1,670 @@
+Introducción a las APIs REST con HTTP (2): Calidad de servicio, seguridad y buenas prácticas
+============================================================================================
+Enrique J. Amodeo_Rubio <eamodeorubio@gmail.com>
+:Blog: http://eamodeorubio.wordpress.com
+:Twitter: @eamodeorubio
+
+Introducción
+------------
+
+En este capítulo se verá que
+
+Calidad de servicio con HTTP
+----------------------------
+
+Servicios multimedia
+~~~~~~~~~~~~~~~~~~~~
+
+Una ventaja de los servicios REST es que permite negociar el formato exacto en el que se va a intercambiar la información.
+
+Como ya vimos cada formato viene definido por un tipo MIME, y podemos usar las cabeceras Accept y Content-Type para gestionar qué tipo MIME se va a usar.
+
+Esto nos abre un nuevo campo con el que hacer nuestros servicios más potentes. Usando la misma URI y los mismos métodos HTTP, podemos consumir el recurso en distintos formatos, no es necesario tener una URI diferente para cada formato.
+
+Por ejemplo podríamos consumir el recurso http://www.server.com/rest/libro/3d-5FG-67 como JSON para poder mostrar información del libro dentro de nuestra aplicación web rica. Al mismo tiempo podemos usar el formato PDF para descargar una copia del libro cuando alguien lo compre. También podríamos consumirlo como audio y descargar la versión audiolibro del mismo. Otra opción sería pedir el recurso en formato HTML, y entonces recibo una página web con la que ver los detalles del libro y poder comprarlo. El límite realmente está en definir que es lo que tiene sentido desde un punto de vista de negocio.
+
+Otro ejemplo sería un recurso colección con todos los movimientos bancarios de una cuenta. Lo puedo consumir como HTML y acceder a una página web donde visualizar y operar. ¿Y por qué no en forma Excel para descargarlos como una hoja de cálculo? ¿Y que tal en PDF para poder imprimir los recibos de todos los movimientos? ¿O quizás es mejor pedirlo en formato JPG o GIF para ver una bonita gráfica de gastos/ingresos?
+
+En general, para maximizar la interoperabilidad, es mejor usar tipos MIME estandarizados, al fin y al cabo, de esta forma no tendremos que crear clientes específicos para consumir esos tipos MIME.
+
+De forma opcional, se suelen definir tipos MIME específicos y propietarios para nuestros servicios REST. En estos casos, cuando el tipo MIME no es estándar, el nombre del tipo empieza por "x-". Estos tipos propietarios suelen estar muy optimizados para el caso concreto de nuestro sistemas. Por ejemplo, si quiero definir un formato especial para los datos de libro, podría publicar el recurso libro de forma que soportara el tipo "application/x-libro". De esta forma los clientes que soporten este tipo especial podrían aprovechar las características optimizadas de este tipo.
+
+En cualquier caso, crear tipos MIME propietarios de nuestra aplicación es algo opcional, ya que implica menor interoperabilidad ya que los posibles consumidores del recurso no lo entenderán a priori, y necesitarán hacer un desarrollo a medida para consumir dicho formato. Por lo tanto, independientemente de tener tipos MIME propietarios, siempre debemos publicar los recursos REST mediante tipos MIME estándar.
+
+Concurrencia optimista
+~~~~~~~~~~~~~~~~~~~~~~
+
+En sistemas distribuidos siempre debemos tener en cuenta los efectos de la concurrencia en la consistencia del estado del sistema. En el caso concreto de los servicios web, puede ocurrir que dos clientes lean el estado del mismo recurso y ambos manden modificaciones al servidor. Obviamente una modificación llegará al servidor antes que la otra. Esto causa que la modificación que llegue más tarde se base en datos obsoletos, lo que dependiendo del caso puede ser indeseable. En sistemas distribuidos de alta escalabilidad, como es el caso de los servicios web, la concurrencia pesimista no es apropiada, ya que evita la escalabilidad del sistema. Es mucho más apropiado un esquema de concurrencia optimista [1], donde no hay bloqueo de datos, y en caso de conflicto la petición de escritura es rechazada, y el cliente notificado de tal hecho de forma ordenada.
+
+En servicios REST podemos implementar la concurrencia optimista mediante el uso de la cabecera HTTP ETag. Esta cabecera permite al servidor indicar en la respuesta una hash o fingerprint del estado del recurso. La idea es que la ETag cambie si y sólo si el estado del recurso cambia. Hay dos formas sencillas de implementar una ETag en el servidor: mediante una hash resistente a colisiones y mediante un identificador de versión.
+
+Existen dos tipos de ETag, las fuertes y las débiles. Si el estado del recurso cambia en al menos un bit, una ETag fuerte también cambia de valor. Nos permiten hacer una hash o fingerprint a nivel binario. Las ETag fuertes también tienen en cuenta los valores de las cabeceras HTTP y el formato concreto del documento. Por lo tanto si añadiésemos un espacio a un documento JSON, una ETag fuerte cambiaría, aunque la semántica del JSON no haya cambiado. Para solucionar esto existen las ETag débiles. Las ETag débiles no deberían cambiar con la mínima alteración del contenido de un mensaje HTTP, sino sólo si la semántica del estado del recurso ha cambiado. Sintácticamente podemos distinguir a una ETag fuerte de una débil, ya que la débil debe tener concatenado "W/" como prefijo.Por ejemplo, una ETag fuerte sería: "sdl1kfj3FA", y una débil W/"sdl1kfj3FA".
+
+Para hacer concurrencia optimista nos basta con ETag débiles. Como ya se dijo, podemos usar en el servidor una hash resistente a colisiones o un número de versión, que se actualizan cada vez que se modifiquen o cree un recurso. Es importante que el cálculo de la ETag sea consistente entre todas las máquinas servidoras en las que está distribuido nuestros servicios REST. Es decir, la ETag debería ser la misma independientemente de que servidor responda a la petición. El valor de la ETag así generado podría persistirse junto con el estado del recurso, para futura referencia.
+
+¿Y qué tiene todo esto que ver con la concurrencia optimista? Es simple, podemos usar la ETag para detectar los conflictos, y hacer peticiones HTTP condicionales.
+
+Supongamos que hemos recibido lo siguiente del servidor al hacer una petición GET:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+ETag: W/"686897696a7c876b7e"
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:10}
+}
+---------------------------
+
+El cliente inspeccionando la ETag puede saber la "versión" de los datos y usarlo posteriormente en peticiones condicionales HTTP. Supongamos que el cliente desea realizar una actualización de la entidad recibida, y por lo tanto envía un PUT.
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+En este caso, hace el PUT condicional mediante la cabecera If-Match. En esta cabecera se incluye el valor del ETag que posee el cliente. El servidor antes de realizar ninguna operación compara el ETag que tiene del recurso con el ETag enviado por el cliente en la cabecera If-Match. Si ambas coinciden, realiza la operación, como es el caso del ejemplo anterior. Si los ETag no coincidieran, el servidor no realizaría la petición, e informaría al cliente.
+El mensaje de respuesta, en caso de éxito sería:
+---------------------------
+HTTP/1.1 204 No Content
+ETag: W/"9082aff9627ab7cb60"
+
+---------------------------
+Obsérvese que se devuelve la nueva ETag del recurso modificado. Sin embargo podría haber ocurrido que el recurso hubiera sido modificado antes de que se realice nuestra petición de modificación. Estaríamos ante un conflicto de versiones. En este caso la respuesta sería diferente:
+---------------------------
+HTTP/1.1 412 Precondition Failed
+
+---------------------------
+La respuesta 412 puede ir acompañada de más cabeceras HTTTP.
+
+El uso de If-Match nos permite asegurarnos que la petición se va a procesar sólo si los datos no han cambiado desde que fueron recuperados por el servidor. Si algún otro cliente hubiera cambiado el estado del recurso antes de que llegara nuestra petición de modificación, las ETag no coincidirían y el servidor no ejecutaría la acción. Es importante que el cliente es notificado de tal circunstancia, ya que puede tomar acciones para reparar el problema. La acción más sencilla es volver a pedir los datos frescos al servidor y notificar al usuario. Otra opción más compleja es pedir los datos frescos y permitir al usuario fusionar sus cambios con los nuevos datos.
+
+Cache
+~~~~~
+
+Es importante saber cuándo un cliente, nodo intermedio, o un CDN, puede cachear la respuesta de una petición GET y cuando no. Al cachear la respuesta podemos evitar llamadas al servidor, por lo que aumentamos la escalabilidad de éste. Esto es clave si queremos diseñar APIs REST que tengan una alta escalabilidad. Sin embargo debemos ser capaces de especificar cuándo hay que descartar el contenido cacheado de un recurso, de otra manera el cliente no se enteraría de los cambios.
+
+Una forma de controlar la cache es mediante ETag. La cache puede hacer un GET condicional al servidor mediante la cabecera If-None-Match. De esta forma el servidor puede responder con la nueva información (y la nueva ETag) en el caso de que ésta haya cambiado.
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-None-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
+
+---------------------------
+El recurso sólo será devuelto por el servidor en el caso de que se haya producido algún cambio y el valor de la ETag haya cambiado. Por ejemplo:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+ETag: W/"9082aff9627ab7cb60"
+Last-Modified: Wed, 01 Sep 2012 13:24:52 GMT
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+En el caso de que el recurso no haya cambiado el servidor respondería lo siguiente.
+--------------------------
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
+
+--------------------------
+El código 304 indica que el recurso que se pide no ha cambiado y realmente el contenido es el mismo. Con la respuesta se pueden enviar más cabeceras HTTP. De esta manera la cache se asegura que el recurso no ha cambiado, y ahorramos ancho de banda y procesamiento en servidor.
+
+Otro método para gestionar la caché es usar las cabeceras If-Modified-Since y Last-Modified. En este caso no se mira ETag, sino sólo la última fecha de modificación del recurso que tenga el servidor (aunque la nueva versión del recurso se semánticamente equivalente a la que tiene el cliente).
+La petición tendría la siguiente forma:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Modified-Since: Wed, 01 Sep 2012 13:24:52 GMT
+Content-Type: application/json
+
+---------------------------
+En el caso que se hubiera producido una modificación posterior a la fecha especificada la respuesta sería:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+Cache-Control: max-age=21600
+Last-Modified: Tue, 27 Dec 2012 03:25:19 GMT
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Si por el contrario los datos siguieran siendo los mismos:
+--------------------------
+HTTP/1.1 304 Not Modified
+Date: Tue, 27 Dec 2012 05:25:19 GMT
+Expires: Tue, 27 Dec 2012 11:25:19 GMT
+ETag: W/"686897696a7c876b7e"
+Cache-Control: max-age=21600
+
+--------------------------
+Observese que se devuelve el nuevo valor de Last-Modified.
+
+Es importante tener en cuenta que la interpretación de la fecha se hace con respecto al reloj del servidor, pudiendo producirse problemas si el cliente y el servidor tienen los relojes muy desincronizados.
+
+Es un esquema totalmente equivalente al de ETag e If-None-Match, pero usando la fecha de modificación en vez de la ETag. En ambos casos sacamos partido de la capacidad de hacer un GET condicional usando las cabeceras If-*.
+
+Algunos os preguntareis por qué no usar Last-Modified en vez de ETag. Al fin y al cabo parece más simple de calcular en servidor. La razón es que algunas caches, notoriamente la cache de IE, no soportan correctamente If-Modified-Since, pero sí lo hacen bien con If-None-Match. Por otra parte algunos servidores de cache antiguos no soportan ETag. Por lo tanto se aconseja mezclar ETag y Last-Modified para un óptimo control de cache.
+
+Sin embargo estos enfoques no impiden que la cache tenga que hacer una llamada a servidor y esperar la respuesta. Por muy sencillo que sea el procesamiento en servidor, y por muy poca información que transporte la petición y la respuesta, seguimos teniendo la penalización de la latencia, que en algunos casos, como en las redes móviles, suele ser alta. Podemos mejorar esto, y evitar peticiones GET condicionales innecesarias al servidor, si tenemos alguna idea de la frecuencia de cambio de los datos. Por ejemplo, en un servicio REST que sirva noticias para un periódico, podemos aguantar sin problemas aunque tengamos datos obsoletos de hace cinco minutos. Por lo tanto podríamos configurar la cache para que al menos aguante cinco, y no intente refrescar los datos en ese intervalo de tiempo. Esto se puede conseguir con el uso de Cache-Control y Expires. Se usa la cabecera Expires por compatibilidad con HTTP 1.0, y en caso de que ambas se contradigan Cache-Control tiene prioridad. Este es el motivo por el que en las respuestas de los anteriores ejemplos se incluyen estas cabeceras. Si pedimos los datos a un nodo de cache, y no se ha cumplido el plazo especificado mediante Cache-Control y/o Expires, la cache nos devolverá lo que tenga cacheado, y no se molestará en emitir una petición GET condicional al servidor. Sólo cuando este tiempo expire, la cache volverá a intentar comprobar si los datos han cambiado o no, normalmente usando tanto If-Match como If-Modified-Since.
+
+Como se ve, el uso combinado de GET condicionales con las cabeceras de control de cache basada en tiempos, nos permiten un control fino de la cache. De esta forma podemos aprovechar la infraestructura de cache de nuestra red, e incluso de internet, pero a la vez asegurarnos que el cliente de nuestro servicio REST no se quede con datos obsoletos y vea los cambios.
+
+Multiidioma
+~~~~~~~~~~~
+
+Mediante el protocolo HTTP podemos construir un soporte multiidioma robusto en nuestros servicios REST.
+
+Mediante la cabecera Accept-Charset el cliente puede especificar al servidor los juegos de caracteres que soporta por orden de preferencia. Podemos especificar una lista de juegos de caracteres, e incluso especificar preferencia mediante el parámetro q. Se trata de un mecanismo similar al usado en la cabecera Accept para especificar preferencia en tipos MIME. Si no se define el juego de caracteres se escogerá ISO-8859-1 por defecto.
+
+Lo mismo podemos hacer con la cabecera Accept-Language, definir una lista por orden de preferencia de los lenguajes que desea el usuario. El servidor debe incluir en la respuesta la cabecera Content-Language indicando el idioma escogido.
+
+Ejemplos:
+--------------------------
+Accept-Charset: iso-8859-5, unicode-1-1;q=0.8
+Accept-Language: da, en-gb;q=0.8, en;q=0.7
+--------------------------
+
+Peticiones asíncronas o de larga duración
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Algunas operaciones pueden representar acciones de larga duración o que desencadenen un workflow. En estos casos puede ser interesante no responder con 201 o 200 a una petición, sino con 202 'Accepted'. Este código indica que la operación ha sido aceptada por el servidor pero que tardará un tiempo en realizarse, y es ideal para modelar peticiones asíncronas. Normalmente en la respuesta se incluye una referencia a una URI que nos indicará el progreso de la operación, y que podremos consultar cada cierto tiempo.
+Supongamos el ejemplo anterior sobre el pago:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
+Si la pasarela de pago va a tardar o simplemente se debe producir un workflow interno de aprobación manual, la petición no se puede dar por terminada, asi que lo mejor es avisar al cliente que estamos trabajando en ella:
+---------------------------
+HTTP/1.1 202 Accepted
+Content-Type: application/json
+
+{"status":"verifying"}
+---------------------------
+Las respuestas 202 pueden contener un cuerpo con indicación del estado actual del recurso. En el caso de que fuera una petición de creación (ya sea con PUT o POST) contendrá una cabecera Location.
+
+Prácticas básicas de seguridad en REST
+--------------------------------------
+
+Como en todo sistema de servicios web, debemos preocuparnos por la seguridad. Éste es un campo muy complejo, pero podemos cumplir algunas normas básicas de seguridad sin gran esfuerzo, y evitar un gran número de ataques.
+
+Cuidado con los identificadores
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lo primero que hay que tener en cuenta es no usar identificadores predecibles, como los autoincrementados. Esto puede permitir a un posible atacante ir averiguando identificadores válidos de recursos que despues pueden ser usados en otro ataque.
+
+Si usamos las "URIs desechables" que explicamos anteriormente se resuelve este problema, ya que ni los UUIDs ni la firma son predecibles por posibles atacantes.
+
+Otro posible riesgo consiste en usar las claves primarias de nuestro sistema de persistencia para montar las URIs. Esto nos puede exponer a otros ataques como la inyección de SQL o de código.
+
+Una posible solución es tener en formato persistente un mapeo entre las URIs y las verdaderas claves primarias. Otra solución más eficiente puede ser construir la clave primaria a partir de la URI mediante una clave secreta. Se trataría de hacer una hash criptográfica de la URI con un secreto.
+
+  PK = HASH(URI+SECRETO)
+
+Podemos reforzar este método teniendo un secreto distinto por "rango" de URIs, o quizás por colección.
+
+Privacidad
+~~~~~~~~~~
+
+La privacidad es otro aspecto a tener en cuenta. En recursos REST sensibles los datos no deberían transmitirse en claro por la red. La forma más obvia de solucionar esto es mediante el uso de HTTPS.
+
+Si queremos un mayor nivel de seguridad, o incluso prescindir de HTTPS, podemos añadir una capa de encriptación a nivel de aplicación, de forma que la petición HTTP no esté encriptada, sino sólo su cuerpo. Esto sin embargo tiene como problema que disminuye la interoperabilidad al usar un sistema de encriptación no estándar.
+
+Autenticación y autorización
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Un punto importante de seguridad es conocer como realizar la autenticación y la autorización. HTTP nos proporciona un mecanismos desafío/respuesta mediante la cabecera WWW-Authenticate.
+
+La idea es que cuando se realiza una petición a un recurso REST protegido, y la petición no lleva credenciales adecuadas, el servidor responde con un 401 que contiene una cabecera WWW-Authenticate. En dicha cabecera se detalla el tipo de credenciales que se necesita y el dominio de seguridad.
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+El servidor respondería:
+---------------------------
+HTTP/1.1 401 Authorization Required
+WWW-Authenticate: Basic realm="catalog"
+
+---------------------------
+En este caso el servidor indica que se necesitan las credenciales para el área de seguridad "catalog", credenciales que han de corresponder al protocolo "Basic"[2]. El cliente debe responder al desafío repitiendo la petición pero esta vez indicando en la cabecera Authorization las credenciales pertinentes:
+---------------------------
+GET /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Authorization: Basic Y29udHJhc2XxYTpzZWNyZXRh
+
+---------------------------
+Si el servidor considera que las credenciales son suficientes, permite el acceso al recurso. Si por el contrario considera que el cliente, aunque posee credenciales válidas, no posee permisos suficientes para acceder al recurso, devuelve un 403.
+---------------------------
+HTTP/1.1 403 Forbidden
+Content-Type: application/json
+
+{"reason":"Not enough security level"}
+---------------------------
+Puede ocurrir que el servidor dictamine que la credenciales no identifican a un usuario del sistema. En ese caso debe devolver un 401 con un nuevo WWW-Authenticate.
+
+En la especificación [2] se definen al menos dos algoritmos de authenticación. El primero es el llamado "Basic", y las credenciales de éste son simplemente la codificación en base 64 de la concatenación del usuario y password separados por ":". Al mandarse el usuario y contraseña en claro, nos vemos forzados a usar HTTPS si queremos tener algo de seguridad.
+
+El otro algoritmo, "Digest", es más seguro y usa unas credenciales que no contienen la password en claro, como es el caso de "Basic". Esto permite autenticarse con seguridad sobre HTTP, sin necesidad de usar HTTPS. Detalles en [2].
+
+Buenas prácticas y patrones básicos
+-----------------------------------
+
+En esta sección se examinan las buenas prácticas y patrones de diseño más básicos.
+
+Actualizaciones parciales
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+La técnica de actualización explicada en el capítulo anterior nos sirve sólo si queremos actualizar por completo un recurso, pero no es válida si necesitamos actualizar sólo unos campos y otros no.
+
+Si lo que queremos hacer realmente es una actualización parcial, la mejor práctica en este caso es revisar el modelo de nuestros recursos. Normalmente cuando surge esta necesidad, es porque queremos operar con trozos más pequeños del recurso original. En estos casos es mejor dividir el recurso principal, y crear recursos detalle con sus propias URI. El recurso principal contendrá sólo la información más esencial y enlaces a todos los recursos que contienen información más detallada o secundaria. De esta forma cada recurso detalle tiene su propia URI y puede ser actualizado de forma independiente.
+
+Sin embargo, pueden existir algunos casos de uso donde este enfoque no sea práctico. Supongamos que por motivos de rendimiento queremos intercambiar entre el cliente y el servidor únicamente los cambios que se produzcan en el recurso, y ahorrar así ancho de banda.
+
+En estos casos estaríamos tentados de usar PUT para mandar sólo esos cambios, algo como lo que sigue:
+---------------------------
+PUT /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/json
+
+{
+  "price": { currency:"€", amount:100},
+  "author": [ "Enrique Gómez Salas", "Juan Pérez" ]
+}
+---------------------------
+Como vemos en este ejemplo, sólo enviamos un documento parcial, con sólo los campos a actualizar. El servidor interpretaría que los campos que no se encuentren en la petición debe dejarlos intacto. Esta forma de usar PUT no es REST, ya que la especificación HTTP dice que el contenido del cuerpo de la petición pasa a ser el nuevo estado del recurso, es decir, el estado del recurso se debe sobreescribir por completo con lo que viene en la petición. Por lo tanto debemos buscar otra alternativa.
+
+Esa alternativa sería POST. Normalmente se interpreta que POST va a añadir contenido por el final cuando se usa para actualizar, pero la especificación sólo nos indica que esa es una de las posibles acciones que se pueden admitir. El método POST sobre una URI se puede interpretar según el estándar de otras formas. En el caso que nos ocupa se puede usar la interpretación de "añadir" en vez de crear un recurso subordinado. La idea es que podemos ir "añadiendo" información al recurso poco a poco. El truco para hacer una actualización parcial es usar un tipo MIME que representa un cambio de estado, o "diff", que se "añade" al estado del servidor. Si mandamos varios de estos "diff" al servidor, éste los va "sumando" y el recurso se va actualizando incrementalmente.
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Sin embargo hay que tener cuidado, POST al contrario que PUT no es idempotente, ¿qué debería hacer el servidor si vuelvo a repetir la petición pensando que no se ejecutó correctamente en el servidor? Una implementación poco sofisticada del servidor podría volver a aplicar los cambios:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/465",
+  "author": [ "Enrique Gómez Salas", "Juan Pérez", "Juan Pérez" ],
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:100}
+}
+---------------------------
+En este caso hemos enviado el mismo "diff" de forma duplicada. Esto hace que la segunda petición sea inconsistente, ya que al haberse procesado el primer "diff" (sin que el cliente lo supiera), el segundo no tiene sentido. En estos casos el servidor debería fallar, con un 409, y no duplicar la petición.
+--------------------------
+HTTP/1.1 409 Conflict
+
+--------------------------
+Se falla con 409 para indicar que existe un conflicto entre la petición y el estado del recurso. Sin embargo, no se especifica en qué consiste este conflicto, ya que 409 es un código de error bastante genérico. Otro problema es que a veces el servidor no podría detectar que la petición es duplicada inspeccionando sólo el cuerpo de esta. En este caso es sencillo, ya que el autor está duplicado, pero en otros casos la cosa no sería tan sencilla.
+
+Debido a estos problemas es mejor usar peticiones condicionales mediante ETag e If-Match cuando hagamos actualizaciones parciales. Por un lado es más explícito y por otro el servidor puede detectar las peticiones duplicadas de forma más sencilla.
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Y si existe una duplicación o un problema de carrera el servidor responde con:
+---------------------------
+HTTP/1.1 412 Precondition Failed
+
+---------------------------
+Que es mucho más explícito, sencillo de implementar y de depurar.
+
+Otro punto importante a la hora de hacer actualizaciones parciales es usar un tipo MIME que represente explícitamente un "diff". Si no nuestra API sería confusa. Ya existen tipos MIME en proceso de estandarización para representar "diff" entre documentos. Algunos están basados en XPath[4], y otros en formato JSON[5].
+
+Método PATCH
+^^^^^^^^^^^^
+
+El problema del sistema anteriormente descrito para realizar actualizaciones parciales es que POST es un método genérico que admite casi cualquier tipo de operación que no sea ni segura ni idempotente. En este sentido se está convirtiendo en una especie de cajón de sastre donde podemos modelar casi cualquier operación que no encaje en el resto del marco de REST. Esto es un problema y puede llegar a hacer que los consumidores de nuestros recursos se confundan al usar POST.
+
+Para solucionar este problema se ha propuesto añadir un nuevo método, el método PATCH, que todavía se encuentra en proceso de estandarización[3]. Al igual que POST es un método no seguro y no idempotente, pero tiene una semántica explícita de actualización parcial y sólo admite tipos MIME que representen "diffs". Al ser más explícito la API es más clara.
+
+Todo lo explicado anteriormente sobre actualizaciones parciales se aplica a PATCH. Así el ejemplo anterior quedaría:
+--------------------------
+PATCH /rest/libro/465 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Es exactamente igual que POST pero usando PATCH que es mucho más explícito y deja menos a la interpretación.
+
+Una forma de saber si un recurso admite el método PATCH es hacer una petición con el método OPTIONS:
+--------------------------
+OPTIONS /rest/libro/465 HTTP/1.1
+Host: www.server.com
+
+--------------------------
+Y la respuesta:
+--------------------------
+HTTP/1.1 200 OK
+Allow: GET, PUT, POST, OPTIONS, HEAD, DELETE, PATCH
+Accept-Patch: application/book-diff+json
+Content-Length: 0
+
+--------------------------
+La respuesta indica los métodos aceptables por el recurso. En el caso de que se soporte PATCH, se debe incluir la cabecera "Accept-Patch" que indica que formatos mime se pueden usar con el método PATCH.
+
+Sin embargo al ser un método nuevo que todavía no está estandarizado podemos tener problemas de interoperabilidad. Puede ser que el servidor no lo implemente, o que algún firewall bloquee dicho método. Para evitar esto podemos usar la cabecera "X-HTTP-Method-Override". Esta cabecera es ignorada por los nodos y servidores antiguos, pero permite indicar a los servidores más modernos que queremos usar un método diferente del especificado en la petición HTTP. Así, el ejemplo anterior quedaría como:
+--------------------------
+POST /rest/libro/465 HTTP/1.1
+Host: www.server.com
+X-HTTP-Method-Override: PATCH
+Accept: application/json
+If-Match: W/"686897696a7c876b7e"
+Content-Type: application/book-diff+json
+
+[{
+    "change-type":"replace",
+    "location":"price/amount",
+    "value":100
+ },
+ {
+   "change-type":"append",
+   "location":"author",
+   "value":"Juan Pérez"
+ }]
+--------------------------
+Como se observa, para cualquier servidor o nodo que no entienda PATCH, la petición sería un POST. Pero en los casos en los que el servidor sí entienda PATCH, ignorará POST.
+
+Actualmente PATCH está soportado por las APIs públicas de grandes compañías como Google o GitHub.
+
+URIs desechables y recursos "virtuales"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Anteriormente se ha comentado que es deseable siempre usar métodos HTTP idempotentes, ya que nos permiten una recuperación más simple de los posibles cortes y congestiones de la red.
+
+El único método HTTP que no es idempotente es POST, ¿existirá alguna forma de prescindir de él? ¿O quizás se puede usar POST de alguna manera que no sea tan peligroso? Son preguntas importantes ya que POST es la manera más simple de crear un recurso, y de modelar operaciones genéricas.
+
+La versión idempotente de POST podría ser PUT, pero tiene como problema que el consumidor del recurso REST necesita poder definir las URIs de los nuevos recursos y acciones. Como vimos anteriormente esto podría disminuir la interoperabilidad, ya que el algoritmo de generación de URIs tendría que estar implementado en el cliente y ser consistente con el servidor. Por la misma razón esto puede generar problemas de seguridad.
+
+La forma de solucionar esto es haciendo trabajar juntos a PUT y a POST. En este diseño el cliente cuando quiere crear un nuevo recurso, o quizás ejecutar un comando arbitrario, le pide permiso al servidor mediante una llamada POST. El servidor puede rechazar la llamada o bien concederle permiso. Si le concede permiso, el servidor genera una nueva URI que es devuelta al cliente. Esta URI representa un nuevo recurso que está vacio, y por lo tanto el servidor no necesita ni persistir ni almacenar en memoria. Se trata pues de un recurso "virtual" que no ocupa espacio en servidor. De esta forma si el cliente piensa que la petición se ha perdido, puede repetir la petición. Lo peor que podría pasar es que se creara una nueva URI para un nuevo recurso, pero como este recurso no ocupa recursos en servidor no pasa nada. El cliente puede después usar dicha URI para actualizar el recurso vacío mediante PUT. Es en ese momento cuando el servidor asigna memoria y realiza persistencia, y cuando se crea realmente el recurso de forma física. Si el cliente piensa que esta última petición falló, puede repetir la petición sin problemas, ya que PUT es idempotente.
+
+Resumiendo:
+
+1. El cliente hace POST a un recurso "factoría", encargado de crear recursos "virtuales".
+2. El servidor devuelve la URI de ese nuevo recurso "virtual"
+3. El cliente hace PUT a la URI devuelta con los datos que el considera debe tener el recurso
+4. El servidor actualiza el recurso con los datos transmitidos en el PUT, y lo persiste.
+
+Como se aprecia el truco consiste en que el recurso no se crea realmente hasta que no se recibe el PUT. Sin embargo queda un problema por resolver: si no almacenamos nada ni en memoria ni en soporte persistente, ¿cómo puede el servidor saber que la URI que le llega en el PUT es legítima? Al fin y al cabo no queremos que el cliente genere las URIs, sino que el servidor controle tal cosa. Lo ideal sería que si el cliente nos manda un PUT a una URI que no existe devolvamos un código 403, indicando que el cliente no tiene permiso para generar recursos en URIs que no sean asignadas por el servidor.
+
+Una solución inocente sería almacenar en algún sitio, en memoria tal vez, las URIs de los recursos, y chequear contra esta información la URI de la petición PUT. Sin embargo esto contradice el principio de que los recursos "virtuales" no deben ocupar espacio en servidor. De lo contrario el cliente no podría reintentar el POST con la seguridad de que no va a pasar nada malo.
+
+La solución consiste en generar una URI desechable. Las URIs desechables pueden ser reconocidas como legítimas por el servidor a simple vista, y no pueden ser falsificadas por el cliente. De esta forma no se se necesita almacenar la URI ni en memoria ni en soporte persistente. ¿Cómo generar una URI desechable? La forma más simple es tener en el servidor una clave secreta y un generador de UUID. La idea sería que cada vez que el servidor reciba un POST, genere un nuevo UUID, le concatene la clave secreta y el resultado lo pase por una función hash criptográfica. El resultado de este proceso es una firma de la URI. Esta firma es concatenada con el UUID anteriormente generado. Esto termina generando un identificador que se transforma en el último segmento de la ruta de la URI.
+
+  FIRMA = HASH(UUID+SECRETO)
+  URI = URI_RECURSO_PADRE + "/" + UUID + "_" + FIRMA
+
+Cuando el servidor reciba un PUT, es tan sencillo como extraer el UUID del último segmento de la ruta de la URI, calcularle la firma, y ver si coinciden. Si es así la URI es legítima, si no, debemos devolver 403. Esta lógica puede hacerse genérica a todas las peticiones PUT e implementarse en un filtro común a todas las URIs.
+
+Veamos un par de ejemplos de uso de esta técnica.
+
+Creando recursos con URIs desechables
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Primero el cliente hace un POST al recurso colección, sin datos:
+---------------------------
+POST /rest/libro HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34
+
+---------------------------
+El cliente, usando la URI que le ha sido devuelta en la cabecera location, realiza un PUT con los datos de la nueva entidad.
+---------------------------
+PUT /rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34 HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+Con esta petición el "recurso virtual" representado por la URI se transforma en un recurso con los datos especificados en la petición PUT. La respuesta:
+---------------------------
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=utf-8
+
+{
+  "id": "http://www.server.com/rest/libro/65557e01989246c59826a1a0ad1d5c7a_45be291cd8e154b258f2c22538bccc34"
+  "author": "Enrique Gómez Salas",
+  "title": "Desventuras de un informático en Paris",
+  "genre": "scifi",
+  "price": { currency:"€", amount:50}
+}
+---------------------------
+De esta forma podemos crear un recurso en dos fases. Primero solicitar la URI, y después confirmar mediante un PUT. De esta forma podemos repetir todas las veces que queramos la petición POST porque generar URIs de "recursos virtuales" no consumen apenas recursos, y por supuesto podemos repetir la petición PUT para transformar el "recurso virtual" en uno real, ya que PUT es idempotente.
+
+Comandos
+~~~~~~~~
+
+Una forma de modelar operaciones de negocio genéricas es transformar las operaciones en recursos. Por ejemplo, si queremos comprar un libro, en vez de tener una URI https://www.server.com/rest/comprar, la URI debería ser https://www.server.com/rest/compra. Nótese la diferencia entre el verbo y el nombre.
+
+¿Como haríamos una compra? Primero haríamos un POST al recurso "compra" para que nos asignase un identificador de nueva compra en forma de URI:
+---------------------------
+POST /rest/compra HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta:
+---------------------------
+HTTP/1.1 201 Created
+Location: http://www.server.com/rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f
+
+---------------------------
+
+Después podemos confirmar la compra mediante un PUT a dicha URI, indicando los datos de compra en el cuerpo del PUT.
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "created"
+}
+---------------------------
+
+Lo interesante es que podríamos consultar el estado de la compra haciendo un GET a dicha URI.
+---------------------------
+GET /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+
+---------------------------
+Y la respuesta indicando que la compra está en fase de aprobación:
+---------------------------
+HTTP/1.1 200 Ok
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "verifying"
+}
+---------------------------
+
+También podríamos solicitar la anulación de la compra haciendo un nuevo PUT:
+---------------------------
+PUT /rest/compra/3b99535d52fd4d84901b028511750247_b80d4b5a5a62546a08853dab8024633f HTTP/1.1
+Host: www.server.com
+Accept: application/json
+Content-Type: application/json
+
+{
+  "payment-method":"visa",
+  "cardnumber": 1234567812345678,
+  "secnumber":333,
+  "expiration": "08/2016",
+  "cardholder": "Pepe Pérez",
+  "order": "http://www.server.com/rest/orders/345",
+  "status": "canceled"
+}
+---------------------------
+El si se puede o no cancelar la compra y que implica eso depende de la lógica de negocio. Otra forma de cancelar la compra sería usar una actualización parcial del campo "status", ya sea usando PATCH o POST. En cualquier caso si la compra ya no se pudiera cancelar o modificar alguno de sus detalles, se debería devolver 409 (Conflict).
+
+No es el caso de la "compra", pero a veces la operación se puede deshacer por completo sin ningún problema. Si se puede hacer esto o no depende del dominio de negocio. En estos casos lo más simple sería usar DELETE para borrar el comando.
+
+Como vemos el patrón comando, implementado con una combinación de PUT y POST, nos da una gran flexibilidad no sólo a la hora de implementar operaciones arbitrarias, sino también procesos de negocio.
+
+Versionado de API
+~~~~~~~~~~~~~~~~~
+
+Como en cualquier sistema de servicios web, cuando usamos REST estamos publicando una API. Si cambiamos esa API entonces vamos a romper la interoperabilidad con los clientes antiguos. ¿Cómo podemos cambiar la API de forma que tenga el mínimo impacto posible?
+
+Uno de las posibles cosas que pueden cambiar es el formato. Es muy común que se añadan nuevos campos para reflejar nueva información, o que empecemos a soportar nuevos tipos MIME. Realmente esto no suele ser un problema, basta con que el cliente ignore los campos que no entienda o no pueda procesar. Si usamos XML hay que tener a la hora de definir el XML Schema, y dejar puntos de extensión dentro de éste.
+
+Si por cualquier razón hacemos un cambio en el formato de datos que vaya a romper los clientes de forma inevitable, podemos aprovechar la capacidad multimedia de HTTP en nuestro provecho. Podemos publicar el nuevo formato con otro nombre, y seguir soportando el antiguo. El formato antiguo lo podemos marcar como obsoleto en la documentación, pero seguir sirviéndolo mientras los clientes que lo consuman no sean una ínfima minoría. Por ejemplo, si soportábamos "application/x-libro+xml", y hacemos un cambio que inevitablemente no pueda ser retrocompatible, haremos este cambio en otro tipo MIME "application/x-libroV2+xml" y dejaremos el original tal como estaba. De esta forma los clientes antiguos pueden seguir consumiendo el formato antiguo, y los nuevos aprovechar las ventajas del nuevo tipo MIME.
+
+Otra cosa que puede cambiar es la URI. Realmente esto hay que evitarlo a toda costa, pero si se da el caso tiene fácil solución. Sólo hay que configurar una nueva redirección permanente a la nueva URI y asunto resuelto.
+
+¿Necesito una sesión HTTP?
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Es importante enfatizar que el protocolo HTTP no tiene sesión. La mal llamada sesión HTTP no es más que un truco implementado por los servidores de aplicaciones, donde se reserva un espacio de memoria en que puede ser referenciado mediante un identificador. Este identificador se pasa una y otra vez entre el servidor y el cliente, ya sea mediante una cabecera, ya sea dentro de la URI o mediante cookies.
+
+Desde el punto de vista de servicios web REST esto no tiene mucho sentido, ya que los servicios son stateless y no hay que almacenar en ningún sitio la historia de la conversación entre cliente y servidor. 
+
+Quizás algún lector estuviera tentado de usar esta pseudosesión HTTP como una forma de no tener que mandar una y otra vez el token de autenticación y simplificar la programación. Sin embargo el autor desaconseja dicha práctica por varias razones:
+
+* Es una práctica no estándar desde el punto de vista de HTTP y la web.
+* Es poco escalable, ya que impone al servidor una sobrecarga, al tener que reservar memoria para la sesión.
+* Abre la posibilidad a implementar servicios web stateful, con memoria. Este tipo de servicios, a parte de no ser tan escalables, imponen un mayor acoplamiento entre cliente y servidor disminuyendo la interoperabilidad. Los servicios stateless son más sencillos al declarar explícitamente toda la información necesaria para consumirlos en forma de parámetros y no necesitar publicar un modelo de cómo cambia la respuesta del servicio en función del estado de la conversación.
+* No se gana nada en rendimiento, ya que si antes tenemos que estar mandando continuamente el token de seguridad, usando sesión deberíamos mantar continuamente el identificador de sesión.
+
+Por lo tanto el uso de sesión HTTP en servidor es una mala práctica desde el punto de vista de los servicios REST.
+
+Conclusión
+----------
+
+Como se ve el protocolo HTTP es ideal para implementar APIs REST, no sólo cumple las restricciones de REST y es ubíquo, sino que proporciona capacidades muy útiles en sistemas del mundo real.
+
+En el siguiente capítulo abordaremos el diseño de APIs REST basadas en hypermedia.
+
+
+Referencias y bibliografía
+--------------------------
+
+[1] Concurrencia optimista: http://en.wikipedia.org/wiki/Optimistic_concurrency_control y también http://www.w3.org/1999/04/Editing/
+
+[2] Autenticación "Basic" y "Digest" de HTTP: http://tools.ietf.org/html/rfc2617
+
+[3] PATCH Method for HTTP: http://tools.ietf.org/html/rfc5789
+
+[4] An Extensible Markup Language (XML) Patch Operations Framework Utilizing XML Path Language (XPath) Selectors: http://tools.ietf.org/html/rfc5261
+
+[5] JSON Patch: http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-01
