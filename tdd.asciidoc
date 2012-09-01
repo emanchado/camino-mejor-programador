@@ -10,7 +10,7 @@ ______________________________
 rojo - verde - refactorización
 ______________________________
 
-Donde el paso rojo es la escritura de la prueba fallida, el paso verde es la modificación del software que satisface la prueba y el paso de refactorización es la mejora del código sin añadir funcionalidad, ayudado por la batería de pruebas existente, que proporciona confianza en que no estamos perdiendo funcionalidad del software sin darnos cuenta.
+Donde en el paso rojo escribimos una prueba que el software no satisface, en el verde modificamos el código de explotación para que la satisfaga y en el de refactorización mejoramos el código sin cambiar funcionalidad, con la confianza de que la batería de pruebas que hemos ido creando hasta el momento nos protege de estropear algo sin darnos cuenta.
 
 Ejemplo
 ~~~~~~~
@@ -47,7 +47,7 @@ java.lang.RuntimeException: Not yet implemented
 
 Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisiones importantes:
 
-Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del objeto (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado; las millas están expresadas con tipo +Double+; etc.
+Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del objeto (y no de la clase) +MilesToKilometersConverter+, por lo que no hay que instanciar el conversor, y sugiere que no tiene estado footnote:[Para los lectores más familiarizados con Java que con Scala, los objectos creados con +object+ en Scala son semejantes a la parte estática de las clases en Java; los métodos definidos bajo +object+ no están ligados a ninguna instancia de la clase +MilesToKilometersConverter+ (que de hecho aquí no existe). Lo cierto es que estos objetos sí que pueden tener estado (de la misma manera que podemos tener campos estáticos en Java), pero muchos equipos eligen no usar esta característica del lenguaje, a no ser que haya un buen motivo; por eso decimos que definir el método +convert+ en el objeto sugiere que el conversor no tiene estado.]; las millas están expresadas con tipo +Double+; etc.
 
 Segundo y más fundamental, la prueba constituye un ejemplo que comienza a definir la funcionalidad de la unidad; que al estar expresado en un lenguaje de programación nos protege de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:
 ______________
@@ -113,7 +113,7 @@ Podríamos haber pasado a la solución general directamente, y a menudo haremos 
 
 Refactorización
 ^^^^^^^^^^^^^^^
-Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño del la aplicación y lo transformemos en lo más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
+Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar +miles * 1.609+ o +1.609 * miles+? ¿el parámetro debería llamarse +miles+ o +distanceInMiles+?), pero es fundamental que con frecuencia también reconsideremos el diseño de la aplicación y lo transformemos en lo más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.
 
 
 Por qué y para qué
@@ -126,7 +126,7 @@ Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento c
 
 Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamiento
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-En clase siguiente, el método +translate+ traduce un texto del español a una especie de inglés, mostrando por pantalla el resultado; este código es poco probable que haya sido desarrollado guiado por pruebas, dado que el resultado principal, la traducción, no se pone a disposición del codigo externo de ninguna manera que sea fácil de incluir en una prueba, sino que se manifiesta llamando al método +println+ que da acceso a la consola, es decir, mediante un _efecto secundario_, lo que dificulta la verificación desde una prueba.
+En la clase siguiente, el método +translate+ traduce un texto del español a una especie de inglés, mostrando por pantalla el resultado; este código es poco probable que haya sido desarrollado guiado por pruebas, dado que el resultado principal, la traducción, no se pone a disposición del codigo externo de ninguna manera que sea fácil de incluir en una prueba, sino que se manifiesta llamando al método +println+ que da acceso a la consola, es decir, mediante un _efecto secundario_, lo que dificulta la verificación desde una prueba.
 
 .https://www.assembla.com/code/tdd-examples/git/nodes/master/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
 [source,scala]
@@ -209,7 +209,7 @@ class ConversionTest extends FunSuite with ShouldMatchers with BeforeAndAfter {
 }
 -----------------------------------------------------------------------------
 
-El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _http get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes a cerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y a cerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _usuario de pleno derecho_ de nuestro proyecto.
+El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _HTTP get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes acerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y acerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _usuario de pleno derecho_ de nuestro proyecto.
 
 Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. En el mundo de Java/Scala, la forma típica de resolver esto es con un Servlet. De nuevo comenzamos con una prueba, esta vez a nivel unitario.
 
@@ -431,7 +431,7 @@ Algunos equipos experimentados deciden utilizar las pruebas para guiar el desarr
 
 Conclusión
 ----------
-El desarrollo dirigido por pruebas nos ayuda a construir aplicaciones donde aquello que nos motiva a escribir el software guia cada línea de código, evitando a cada nivel desperdiciar nuestros esfuerzos en desarrollar funcionalidad que no sea exactamente la que necesitamos, o que sea simplemente innecesaria. La guía de las pruebas, combinada con el diseño continuo, hace posible un estilo de desarrollo orgánico, en el que el equipo evoluciona la aplicación, a medida que mejora su conocimiento de los requisitos del dominio y de la implementación ideal para resolverlos. Además, la utilización de pruebas desde el primer momento, desvela el acoplamiento y nos incita a descomponer el código en unidades cohesivas con depencias claramente identificadas.
+El desarrollo dirigido por pruebas nos ayuda a construir aplicaciones donde aquello que nos motiva a escribir el software guía cada línea de código, evitando a cada nivel desperdiciar nuestros esfuerzos en desarrollar funcionalidad que no sea exactamente la que necesitamos, o que sea simplemente innecesaria. La guía de las pruebas, combinada con el diseño continuo, hace posible un estilo de desarrollo orgánico, en el que el equipo evoluciona la aplicación, a medida que mejora su conocimiento de los requisitos del dominio y de la implementación ideal para resolverlos. Además, la utilización de pruebas desde el primer momento, desvela el acoplamiento y nos incita a descomponer el código en unidades cohesivas con depencias claramente identificadas.
 
 Si bien no hay un concenso absoluto en la idoineidad del desarrollo guiado por pruebas , muchos equipos lo usan, particularmente para aplicaciones comerciales y en lenguajes orientados a objetos. Nuestra opinión es que, además de dar sentido y ritmo a cada actividad del desarrollo, lo hace más divertido, porque da al desarrollador más libertad para mejorar y acrecentar el software.
 
