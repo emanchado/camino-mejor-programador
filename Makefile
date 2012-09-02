@@ -13,7 +13,7 @@ clean:
 	rm book.tex book.xml
 	rm -rf book.chunked book.pdf book.html book.epub
 
-ARTICLE_SOURCE_FILES = funcionales documentacion_activa consejospruebas calidad integracion_continua
+ARTICLE_SOURCE_FILES = funcionales documentacion_activa consejospruebas calidad integracion_continua tdd
 SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc $(article)-biblio.asc)
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
 
@@ -74,12 +74,14 @@ book.tex: $(SOURCE_FILES)
 	sed 's/^\\documentclass{report}/&\n\\usepackage[spanish]{babel}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Make the table of contents only have the article names
 	sed 's/^\\setcounter{tocdepth}{[0-9]\+}/\\setcounter{tocdepth}{0}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
-	# Add Javascript language definition rules for the "listings"
-	# package. Thanks to Lena Herrmann for the tip:
+	# Add Javascript and Scala language definition rules for the
+	# "listings" package. Thanks to Lena Herrmann and Mark/Eivind
+	# for the tip:
 	# http://lenaherrmann.net/2010/05/20/javascript-syntax-highlighting-in-the-latex-listings-package
-	# Also, set secnumdepth to -1 so those pesky "Chapter X" are
-	# not show at all
-	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n\\setcounter{secnumdepth}{-1}\n\\renewcommand\\contentsname{\\'"'"'Indice}\n&/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
+	# http://tex.stackexchange.com/questions/47175/scala-support-in-listings-package / http://tihlde.org/~eivindw/
+	# Also, set secnumdepth to -1 so
+	# those pesky "Chapter X" are not show at all
+	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n% "define" Scala\n\\lstdefinelanguage{scala}{\nmorekeywords={abstract,case,catch,class,def,%\ndo,else,extends,false,final,finally,%\nfor,if,implicit,import,match,mixin,%\nnew,null,object,override,package,%\nprivate,protected,requires,return,sealed,%\nsuper,this,throw,trait,true,try,%\ntype,val,var,while,with,yield},\notherkeywords={=>,<-,<\\%,<:,>:,\\#,@},\nsensitive=true,\nmorecomment=[l]{\/\/},\nmorecomment=[n]{\/*}{*\/},\nmorestring=[b]",\nmorestring=[b]'"'"',\nmorestring=[b]"""\n}\n\\setcounter{secnumdepth}{-1}\n\\renewcommand\\contentsname{\\'"'"'Indice}\n&/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Fix a pathetic TeX formatting problem with double quotes
 	# (possibly only when using Spanish)
 	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
