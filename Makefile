@@ -85,3 +85,5 @@ book.tex: $(SOURCE_FILES)
 	# Fix a pathetic TeX formatting problem with double quotes
 	# (possibly only when using Spanish)
 	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
+	# Fix dashes, also probably only for Spanish
+	sed 's/ -{}-{}\([^ ]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ ,\.:;-]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
