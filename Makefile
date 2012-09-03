@@ -32,6 +32,8 @@ book.asc: book.asc.in Makefile
 
 book.html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc
+	# Fix generation of dashes next to words (with no space in between)
+	sed 's/ --\([^ ->]\)/ \&#8212;\1/g' book.html | sed 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' >book.html-tmp && mv book.html-tmp book.html
 
 book.epub: book.xml libro.css
 	a2x $(XSLT_OPTS) -f epub --stylesheet libro.css book.xml
@@ -86,4 +88,4 @@ book.tex: $(SOURCE_FILES)
 	# (possibly only when using Spanish)
 	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Fix dashes, also probably only for Spanish
-	sed 's/ -{}-{}\([^ ]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ ,\.:;-]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
+	sed 's/ -{}-{}\([^ -]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ -]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
