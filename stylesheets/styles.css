@@ -2,7 +2,7 @@
 
 body {
   padding:50px;
-  font:14px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font:16px/1.5 Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
   color:#777;
   font-weight:300;
 }
@@ -39,7 +39,7 @@ a {
 }
 
 a small {
-  font-size:11px;
+  font-size:14px;
   color:#777;
   margin-top:-0.6em;
   display:block;
@@ -60,7 +60,7 @@ blockquote {
 code, pre {
   font-family:Monaco, Bitstream Vera Sans Mono, Lucida Console, Terminal;
   color:#333;
-  font-size:12px;
+  font-size:14px;
 }
 
 pre {
@@ -130,7 +130,7 @@ header li {
 
 header ul a {
   line-height:1;
-  font-size:11px;
+  font-size:14px;
   color:#999;
   display:block;
   text-align:center;
@@ -154,7 +154,7 @@ header ul li + li + li {
 }
 
 header ul a strong {
-  font-size:14px;
+  font-size:16px;
   display:block;
   color:#222;
 }
@@ -166,7 +166,7 @@ section {
 }
 
 small {
-  font-size:11px;
+  font-size:14px;
 }
 
 hr {
