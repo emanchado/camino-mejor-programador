@@ -3,25 +3,41 @@ layout: default
 ---
 El libro
 ========
-«El camino a un mejor programador» es un libro que recopila artículos sobre ingeniería informática escritos por Esteban Manchado Velázquez, Joaquín Caraballo Moreno y Yeray Darias Camacho.
+«El camino a un mejor programador» es un libro que recopila artículos
+sobre ingeniería informática escritos por Esteban Manchado Velázquez,
+Joaquín Caraballo Moreno y Yeray Darias Camacho.
 
-### Welcome to GitHub Pages.
-This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:
+La mayoría de los artículos tratan sobre pruebas automáticas de una
+manera u otra, pero el tema común es ser un mejor profesional.
 
-    $ cd your_repo_root/repo_name
-    $ git fetch origin
-    $ git checkout gh-pages
+Formatos
+--------
+El libro se escribió en AsciiDoc, y está disponible para descarga en
+PDF, ePub, HTML (en una sola página). Además, se puede [leer en
+HTML](/html/) (en varias páginas).
 
-If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.
+Puedes visitar el [proyecto en
+GitHub](https://github.com/emanchado/camino-mejor-programador) para
+ver el texto en el formato AsciiDoc, y los programas que usamos para
+producir los diferentes formatos. Para compilar a distintos formatos
+usamos `a2x` y `asciidoc`, pero tuvimos que arreglar varios detalles
+manualmente, así que si están trabajando con AsciiDoc y tienes
+problemas, quizás te pueda servir de ayuda.
 
-### Designer Templates
-We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.
+Licencia
+--------
+El texto entero del libro tiene licencia Creative Commons «Attribution
+Share Alike (CC BY-SA)».
 
-### Rather Drive Stick?
-If you prefer to not use the automatic generator, push a branch named `gh-pages` to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.
+¿Por qué?
+---------
+Escribimos este libro porque queríamos contar y compartir algo, y
+porque nos gustaba el reto de trabajar en un libro y conseguir
+terminarlo.
 
-### Authors and Contributors
-You can @mention a GitHub username to generate a link to their profile. The resulting `<a>` element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (@defunkt), PJ Hyett (@pjhyett), and Tom Preston-Werner (@mojombo) founded GitHub.
-
-### Support or Contact
-Having trouble with Pages? Check out the documentation at http://help.github.com/pages or contact support@github.com and we’ll help you sort it out.
+La portada
+----------
+La
+[portada](https://raw.github.com/emanchado/camino-mejor-programador/master/cover.png)
+fue diseñada por Sara Pettersson, y también se distribuye bajo la
+licencia Creative Commons «Attribution Share Alike (CC BY-SA)».
