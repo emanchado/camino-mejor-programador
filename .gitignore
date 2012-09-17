@@ -1,11 +1,12 @@
 *.html
 *.swp
+cover.pdf
 book.chunked
 book.pdf
 book.epub
 book.tex
+book.asc
 tex-tmp
 tmp
 epub-tmp
 .idea/
-book.asc
