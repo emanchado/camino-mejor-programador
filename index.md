@@ -38,6 +38,7 @@ terminarlo.
 La portada
 ----------
 La
-[portada](https://raw.github.com/emanchado/camino-mejor-programador/master/cover.png)
-fue diseñada por Sara Pettersson, y también se distribuye bajo la
-licencia Creative Commons «Attribution Share Alike (CC BY-SA)».
+[portada](https://raw.github.com/emanchado/camino-mejor-programador/master/cover.jpg)
+fue diseñada por [Sara Pettersson](http://www.sarap.se/), y también se
+distribuye bajo la licencia Creative Commons «Attribution Share Alike
+(CC BY-SA)».
