@@ -47,7 +47,10 @@ book.xml: $(SOURCE_FILES)
 	asciidoc -b docbook book.asc
 	sed 's/<programlisting language="\([^"]*\)"[^>]*>/&LANGUAGE=\1 /' book.xml >tmp.xml && mv tmp.xml book.xml
 
-book.pdf: book.tex
+cover.pdf: cover.jpg
+	convert $< $@
+
+book.pdf: book.tex cover.pdf
 	rm -rf tex-tmp
 	mkdir tex-tmp
 	cat $< >tex-tmp/book.tex
@@ -56,7 +59,7 @@ book.pdf: book.tex
 		mv tmp.tex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
-		pdftk book.pdf cat 3-end output ../book.pdf
+		pdftk C=../cover.pdf B=book.pdf cat C B3-end output ../book.pdf
 
 book.tex: $(SOURCE_FILES)
 	a2x $(XSLT_OPTS) -f tex book.asc
@@ -80,5 +83,5 @@ book.tex: $(SOURCE_FILES)
 
 clean:
 	rm -rf tex-tmp epub-tmp
-	rm -f book.tex book.xml
+	rm -f book.tex book.xml cover.pdf
 	rm -rf book.chunked book.pdf book.html book.epub
