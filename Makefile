@@ -1,18 +1,3 @@
-all: herramientas.html \
-    malos_olores.html \
-    eclipse.html \
-    rest.html \
-    tdd.html
-
-%.html: %.asciidoc
-	asciidoc $<
-
-clean:
-	rm *.html
-	rm -rf tex-tmp epub-tmp
-	rm book.tex book.xml
-	rm -rf book.chunked book.pdf book.html book.epub
-
 ARTICLE_SOURCE_FILES = funcionales documentacion_activa consejospruebas calidad integracion_continua tdd
 SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc $(article)-biblio.asc)
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
@@ -92,3 +77,8 @@ book.tex: $(SOURCE_FILES)
 	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Fix dashes, also probably only for Spanish
 	sed 's/ -{}-{}\([^ -]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ -]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
+
+clean:
+	rm -rf tex-tmp epub-tmp
+	rm -f book.tex book.xml
+	rm -rf book.chunked book.pdf book.html book.epub
