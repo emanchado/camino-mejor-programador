@@ -45,6 +45,9 @@ book.epub: book.xml libro.css
 		rm $$i.tmp; \
 	done
 	./fix-epub-toc.py epub-tmp/OEBPS/toc.ncx >epub-tmp/toc.ncx && mv epub-tmp/toc.ncx epub-tmp/OEBPS/toc.ncx
+	./add-epub-cover.sh epub-tmp/OEBPS/content.opf >epub-tmp/content.opf && mv epub-tmp/content.opf epub-tmp/OEBPS/content.opf
+	cp cover.html epub-tmp/OEBPS
+	cp cover.jpg epub-tmp/OEBPS
 	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
 
 book.chunked/index.html: book.xml libro.css
