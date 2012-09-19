@@ -32,7 +32,7 @@ book.epub: book.xml libro.css
 	./fix-epub-toc.py epub-tmp/OEBPS/toc.ncx >epub-tmp/toc.ncx && mv epub-tmp/toc.ncx epub-tmp/OEBPS/toc.ncx
 	./add-epub-cover.sh epub-tmp/OEBPS/content.opf >epub-tmp/content.opf && mv epub-tmp/content.opf epub-tmp/OEBPS/content.opf
 	cp cover.html epub-tmp/OEBPS
-	cp cover.jpg epub-tmp/OEBPS
+	cp cover.png epub-tmp/OEBPS
 	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
 
 book.chunked/index.html: book.xml libro.css
@@ -47,7 +47,7 @@ book.xml: $(SOURCE_FILES)
 	asciidoc -b docbook book.asc
 	sed 's/<programlisting language="\([^"]*\)"[^>]*>/&LANGUAGE=\1 /' book.xml >tmp.xml && mv tmp.xml book.xml
 
-cover.pdf: cover.jpg
+cover.pdf: cover.png
 	convert $< $@
 
 book.pdf: book.tex cover.pdf
