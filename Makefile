@@ -66,9 +66,7 @@ book.pdf: book.tex cover.pdf
 		pdftk C=../cover.pdf B=book.pdf cat C B3-end output ../book.pdf
 
 book.tex: $(SOURCE_FILES)
-	a2x $(XSLT_OPTS) -f tex book.asc
-	# Specify that the document language in Spanish (for hyphenation rules)
-	sed 's/^\\documentclass{report}/&\n\\usepackage[spanish]{babel}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
+	a2x -a lang=es $(XSLT_OPTS) -f tex book.asc
 	# Make the table of contents only have the article names
 	sed 's/^\\setcounter{tocdepth}{[0-9]\+}/\\setcounter{tocdepth}{0}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Add Javascript and Scala language definition rules for the
@@ -79,9 +77,6 @@ book.tex: $(SOURCE_FILES)
 	# Also, set secnumdepth to -1 so
 	# those pesky "Chapter X" are not show at all
 	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n% "define" Scala\n\\lstdefinelanguage{scala}{\nmorekeywords={abstract,case,catch,class,def,%\ndo,else,extends,false,final,finally,%\nfor,if,implicit,import,match,mixin,%\nnew,null,object,override,package,%\nprivate,protected,requires,return,sealed,%\nsuper,this,throw,trait,true,try,%\ntype,val,var,while,with,yield},\notherkeywords={=>,<-,<\\%,<:,>:,\\#,@},\nsensitive=true,\nmorecomment=[l]{\/\/},\nmorecomment=[n]{\/*}{*\/},\nmorestring=[b]",\nmorestring=[b]'"'"',\nmorestring=[b]"""\n}\n\\setcounter{secnumdepth}{-1}\n\\renewcommand\\contentsname{\\'"'"'Indice}\n&/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
-	# Fix a pathetic TeX formatting problem with double quotes
-	# (possibly only when using Spanish)
-	sed 's/"extras"/"{}extras"{}/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Fix dashes, also probably only for Spanish
 	sed 's/ -{}-{}\([^ -]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ -]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
 
