@@ -33,9 +33,15 @@ h1, h2, h3, h4, h5, h6
 }
 
 p[title] {
-    color: #527BBD;
+    color: #888;
     font-family: "Arial", "Helvetica", sans-serif;
     margin-bottom: 0.5em;
+    margin-top: 0.5ex;
+    font-size: 90%;
+}
+
+p[title] strong {
+    font-weight: inherit;
 }
 
 div.toc p:first-child,
@@ -143,7 +149,7 @@ tt.literal, code.literal {
 }
 
 .programlisting, .screen {
-  margin: 0.5em 10% 1.5em 0;
+  margin: 0.5em 10% 0 0;
   padding: 0.5em;
   background: #F8F8F8;
   border: 1px solid #DDDDDD;
