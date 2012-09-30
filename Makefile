@@ -2,6 +2,8 @@ ARTICLE_SOURCE_FILES = funcionales documentacion_activa consejospruebas calidad 
 SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc $(article)-biblio.asc)
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
 BUILD_ID = $(shell git log -1 --format='Committed %ci %H')
+BUILD_LINK = $(shell git log -1 --format='<a href="https://www.assembla.com/code/proyecto-libro/git/changesets/%H">Versión %ci %h</a>')
+#https://www.assembla.com/code/proyecto-libro/git/changesets/070af83b8b25e8ced0b3c1b832cf301f9cb883a7[Versión 2012-09-30 16:46:32 070af83]
 
 libro: book.html book.epub book.chunked/index.html book.pdf
 
@@ -15,12 +17,12 @@ book.asc: book.asc.in Makefile
 		echo "include::$$i-biblio.asc[]\n" >>book.asc; \
 	done
 	sed -e '1,/#BIBLIOLIST#/d' book.asc.in >>book.asc
+	sed 's/#BUILDID#/$(BUILD_ID)/' book.asc >book.asc-tmp && mv book.asc-tmp book.asc
 
 book.html: $(SOURCE_FILES)
-	echo Building $(BUILD_ID)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc
 	# Build id
-	sed 's/<head>/<head><!-- $(BUILD_ID) -->/' book.html >book.html-tmp && mv book.html-tmp book.html
+	sed 's|^Last updated.*|$(BUILD_LINK)|' book.html >book.html-tmp && mv book.html-tmp book.html
 	# Fix generation of dashes next to words (with no space in between)
 	sed 's/ --\([^ ->]\)/ \&#8212;\1/g' book.html | sed 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' >book.html-tmp && mv book.html-tmp book.html
 
