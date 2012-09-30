@@ -70,7 +70,8 @@ book.pdf: book.tex cover.pdf
 		mv tmp.tex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
-		pdftk C=../cover.pdf B=book.pdf cat C B3-end output ../book.pdf
+		pdftk C=../cover.pdf B=book.pdf cat C B3-end output book-with-cover.pdf keep_final_id && \
+		../set_pdf_metadata.bash <book-with-cover.pdf >../book.pdf 'El camino a un mejor programador' 'Varios Autores'
 
 book.tex: $(SOURCE_FILES)
 	a2x -a lang=es $(XSLT_OPTS) -f tex book.asc
