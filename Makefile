@@ -3,6 +3,7 @@ SOURCE_FILES = book.asc $(foreach article,$(ARTICLE_SOURCE_FILES),$(article).asc
 XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chunk.section.depth 0 --stringparam toc.section.depth 0"
 BUILD_ID = $(shell git log -1 --format='Committed %ci %H')
 BUILD_LINK = $(shell git log -1 --format='<a href="https://www.assembla.com/code/proyecto-libro/git/changesets/%H">Versión %ci %h</a>')
+BUILD_ID_URL = $(shell git log -1 --format='https://www.assembla.com/code/proyecto-libro/git/changesets/%H')
 #https://www.assembla.com/code/proyecto-libro/git/changesets/070af83b8b25e8ced0b3c1b832cf301f9cb883a7[Versión 2012-09-30 16:46:32 070af83]
 
 libro: book.html book.epub book.chunked/index.html book.pdf
@@ -40,6 +41,8 @@ book.epub: book.xml libro.css
 	./add-epub-cover.sh epub-tmp/OEBPS/content.opf >epub-tmp/content.opf && mv epub-tmp/content.opf epub-tmp/OEBPS/content.opf
 	cp cover.html epub-tmp/OEBPS
 	cp cover.png epub-tmp/OEBPS
+	#Hack id
+	sed 's|<dc:identifier.*</dc:identifier>|<dc:identifier id="id" opf:scheme="URI">$(BUILD_ID_URL)</dc:identifier>|' epub-tmp/OEBPS/content.opf >content.opf-tmp && mv content.opf-tmp epub-tmp/OEBPS/content.opf
 	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
 
 book.chunked/index.html: book.xml libro.css
