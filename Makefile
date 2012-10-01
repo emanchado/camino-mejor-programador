@@ -4,9 +4,28 @@ XSLT_OPTS = --xsltproc-opts="--stringparam chapter.autolabel 0 --stringparam chu
 BUILD_ID = $(shell git log -1 --format='Committed %ci %H')
 BUILD_LINK = $(shell git log -1 --format='<a href="https://www.assembla.com/code/proyecto-libro/git/changesets/%H">Versión %ci %h</a>')
 BUILD_ID_URL = $(shell git log -1 --format='https://www.assembla.com/code/proyecto-libro/git/changesets/%H')
-#https://www.assembla.com/code/proyecto-libro/git/changesets/070af83b8b25e8ced0b3c1b832cf301f9cb883a7[Versión 2012-09-30 16:46:32 070af83]
 
-libro: book.html book.epub book.chunked/index.html book.pdf
+#COMMIT_DATE_TIME = $(shell date --date="`git log -1 --format='%ci'`" --utc '+%Y%m%dT%H%M%S')
+#FILENAME = $(shell git log -1 --format='camino-$(COMMIT_DATE_TIME)-%h')
+COMMIT_DATE_TIME = $(shell git log -1 --format='%ci' | sed 's/ /_/g' | sed 's/:/^/g')
+FILENAME = $(shell git log -1 --format='camino_$(COMMIT_DATE_TIME)_%h')
+
+libro: html epub chunked pdf
+
+
+html: $(FILENAME).html
+	cp $(FILENAME).html `echo $(FILENAME) | sed 's/\^/:/g'`.html
+
+epub: $(FILENAME).epub 
+	cp $(FILENAME).epub `echo $(FILENAME) | sed 's/\^/:/g'`.epub
+
+chunked: $(FILENAME).chunked/index.html
+	cp -R $(FILENAME).chunked `echo $(FILENAME) | sed 's/\^/:/g'`.chunked
+
+pdf: $(FILENAME).pdf
+	cp $(FILENAME).pdf `echo $(FILENAME) | sed 's/\^/:/g'`.pdf
+
+.PHONY: html epub chunked pdf
 
 book.asc: book.asc.in Makefile
 	sed -n '/#ARTICLELIST#/,$$ !p' book.asc.in >book.asc
@@ -20,14 +39,15 @@ book.asc: book.asc.in Makefile
 	sed -e '1,/#BIBLIOLIST#/d' book.asc.in >>book.asc
 	sed 's/#BUILDID#/$(BUILD_ID)/' book.asc >book.asc-tmp && mv book.asc-tmp book.asc
 
-book.html: $(SOURCE_FILES)
+$(FILENAME).html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 book.asc
 	# Build id
 	sed 's|^Last updated.*|$(BUILD_LINK)|' book.html >book.html-tmp && mv book.html-tmp book.html
 	# Fix generation of dashes next to words (with no space in between)
 	sed 's/ --\([^ ->]\)/ \&#8212;\1/g' book.html | sed 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' >book.html-tmp && mv book.html-tmp book.html
+	mv book.html $(FILENAME).html
 
-book.epub: book.xml libro.css
+$(FILENAME).epub: book.xml libro.css
 	a2x $(XSLT_OPTS) -f epub --stylesheet libro.css book.xml
 	rm -rf epub-tmp
 	mkdir epub-tmp && cd epub-tmp && unzip ../book.epub
@@ -41,9 +61,9 @@ book.epub: book.xml libro.css
 	./add-epub-cover.sh epub-tmp/OEBPS/content.opf >epub-tmp/content.opf && mv epub-tmp/content.opf epub-tmp/OEBPS/content.opf
 	cp cover.html epub-tmp/OEBPS
 	cp cover.png epub-tmp/OEBPS
-	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
+	cd epub-tmp && rm -f ../book.epub && zip -r ../$(FILENAME).epub *
 
-book.chunked/index.html: book.xml libro.css
+$(FILENAME).chunked/index.html: book.xml libro.css
 	a2x $(XSLT_OPTS) -f chunked --stylesheet libro.css book.xml
 	for i in book.chunked/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
@@ -51,6 +71,7 @@ book.chunked/index.html: book.xml libro.css
 		./listing-title-hack.pl $$i >$$i.tmp; \
 		mv $$i.tmp $$i; \
 	done
+	mv book.chunked $(FILENAME).chunked
 
 book.xml: $(SOURCE_FILES)
 	asciidoc -b docbook book.asc
@@ -59,7 +80,7 @@ book.xml: $(SOURCE_FILES)
 cover.pdf: cover.png
 	convert $< $@
 
-book.pdf: book.tex cover.pdf
+$(FILENAME).pdf: book.tex cover.pdf
 	rm -rf tex-tmp
 	mkdir tex-tmp
 	cat $< >tex-tmp/book.tex
@@ -69,7 +90,7 @@ book.pdf: book.tex cover.pdf
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		pdftk C=../cover.pdf B=book.pdf cat C B3-end output book-with-cover.pdf keep_final_id && \
-		../set_pdf_metadata.bash <book-with-cover.pdf >../book.pdf 'El camino a un mejor programador' 'Varios Autores' $(BUILD_ID_URL)
+		../set_pdf_metadata.bash <book-with-cover.pdf >../$(FILENAME).pdf 'El camino a un mejor programador' 'Varios Autores' $(BUILD_ID_URL)
 
 book.tex: $(SOURCE_FILES)
 	a2x -a lang=es $(XSLT_OPTS) -f tex book.asc
@@ -89,4 +110,4 @@ book.tex: $(SOURCE_FILES)
 clean:
 	rm -rf tex-tmp epub-tmp
 	rm -f book.tex book.xml cover.pdf
-	rm -rf book.chunked book.pdf book.html book.epub
+	rm -rf camino_*.chunked camino_*.pdf camino_*.html camino_*.epub
