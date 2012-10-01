@@ -41,8 +41,6 @@ book.epub: book.xml libro.css
 	./add-epub-cover.sh epub-tmp/OEBPS/content.opf >epub-tmp/content.opf && mv epub-tmp/content.opf epub-tmp/OEBPS/content.opf
 	cp cover.html epub-tmp/OEBPS
 	cp cover.png epub-tmp/OEBPS
-	#Hack id
-	sed 's|<dc:identifier.*</dc:identifier>|<dc:identifier id="id" opf:scheme="URI">$(BUILD_ID_URL)</dc:identifier>|' epub-tmp/OEBPS/content.opf >content.opf-tmp && mv content.opf-tmp epub-tmp/OEBPS/content.opf
 	cd epub-tmp && rm -f ../book.epub && zip -r ../book.epub *
 
 book.chunked/index.html: book.xml libro.css
