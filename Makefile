@@ -7,23 +7,25 @@ BUILD_ID_URL = $(shell git log -1 --format='https://www.assembla.com/code/proyec
 
 #COMMIT_DATE_TIME = $(shell date --date="`git log -1 --format='%ci'`" --utc '+%Y%m%dT%H%M%S')
 #FILENAME = $(shell git log -1 --format='camino-$(COMMIT_DATE_TIME)-%h')
-COMMIT_DATE_TIME = $(shell git log -1 --format='%ci' | sed 's/ /_/g' | sed 's/:/^/g')
+#COMMIT_DATE_TIME = $(shell git log -1 --format='%ci' | sed 's/ /_/g' | sed 's/:/^/g')
+#FILENAME = $(shell git log -1 --format='camino_$(COMMIT_DATE_TIME)_%h')
+COMMIT_DATE_TIME = $(shell date --date="`git log -1 --format='%ci'`" --utc '+%Y-%m-%d')
 FILENAME = $(shell git log -1 --format='camino_$(COMMIT_DATE_TIME)_%h')
 
 libro: html epub chunked pdf
 
 
 html: $(FILENAME).html
-	cp $(FILENAME).html `echo $(FILENAME) | sed 's/\^/:/g'`.html
+	#cp $(FILENAME).html `echo $(FILENAME) | sed 's/\^/:/g'`.html
 
 epub: $(FILENAME).epub 
-	cp $(FILENAME).epub `echo $(FILENAME) | sed 's/\^/:/g'`.epub
+	#cp $(FILENAME).epub `echo $(FILENAME) | sed 's/\^/:/g'`.epub
 
 chunked: $(FILENAME).chunked/index.html
-	cp -R $(FILENAME).chunked `echo $(FILENAME) | sed 's/\^/:/g'`.chunked
+	#cp -R $(FILENAME).chunked `echo $(FILENAME) | sed 's/\^/:/g'`.chunked
 
 pdf: $(FILENAME).pdf
-	cp $(FILENAME).pdf `echo $(FILENAME) | sed 's/\^/:/g'`.pdf
+	#cp $(FILENAME).pdf `echo $(FILENAME) | sed 's/\^/:/g'`.pdf
 
 .PHONY: html epub chunked pdf
 

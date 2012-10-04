@@ -7,6 +7,10 @@ book.epub
 book.tex
 book.asc
 book.xml
+camino_*.pdf
+camino_*.html
+camino_*.epub
+camino_*.chunked
 tex-tmp
 tmp
 epub-tmp
