@@ -11,6 +11,7 @@ camino_*.pdf
 camino_*.html
 camino_*.epub
 camino_*.chunked
+camino_*.xml
 tex-tmp
 tmp
 epub-tmp
