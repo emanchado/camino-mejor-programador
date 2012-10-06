@@ -16,13 +16,7 @@ Probablemente la forma más fácil de explicar TDD es con un ejemplo a nivel uni
 
 Rojo
 ~~~~
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala[example0/MilesToKilometersConverterTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Converts miles into kilometers") {
-  MilesToKilometersConverter.convert(1.0) should be(1.609)
-}
------------------------------------------------------------------------------
+#SNIPPET "example0/MilesToKilometersConverterTest.scala" tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala 9 11#
 
 A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. footnote:[Si estamos usando un entorno de desarrollo, la función de _arreglo_ hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra --por ejemplo, devolviendo +0+ o +null+--.]
 
@@ -77,13 +71,7 @@ Rojo
 ~~~~
 Antes de saltar a la implementación general, merece la pena que consideremos otras condiciones de entrada: ¿aceptamos distancias negativas? Como en este caso sí las aceptamos, lo expresamos con otra prueba.
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala[example0/MilesToKilometersConverterTest.scala (negativos)]
-[source,scala]
------------------------------------------------------------------------------
-test("Converts negative miles into kilometers") {
-  MilesToKilometersConverter.convert(-2.0) should be(-3.218)
-}
------------------------------------------------------------------------------
+#SNIPPET "example0/MilesToKilometersConverterTest.scala (negativos)" tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala 13 15#
 
 Ejecutamos las pruebas para ver como la nueva falla.
 
@@ -96,13 +84,7 @@ Verde
 ~~~~~
 Ahora que tenemos dos ejemplos de la funcionalidad de +convert+, es un buen momento para buscar una implementación más general footnote:[A esta generalización Kent Beck la llama http://www.informit.com/articles/article.aspx?p=30641[_triangulación_]. No estoy seguro de que me guste el término, porque la triangulación geométrica a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.] que no sólo satisfaga estas dos pruebas, sino que también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala[example0/MilesToKilometersConverter.scala]
-[source,scala]
------------------------------------------------------------------------------
-object MilesToKilometersConverter {
-  def convert(miles: Double): Double = miles * 1.609
-}
------------------------------------------------------------------------------
+#SNIPPET "example0/MilesToKilometersConverter.scala" tdd/tdd-examples/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala 3 5#
 
 Podríamos haber pasado a la solución general directamente, y a menudo haremos exactamente eso, sin embargo, como vimos en el anterior paso verde, empezar por la solución más simple y dejar la generalización para el siguiente ciclo, nos ayuda a centrarnos primero en definir qué funcionalidad vamos a añadir y cuál va a ser el contrato de la unidad que estamos probando, resolviendo ambigüedades y desvelando suposiciones erróneas. Esto será particularmente útil cuando no tengamos claro lo que queremos hacer y cómo queremos implementarlo.
 
@@ -124,54 +106,15 @@ Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamient
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 En la clase siguiente, el método +translate+ traduce un texto del español a una especie de inglés, mostrando por pantalla el resultado; este código es poco probable que haya sido desarrollado guiado por pruebas, dado que el resultado principal, la traducción, no se pone a disposición del codigo externo de ninguna manera que sea fácil de incluir en una prueba, sino que se manifiesta llamando al método +println+ que da acceso a la consola, es decir, mediante un _efecto secundario_, lo que dificulta la verificación desde una prueba.
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala[example1coupled/SpanishIntoEnglishTranslator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslator {
-  def translate(spanish: String) {
-    println(spanish.split(' ').map(_ match {
-      case "yo" => "I"
-      case "soy" => "am"
-      case _ => "mmmeh"
-    }).mkString(" "))
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "example1coupled/SpanishIntoEnglishTranslator.scala" tdd/tdd-examples/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala 3 11#
 
 Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta clase, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala[example2/SpanishIntoEnglishTranslatorTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-var translator: SpanishIntoEnglishTranslator = _
-
-before {
-  translator = new SpanishIntoEnglishTranslator()
-}
-
-test("translates what it can") {
-  translator.translate("yo soy") should be("I am")
-}
-
-test("mmmehs what it can't") {
-  translator.translate("dame argo") should be("mmmeh mmmeh")
-}
------------------------------------------------------------------------------
+#SNIPPET "example2/SpanishIntoEnglishTranslatorTest.scala" tdd/tdd-examples/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala 9 21#
 
 Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala[example2/SpanishIntoEnglishTranslator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslator {
-  def translate(spanish: String): String =
-    spanish.split(' ').map(_ match {
-      case "yo" => "I"
-      case "soy" => "am"
-      case _ => "mmmeh"
-    }).mkString(" ")
-}
------------------------------------------------------------------------------
+#SNIPPET "example2/SpanishIntoEnglishTranslator.scala" tdd/tdd-examples/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala 3 10#
 
 Probar el conjunto de la aplicación
 -----------------------------------
@@ -181,31 +124,7 @@ Ejemplo
 ~~~~~~~
 Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La _primera_ prueba que vamos a escribir, incluso antes de las que vimos en la introducción, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala[step1/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-class ConversionTest
-    extends FunSuite with ShouldMatchers with BeforeAndAfter {
-
-  test("Converts miles into kilometers") {
-    get("http://localhost:8080/1.0") should be("1.609")
-  }
-
-  def get(url: String): String = {
-    Request.Get(url).execute().returnContent().asString()
-  }
-
-  var converter: Server = _
-
-  before {
-    converter = Converter.start(8080)
-  }
-
-  after {
-    converter.stop()
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "step1/functional/ConversionTest.scala" tdd/unitconvert/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala 9 29#
 
 El método +get+ es aquí un método de ayuda para pruebas, que hace una petición _HTTP get_ y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes acerca del sistema, particularmente a nivel de aplicación, por ejemplo: _¿cómo nos comunicaremos con el sistema?_; y acerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un _usuario de pleno derecho_ de nuestro proyecto.
 
@@ -231,87 +150,21 @@ class ConverterTest extends FunSuite {
 
 Un conversor más o menos mínimo usando Jetty viene a ser:
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step1/Converter.scala[step1/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    resp.getWriter.print("1.609")
-  }
-}
-
-object Converter {
-  def main(args: Array[String]){
-    start(8080)
-  }
-
-  def start(port: Int): Server = {
-    val context = new ServletContextHandler()
-    context.setContextPath("/")
-    context.addServlet(new ServletHolder(new Converter()), "/*")
-
-    val converter = new Server(port)
-    converter.setHandler(context)
-
-    converter.start()
-    converter
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "step1/Converter.scala" tdd/unitconvert/src/main/scala/org/casa/unitconvert/step1/Converter.scala 7 29#
 
 Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos ha obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.
 
 A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala[step2/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Converts negative miles into kilometers") {
-  get("http://localhost:8080/-2.0") should be("-3.218")
-}
------------------------------------------------------------------------------
+#SNIPPET "step2/functional/ConversionTest.scala" tdd/unitconvert/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala 16 18#
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step2/Converter.scala[step2/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val miles = req.getRequestURI.substring(1).toDouble
-    resp.getWriter.print(miles * 1.609)
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "step2/Converter.scala" tdd/unitconvert/src/main/scala/org/casa/unitconvert/step2/Converter.scala 7 12#
 
 A continuación el manejo de los casos de error, como cantidades de millas que no sean numéricas
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala[step3/functional/ConversionTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-test("Responds with 400 (Bad Request) and error message to unparseable amounts of miles") {
-  statusCode("http://localhost:8080/blah") should be(400)
-  get("http://localhost:8080/blah") should be("Miles incorrectly specified: /blah")
-}
------------------------------------------------------------------------------
+#SNIPPET "step3/functional/ConversionTest.scala" tdd/unitconvert/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala 21 24#
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step3/Converter.scala[step3/Converter.scala]
-[source,scala]
------------------------------------------------------------------------------
-class Converter extends HttpServlet {
-  override def doGet(req: HttpServletRequest, resp: HttpServletResponse) {
-    val milesAsString = req.getRequestURI.substring(1)
-    try {
-      val miles = milesAsString.toDouble
-      resp.getWriter.print(miles * 1.609)
-    }
-    catch {
-      case _: NumberFormatException => {
-        resp.setStatus(HttpServletResponse.SC_BAD_REQUEST)
-        resp.getWriter.print("Miles incorrectly specified: " + req.getRequestURI)
-      }
-    }
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "step3/Converter.scala" tdd/unitconvert/src/main/scala/org/casa/unitconvert/step3/Converter.scala 7 21#
 
 Además de los pasos _rojos_ y _verdes_ que hemos visto en el ejemplo hasta ahora, a medida que la aplicación va creciendo, debemos tanto refactorizar a nivel unitario como ir mejorando el diseño; por ejemplo, si en los próximos pasos la aplicación necesitase responder a distintas rutas con distintas conversiones, probablemente decidiríamos extraer el análisis de las URIs a una unidad independiente e introduciríamos distintos objetos a los que delegar dependiendo del tipo de conversión.
 
@@ -343,66 +196,15 @@ Podemos ver estas deficiencias de nuestra batería como el resultado de una gran
 
 Extraemos la división de palabras a su propia unidad, con lo que podemos expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SplitterTest.scala[example3/SplitterTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SplitterTest extends FunSuite with ShouldMatchers {
-  test("splits by space") {
-    Splitter("xxx xx") should be(Seq("xxx", "xx"))
-  }
+#SNIPPET "example3/SplitterTest.scala" tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SplitterTest.scala 6 14#
 
-  test("splits by change of line") {
-    Splitter("xxx\nxx") should be(Seq("xxx", "xx"))
-  }
-}
------------------------------------------------------------------------------
-
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example3/Splitter.scala[example3/Splitter.scala]
-[source,scala]
------------------------------------------------------------------------------
-object Splitter extends ((String) => Seq[String]) {
-  def apply(s: String): Seq[String] = s split """[ \n]"""
-}
------------------------------------------------------------------------------
+#SNIPPET "example3/Splitter.scala" tdd/tdd-examples/src/main/scala/org/casa/translation/example3/Splitter.scala 3 5#
 
 El traductor lo recibe como una dependencia inyectada mediante el constructor. footnote:[En este ejemplo nos hemos quedado con pruebas que ejercitan las unidades unidades independientemente; perdiendo la cobertura de la combinación de ambas unidades. Sin embargo, en la práctica, este código formaría parte de un proyecto mayor que contaría con baterías de pruebas de mayor ámbito, que incluirían la verificación del comportamiento conjunto.]
 
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SpanishIntoEnglishTranslatorTest.scala[example3/SpanishIntoEnglishTranslatorTest.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslatorTest
-    extends FunSuite with ShouldMatchers with BeforeAndAfter {
+#SNIPPET "example3/SpanishIntoEnglishTranslatorTest.scala" tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SpanishIntoEnglishTranslatorTest.scala 6 22#
 
-  var translator: SpanishIntoEnglishTranslator = _
-
-  before {
-    translator = new SpanishIntoEnglishTranslator(_ split ' ')
-  }
-
-  test("translates what it can") {
-    translator.translate("yo soy") should be("I am")
-  }
-
-  test("mmmehs what it can't") {
-    translator.translate("dame argo") should be("mmmeh mmmeh")
-  }
-}
------------------------------------------------------------------------------
-
-.https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example3/SpanishIntoEnglishTranslator.scala[example3/SpanishIntoEnglishTranslator.scala]
-[source,scala]
------------------------------------------------------------------------------
-class SpanishIntoEnglishTranslator(val splitter: (String) => Seq[String]) {
-  def translate(spanish: String): String = {
-    val split = splitter(spanish)
-    split.map(_ match {
-      case "yo" => "I"
-      case "soy" => "am"
-      case _ => "mmmeh"
-    }).mkString(" ")
-  }
-}
------------------------------------------------------------------------------
+#SNIPPET "example3/SpanishIntoEnglishTranslator.scala" tdd/tdd-examples/src/main/scala/org/casa/translation/example3/SpanishIntoEnglishTranslator.scala 3 12#
 
 El aumento de la granularidad nos ha permitido que la introducción de funcionalidad nueva no afecte a multitud de pruebas. Sin embargo, esto no ha sido gratis; hemos aumentado la complejidad del código. Al final, todas estas decisiones hay que valorarlas una a una y decidir qué es lo más apropiado en cada caso, teniendo en cuenta aspectos como la complejidad, el tiempo de ejecución y la dirección en la que esperamos y queremos que vaya el proyecto.
 
