@@ -1,0 +1,130 @@
+Documentación activa
+====================
+Joaquín Caraballo
+
+Si en un extremo están los que definen el problema a resolver y en el otro los que lo resuelven, ¿cómo podemos asegurarnos de que todos estamos intentando resolver el mismo problema? Y, si aceptamos que la definición va a necesitar ser enriquecida, corregida, matizada, e incluso que el problema a resolver va a cambiar radicalmente durante la vida del proyecto, ¿cómo mantenemos una misma definición para todos los interesados, y más importante, cómo aseguramos que nuestro programa resuelve el problema?
+
+
+Las pruebas funcionales
+-----------------------
+
+Para tener una cierta confianza en que la aplicación resuelve un cierto problema se llevan a cabo pruebas funcionales; estas resuelven un ejemplo concreto y representativo simulando las acciones del usuario y verificando que la reacción de la aplicación es la esperada.
+
+Las pruebas funcionales han de mantenerse al día y evolucionar con los cambios de la aplicación y sus requisitos. Otro de los retos es que sean correctas, es decir, que el comportamiento que estén verificando sea realmente el que se requiere de la aplicación.
+
+Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de que algo que funcionaba deje de hacerlo, es decir, de posibles _regresiones_.
+
+
+neverread
+~~~~~~~~~
+
+Supongamos que tenemos un cliente con falta de tiempo para leer artículos de Internet. 
+
+____________________________________________________________________
+-Tantos artículos interesantes, no tengo tiempo para leerlos, pero tampoco puedo ignorarlos. Me gustaría tener una aplicación en la que copiar la dirección del artículo que me interese.
+
+-¡Ah!, ¿quieres una aplicación que te permita almacenar enlaces a artículos? La aplicación mantendría una lista con los artículos almacenados, a la que luego podrías acceder cuando tengas tiempo y leer los artículos...
+
+-No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre. Estaría bien que tuviese una lista de artículos por leer siempre vacía, me daría una sensación genial de tenerlo todo bajo control.
+
+-Er... vale.
+____________________________________________________________________
+
+De la conversación hemos conseguido extraer un criterio de aceptación:
+____
+Por mucho que añadamos artículos, estos no se añadirán a una lista de artículos por leer.
+____
+
+La prueba funcional correspondiente, verificará que la aplicación cumple el criterio para un ejemplo concreto:
+____
+Cuando añadimos el artículo `art.culo/interesante.html`, la lista de artículos por leer permanece vacía.
+____
+
+Las pruebas funcionales, si bien no tienen necesariamente que serlo, se llevan a cabo con frecuencia como pruebas de punta a punta _(end to end)_ (<<goos>> pág 10), es decir, pruebas en las que se ejercita la aplicación en su conjunto y desde afuera, simulando las acciones del usuario y de los sistemas colaboradores, y evaluando la corrección según la perciben usuario y colaboradores.
+
+Hemos decidido resolver el problema propuesto con una aplicación web, _neverread_. Implementaremos en Java una prueba funcional de punta a punta que verifique el criterio de aceptación con una prueba _junit_ que va a iniciar la aplicación y a continuación ejercitarla y evaluarla. Para simular la interacción de un usuario a través de un navegador web utilizaremos Selenium/WebDriver/HtmlUnit:
+
+#SNIPPET "purejava/ListStaysEmptyTest.java" active-documentation/src/test-acceptance/purejava/ListStaysEmptyTest.java 15 40#
+
+Documentación activa
+-------------------
+
+Si bien podríamos considerar que nuestra prueba funcional en Java es la documentación principal donde se registran los criterios de aceptación; dependiendo de quién vaya a consumirla, esto puede o no ser una opción. Además, conseguir reemplazar la legibilidad de un párrafo en español con una prueba en el lenguaje de programación es todo un reto, particularmente si el lenguaje de programación es tan prolijo como Java.
+
+En consecuencia, en la mayoría de los proyectos es necesario documentar los requisitos de manera más textual.
+
+Una forma de intentar obtener lo mejor de las dos alternativas es conectar la documentación a la aplicación de tal forma que en todo momento sea automático y evidente verificar el cumplimiento de cada uno de los requisitos expresados, lo que nos ayudará a mantener la documentación sincronizada con la aplicación y con el cliente.
+
+La documentación, junto con la capacidad de procesarla para su verificación, servirá así de batería de pruebas funcionales; si ejecutamos esta batería con frecuencia (idealmente con cada cambio) y la mantenemos veraz, estaremos garantizando el correcto funcionamiento de la aplicación... para la definición especificada.
+
+
+Concordion
+----------
+
+Concordion es una de las herramientas que nos pueden ayudar a conectar la documentación con la aplicación; en Concordion los criterios se escriben en HTML al que se añaden algunas marcas que comienzan con `concordion:`
+
+#SNIPPET "concordion/v1/ListStaysEmpty.html" active-documentation/src/test-acceptance/concordion/v1/ListStaysEmpty.html 8 21#
+
+Vemos que hemos expresado el ejemplo en forma de condición y consecuencia que se debe verificar. Los atributos `concordion:set` y `concordion:assertEquals` conectan el documento al método de la clase de respaldo, escrita en Java, `String articleListAfterAdding(String url)`, que se encargará de hacer lo que dice el texto.
+
+#SNIPPET "purejava/ListaPermaneceVaciaTest.java" active-documentation/src/test-acceptance/concordion/v1/ListStaysEmptyTest.java 15 38#
+
+Al ejecutar `ListaPermaneceVaciaTest`, Concordion generará un documento HTML con el texto anterior en el que se indicará si se cumple la aserción resaltándola en verde o rojo.
+
+
+Paso a paso
+~~~~~~~~~~~
+
+Veamos qué es lo que está pasando aquí. Hemos escrito el criterio de aceptación en `ListaPermaneceVacia.html`.  Acompañando al HTML hemos escrito una clase en Java que extiende una clase de infrastructura de Concordion: `class ListaPermaneceVaciaTest extends ConcordionTestCase`.
+
+Cuando ejecutamos `ListaPermaneceVaciaTest`:
+
+. Concordion procesa el HTML.
+. Concordion detecta la marca `concordion:set="#url"` y guarda el contenido de esa marca HTML (en este caso, «art.culo/interesante.html») en la variable de Concordion `#url`.
+. Concordion detecta la marca `concordion:assertEquals="articleListAfterAdding(#url)"`, por lo que busca en la clase de acompañamiento un método denominado `articleListAfterAdding` y lo ejecuta, pasándole el contenido de `#url` como parámetro.
+. El método `articleListAfterAdding` simula la acción de un usuario que introduce `url` y obtiene la lista de artículos resultante.
+. Mediante `convertListOfArticlesToString`, transformamos la lista producida por WebDriver en una representación textual que pueda ser comparada con el texto del HTML. Hemos decidido que la representación textual de una lista vacía sea «vacía».
+. El método `articleListAfterAdding` retorna, devolviendo una cadena (en este caso «vacía») que es comparada con el contenido de la marca HTML en el que se encontró `concordion:assertEquals`.
+. Concordion termina de procesar el documento HTML y genera otro HTML en el que el texto que tiene la marca `concordion:assertEquals` está resaltado en verde, para indicar que la aserción se cumple.
+
+
+Manteniendo el nivel de abstracción apropiado
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Es importante esforzarse en describir el funcionamiento de la aplicación en términos del dominio. Por ejemplo, podríamos haber caído en la tentación de escribir el ejemplo como _Cuando el usuario entra una cadena en la caja de texto y pulsa enter, la lista de artículos está vacía_. Sin embargo, eso sería perjudicial porque nos alejaría de la persona que define lo que debe hacer la aplicación y resultaría más _frágil_, es decir, en cuanto decidiéramos cambiar la implementación, por ejemplo, supongamos que las direcciones se introducen arrastrándolas a una zona de la aplicación, tendríamos que reescribir el documento.
+
+A poco que la documentación activa crezca, las clases de respaldo van a necesitar una cantidad importante de código. Algunas abstracciones pueden ayudarnos reducir la repetición y la fragilidad de las clases de respaldo.
+
+Podemos hacer que la clase de respaldo sólo _hable_ en el lenguaje del dominio, para lo cual hemos de desarrollar un lenguaje dedicado, con lo que el método quedaría algo así:
+
+#SNIPPET "concordion/v2_appdriver/ListaPermaneceVaciaTest.java" active-documentation/src/test-acceptance/concordion/v2_appdriver/ListStaysEmptyTest.java 18 21#
+
+Otra posibilidad es abstraer la página web en términos de los elementos del entorno gráfico, es decir, que hable de elementos visuales de la página.
+
+#SNIPPET "concordion/v3_pagedriver/ListaStaysEmptyTest.java" active-documentation/src/test-acceptance/concordion/v3_pagedriver/ListStaysEmptyTest.java 18 23#
+
+La capa de abstracción en términos de lenguaje del dominio es la opción más _pura_, pero dependiendo del proyecto podremos preferir una capa que se exprese en términos gráficos o ambas, dependiendo de la complejidad del proyecto y de cuán involucrado esté el cliente en los detalles gráficos.
+
+
+Pruebas asíncronas
+------------------
+
+En las secciones anteriores nos hemos permitido hacer un poco _trampas_ que deberíamos descubrir antes de cerrar el artículo. Supongamos que el desarrollador, al escribir el código de la aplicación comete una equivocación por no entender debidamente lo que necesita el cliente; decide hacer una aplicación que _añade_ los artículos a una lista de artículos a leer.  Nuestras pruebas funcionales deberían detectar este error marcando la aserción en rojo. Sin embargo, nos encontramos con que la pruebas pasan.
+
+Evidentemente, nuestras pruebas funcionales no son correctas, esto se debe a que estamos verificando que el estado de la lista de artículos es el mismo después de entrar el nuevo artículo que antes de entrarlo, y la prueba verifica la condición antes de que la aplicación tenga tiempo de añadir erróneamente artículos a la lista.
+
+Probar sistemas asíncronos es lo suficientemente complejo como para justificar un artículo en sí mismo, pero si enumeramos algunas de las opciones, de más rápidas y sencillas de implementar a menos, tenemos:
+
+. Probamos sólo la parte síncrona del sistema. Esto hace las pruebas más sencillas y rápidas a costa de reducir el alcance.
+. Introducimos puntos de sincronización. Volveremos a este en un segundo.
+. Verificamos periódicamente la aserción hasta que se cumpla o se agote el tiempo de espera. En esta opción es crucial ajustar la duración, si esperamos demasiado las pruebas tardarán demasiado innecesariamente, si esperamos demasiado poco tendremos falsos negativos.
+
+En nuestro ejemplo sabemos que, cada vez que la aplicación responde a la entrada de un nuevo artículo, lo último que hace es borrar la caja de texto. Por lo tanto, podemos utilizar este evento como punto de sincronización, es decir, antes de verificar que la lista permanece vacía esperaremos a que la caja se haya borrado.
+
+
+#SNIPPET "concordion/v5_with_synchronisation/tools/NeverReadDriver.java" active-documentation/src/test-acceptance/concordion/v5_with_synchronisation/tools/NeverReadDriver.java 25 38#
+
+Conclusión
+----------
+
+La _documentación activa_ es una forma de probar funcionalmente un programa en el que cada criterio de aceptación se enuncia con un texto que se enlaza a la ejecución de código que verifica el criterio. Al ejecutarla, se produce un resultado que indica, de forma legible para los expertos del dominio, qué criterios de aceptación cumple el programa y qué criterios no cumple. Como casi todo, su uso debería adaptarse a la composición del equipo y la complejidad del proyecto.
