@@ -66,14 +66,14 @@ $(FILENAME).epub: book.xml libro.css
 	cd epub-tmp && rm -f ../book.epub && zip -r ../$(FILENAME).epub *
 
 $(FILENAME).chunked/index.html: book.xml libro.css
-	a2x $(XSLT_OPTS) -f chunked --stylesheet libro.css book.xml
-	for i in book.chunked/ch*.html; do \
+	cp book.xml $(FILENAME).xml
+	a2x $(XSLT_OPTS) -f chunked --stylesheet libro.css $(FILENAME).xml
+	for i in $(FILENAME).chunked/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
 		./listing-title-hack.pl $$i >$$i.tmp; \
 		mv $$i.tmp $$i; \
 	done
-	mv book.chunked $(FILENAME).chunked
 
 book.xml: $(SOURCE_FILES)
 	asciidoc -b docbook book.asc
