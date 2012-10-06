@@ -67,7 +67,7 @@ Concordion es una de las herramientas que nos pueden ayudar a conectar la docume
 
 Vemos que hemos expresado el ejemplo en forma de condición y consecuencia que se debe verificar. Los atributos `concordion:set` y `concordion:assertEquals` conectan el documento al método de la clase de respaldo, escrita en Java, `String articleListAfterAdding(String url)`, que se encargará de hacer lo que dice el texto.
 
-#SNIPPET "purejava/ListaPermaneceVaciaTest.java" active-documentation/src/test-acceptance/concordion/v1/ListStaysEmptyTest.java 15 38#
+#SNIPPET "purejava/ListStaysEmptyTest.java" active-documentation/src/test-acceptance/concordion/v1/ListStaysEmptyTest.java 15 38#
 
 Al ejecutar `ListaPermaneceVaciaTest`, Concordion generará un documento HTML con el texto anterior en el que se indicará si se cumple la aserción resaltándola en verde o rojo.
 
@@ -97,7 +97,7 @@ A poco que la documentación activa crezca, las clases de respaldo van a necesit
 
 Podemos hacer que la clase de respaldo sólo _hable_ en el lenguaje del dominio, para lo cual hemos de desarrollar un lenguaje dedicado, con lo que el método quedaría algo así:
 
-#SNIPPET "concordion/v2_appdriver/ListaPermaneceVaciaTest.java" active-documentation/src/test-acceptance/concordion/v2_appdriver/ListStaysEmptyTest.java 18 21#
+#SNIPPET "concordion/v2_appdriver/ListStaysEmptyTest.java" active-documentation/src/test-acceptance/concordion/v2_appdriver/ListStaysEmptyTest.java 18 21#
 
 Otra posibilidad es abstraer la página web en términos de los elementos del entorno gráfico, es decir, que hable de elementos visuales de la página.
 
@@ -123,6 +123,7 @@ En nuestro ejemplo sabemos que, cada vez que la aplicación responde a la entrad
 
 
 #SNIPPET "concordion/v5_with_synchronisation/tools/NeverReadDriver.java" active-documentation/src/test-acceptance/concordion/v5_with_synchronisation/tools/NeverReadDriver.java 25 38#
+
 
 Conclusión
 ----------
