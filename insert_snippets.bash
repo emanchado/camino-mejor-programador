@@ -22,8 +22,8 @@ function retrieve_snippet (){
     [[ ${PIPESTATUS[0]} != "0" ]] && echo failed to download "$url" && exit -1
 }
 
-#matches: '#INCLUDE "a label" some/url.scala 7 27#'
-pattern='^#INCLUDE  *"([^"]*)"  *([^ ][^ ]*\.([^ .][^ .]*))  *([0-9][0-9]*)  *([0-9][0-9]*)#$'
+#matches: '#SNIPPET "a label" some/url.scala 7 27#'
+pattern='^#SNIPPET  *"([^"]*)"  *([^ ][^ ]*\.([^ .][^ .]*))  *([0-9][0-9]*)  *([0-9][0-9]*)#$'
 while read LINE; do
   if [[ "$LINE" =~ $pattern ]]; then
     label=${BASH_REMATCH[1]}
