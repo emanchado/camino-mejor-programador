@@ -1,7 +1,7 @@
 #!/bin/bash
 
 RAW_BASE_URL=https://raw.github.com/emanchado/camino-mejor-programador-codigo
-PRETTY_BASE_URL=https://github.com/emanchado/camino-mejor-programador-codigo/blob
+PRETTY_BASE_URL=https://github.com/emanchado/camino-mejor-programador-codigo/blob/master
 
 function normalise() {
   snippet=`cat`
@@ -15,7 +15,7 @@ function normalise() {
 
 function retrieve_snippet (){
     url="${RAW_BASE_URL}/${1}"
-    src=../camino-mejor-programador-codigo/`echo "${1}" | sed 's|[^/]*/||'`
+    src="../camino-mejor-programador-codigo/${1}"
     first=$2
     last=$3
     
