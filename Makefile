@@ -113,3 +113,4 @@ clean:
 	rm -rf tex-tmp epub-tmp
 	rm -f book.tex book.xml cover.pdf
 	rm -rf camino_*.chunked camino_*.pdf camino_*.html camino_*.epub
+	rm -f camino_*.xml
