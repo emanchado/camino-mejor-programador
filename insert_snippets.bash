@@ -6,7 +6,7 @@ PRETTY_BASE_URL=https://github.com/emanchado/camino-mejor-programador-codigo/blo
 function normalise() {
   snippet=`cat`
 
-  while [[ `echo "$snippet" | wc -l` == `echo "$snippet" | grep '^ ' | wc -l` ]]; do
+  while [[ `echo "$snippet" | grep -v '^ ' | grep -v '^$' | wc -l` == "0" ]]; do
     snippet=`echo "$snippet" | sed 's/^ //'`
   done
 
