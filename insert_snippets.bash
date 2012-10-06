@@ -1,7 +1,7 @@
 #!/bin/bash
 
-RAW_BASE_URL=https://raw.github.com/jcaraballo/neverread
-PRETTY_BASE_URL=https://github.com/jcaraballo/neverread/blob
+RAW_BASE_URL=https://raw.github.com/emanchado/camino-mejor-programador-codigo
+PRETTY_BASE_URL=https://github.com/emanchado/camino-mejor-programador-codigo/blob
 
 function normalise() {
   snippet=`cat`
@@ -14,11 +14,13 @@ function normalise() {
 }
 
 function retrieve_snippet (){
-    url=$1
+    url="${RAW_BASE_URL}/${1}"
+    src=../camino-mejor-programador-codigo/`echo "${1}" | sed 's|[^/]*/||'`
     first=$2
     last=$3
     
-    curl --fail -s "$url" | sed -n -e "${first},${last} p" | normalise
+    cat "$src" | sed -n -e "${first},${last} p" | normalise
+    #curl --fail -s "$url" | sed -n -e "${first},${last} p" | normalise
     [[ ${PIPESTATUS[0]} != "0" ]] && echo failed to download "$url" && exit -1
 }
 
@@ -35,10 +37,10 @@ while read LINE; do
     echo ".${PRETTY_BASE_URL}/${url}[${label}]"
     echo "[source,${extension}]"
     echo -----------------------------------------------------------------------------
-    retrieve_snippet "${RAW_BASE_URL}/${url}" "${first}" "${last}"
+    retrieve_snippet "${url}" "${first}" "${last}"
     echo -----------------------------------------------------------------------------
   else
-    echo "$LINE"
+    echo -e "$LINE"
   fi
 done
 
