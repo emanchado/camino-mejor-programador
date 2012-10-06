@@ -26,7 +26,7 @@ function retrieve_snippet (){
 
 #matches: '#SNIPPET "a label" some/url.scala 7 27#'
 pattern='^#SNIPPET  *"([^"]*)"  *([^ ][^ ]*\.([^ .][^ .]*))  *([0-9][0-9]*)  *([0-9][0-9]*)#$'
-while read LINE; do
+while IFS='' read -r LINE; do
   if [[ "$LINE" =~ $pattern ]]; then
     label=${BASH_REMATCH[1]}
     url=${BASH_REMATCH[2]}
@@ -40,7 +40,7 @@ while read LINE; do
     retrieve_snippet "${url}" "${first}" "${last}"
     echo -----------------------------------------------------------------------------
   else
-    echo -e "$LINE"
+    echo "$LINE"
   fi
 done
 
