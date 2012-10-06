@@ -19,9 +19,9 @@ function retrieve_snippet (){
     first=$2
     last=$3
     
-    cat "$src" | sed -n -e "${first},${last} p" | normalise
+    sed -n -e "${first},${last} p" "${src}" | normalise
     #curl --fail -s "$url" | sed -n -e "${first},${last} p" | normalise
-    [[ ${PIPESTATUS[0]} != "0" ]] && echo failed to download "$url" && exit -1
+    #[[ ${PIPESTATUS[0]} != "0" ]] && echo failed to download "$url" && exit -1
 }
 
 #matches: '#SNIPPET "a label" some/url.scala 7 27#'
