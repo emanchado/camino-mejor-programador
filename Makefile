@@ -88,7 +88,7 @@ $(FILENAME).pdf: book.tex cover.pdf
 	cat $< >tex-tmp/book.tex
 	cd tex-tmp && \
 		sed 's/[áéíóúñ]/_/gi' book.tex >tmp.tex && \
-		mv tmp.tex book.tex && \
+	        ../tex-listing-title-hack.pl tmp.tex >book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		pdftk C=../cover.pdf B=book.pdf cat C B3-end output book-with-cover.pdf keep_final_id && \
