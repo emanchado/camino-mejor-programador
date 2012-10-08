@@ -46,7 +46,9 @@ $(FILENAME).html: $(SOURCE_FILES)
 	# Build id
 	sed 's|^Last updated.*|$(BUILD_LINK)|' book.html >book.html-tmp && mv book.html-tmp book.html
 	# Fix generation of dashes next to words (with no space in between)
-	sed 's/ --\([^ ->]\)/ \&#8212;\1/g' book.html | sed 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' >book.html-tmp && mv book.html-tmp book.html
+	sed 's/ --\([^ ->]\)/ \&#8212;\1/g' book.html | sed 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' >book.html-tmp && \
+		./single-html-listing-title-hack.pl book.html-tmp >book.html && \
+		rm book.html-tmp
 	mv book.html $(FILENAME).html
 
 $(FILENAME).epub: book.xml libro.css
