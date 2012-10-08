@@ -42,7 +42,7 @@ book.asc: book.asc.in Makefile
 	sed 's/#BUILDID#/$(BUILD_ID)/' book.asc >book.asc-tmp && mv book.asc-tmp book.asc
 
 $(FILENAME).html: $(SOURCE_FILES)
-	asciidoc -b html5 -a toc -a toclevels=1 book.asc
+	asciidoc -b html5 -a toc -a toclevels=1 -a themedir=`pwd`/theme-libro --theme=libro book.asc
 	# Build id
 	sed 's|^Last updated.*|$(BUILD_LINK)|' book.html >book.html-tmp && mv book.html-tmp book.html
 	# Fix generation of dashes next to words (with no space in between)
