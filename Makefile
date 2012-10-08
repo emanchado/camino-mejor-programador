@@ -58,7 +58,7 @@ $(FILENAME).epub: book.xml libro.css
 	for i in epub-tmp/OEBPS/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
-		./html-listing-title-hack.pl $$i >$$i.tmp; \
+		./chunked-html-listing-title-hack.pl $$i >$$i.tmp; \
 		mv $$i.tmp $$i; \
 	done
 	./fix-epub-toc.py epub-tmp/OEBPS/toc.ncx >epub-tmp/toc.ncx && mv epub-tmp/toc.ncx epub-tmp/OEBPS/toc.ncx
@@ -73,7 +73,7 @@ $(FILENAME).chunked/index.html: book.xml libro.css
 	for i in $(FILENAME).chunked/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
-		./html-listing-title-hack.pl $$i >$$i.tmp; \
+		./chunked-html-listing-title-hack.pl $$i >$$i.tmp; \
 		mv $$i.tmp $$i; \
 	done
 
