@@ -38,7 +38,7 @@ while (my $line = <F>) {
   if ($line =~ /{\\bf (.+)}/) {
     $title = $1;
     <F>;         # Discard the next line, should be empty
-  } elsif ($line =~ /^\\begin{lstlisting}/) {
+  } elsif ($title && $line =~ /^\\begin{lstlisting}/) {
     # Try to find the URL for this snippet. If found, add a link.
     my $url = find_snippet_url($title);
     if ($url) {
@@ -47,6 +47,7 @@ while (my $line = <F>) {
       $line =~ s/,\]/,title={$title}]/;
     }
     print $line;
+    $title = undef;
   } else {
     print $line;
   }
