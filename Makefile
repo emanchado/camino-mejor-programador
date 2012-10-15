@@ -88,8 +88,9 @@ $(FILENAME).pdf: book.tex cover.pdf
 	rm -rf tex-tmp
 	mkdir tex-tmp
 	cat $< >tex-tmp/book.tex
+	convert cc-by-sa-big.png tex-tmp/cc-by-sa.pdf
 	cd tex-tmp && \
-		sed 's/[áéíóúñ]/_/gi' book.tex >tmp.tex && \
+		sed -e 's/[áéíóúñ]/_/gi' -e 's/cc-by-sa.png/cc-by-sa.pdf/g' book.tex >tmp.tex && \
 	        ../tex-listing-title-hack.pl tmp.tex >book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \
 		TEXINPUTS=/usr/share/dblatex/latex/style//::/etc/asciidoc/dblatex:/usr/share/dblatex/latex// pdflatex book.tex && \

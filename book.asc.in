@@ -5,6 +5,48 @@ Varios autores
 
 :leveloffset: 1
 
+Licencia
+========
+
+Esta obra se distribuye bajo la http://creativecommons.org/licenses/by-sa/3.0/deed.es_ES[licencia Creative Commons Reconocimiento-CompartirIgual 3.0]. Esto significa que usted puede:
+
+* copiar, distribuir y comunicar públicamente la obra
+* remezclar: transformar la obra
+* hacer un uso comercial de esta obra
+
+Bajo las condiciones siguientes:
+
+* Reconocimiento: debe reconocer los créditos de la obra de la manera especificada por el autor o el licenciador (pero no de una manera que sugiera que tiene su apoyo o apoyan el uso que hace de su obra). 
+* Compartir bajo la misma licencia: si altera o transforma esta obra, o genera una obra derivada, sólo puede distribuir la obra generada bajo una licencia idéntica a ésta. 
+
+Entendiendo que:
+
+* Renuncia: alguna de estas condiciones puede no aplicarse si se obtiene el permiso del titular de los derechos de autor 
+* Dominio público: cuando la obra o alguno de sus elementos se halle en el dominio público según la ley vigente aplicable, esta situación no quedará afectada por la licencia. 
+* Otros derechos: los derechos siguientes no quedan afectados por la licencia de ninguna manera: 
+** Los derechos derivados de usos legítimos u otras limitaciones reconocidas por ley no se ven afectados por lo anterior. 
+** Los derechos morales del autor;
+** Derechos que pueden ostentar otras personas sobre la propia obra o su uso, como por ejemplo derechos de imagen o de privacidad. 
+* Aviso: al reutilizar o distribuir la obra, tiene que dejar bien claro los términos de la licencia de esta obra. 
+
+image:cc-by-sa.png[Creative Common Reconocimiento-CompartirIgual 3.0]
+
+Agradecimientos
+===============
+
+A todos aquellos que ayudaron de una manera u otra en la creación de
+este libro, con consejos, apoyo o trabajo. Pero las siguientes
+personas se merecen una mención especial:
+
+* Sara Pettersson, por hacer la portada
+* Mario Hernández, por la introducción
+* Carlos Ble, por ayudar con la revisión de varios artículos y dar
+  ideas y consejos
+* Juanje Ojeda, por su empuje inicial y ayudar con los primeros pasos
+  de automatización de la compilación
+
+Todos los colaboradores ayudaron de manera desinteresada.
+
 #ARTICLELIST#
 
 [bibliography]
