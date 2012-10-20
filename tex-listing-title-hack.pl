@@ -26,6 +26,9 @@ sub find_snippet_url {
   for (<../*.asc>) {
     open F2, $_;
     while (my $line = decode("utf-8", <F2>)) {
+      # Drop the "_" from the line before trying to match: the
+      # emphasis marks are dropped from the LaTeX version
+      $line =~ s/_//g;
       if ($line =~ /^\.$title \((.*)\[.*\]\)/) {
         return $1;
       }
