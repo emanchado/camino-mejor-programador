@@ -1,12 +1,8 @@
 *.html
 *.swp
 cover.pdf
-book.chunked
-book.pdf
-book.epub
-book.tex
 book.asc
-book.xml
+book.tex
 camino_*.pdf
 camino_*.html
 camino_*.epub
