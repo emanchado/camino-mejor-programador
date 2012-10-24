@@ -5,10 +5,6 @@ BUILD_ID = $(shell git log -1 --format='Committed %ci %H')
 BUILD_LINK = $(shell git log -1 --format='<a href="https://www.assembla.com/code/proyecto-libro/git/changesets/%H">Versión %ci %h</a>')
 BUILD_ID_URL = $(shell git log -1 --format='https://www.assembla.com/code/proyecto-libro/git/changesets/%H')
 
-#COMMIT_DATE_TIME = $(shell date --date="`git log -1 --format='%ci'`" --utc '+%Y%m%dT%H%M%S')
-#FILENAME = $(shell git log -1 --format='camino-$(COMMIT_DATE_TIME)-%h')
-#COMMIT_DATE_TIME = $(shell git log -1 --format='%ci' | sed 's/ /_/g' | sed 's/:/^/g')
-#FILENAME = $(shell git log -1 --format='camino_$(COMMIT_DATE_TIME)_%h')
 COMMIT_DATE_TIME = $(shell date --date="`git log -1 --format='%ci'`" --utc '+%Y-%m-%d')
 FILENAME = $(shell git log -1 --format='camino_$(COMMIT_DATE_TIME)_%h')
 
@@ -16,16 +12,12 @@ libro: html epub chunked pdf
 
 
 html: $(FILENAME).html
-	#cp $(FILENAME).html `echo $(FILENAME) | sed 's/\^/:/g'`.html
 
 epub: $(FILENAME).epub 
-	#cp $(FILENAME).epub `echo $(FILENAME) | sed 's/\^/:/g'`.epub
 
 chunked: $(FILENAME).chunked/index.html
-	#cp -R $(FILENAME).chunked `echo $(FILENAME) | sed 's/\^/:/g'`.chunked
 
 pdf: $(FILENAME).pdf
-	#cp $(FILENAME).pdf `echo $(FILENAME) | sed 's/\^/:/g'`.pdf
 
 .PHONY: html epub chunked pdf
 
@@ -73,8 +65,9 @@ $(FILENAME).chunked/index.html: book.xml libro.css
 	for i in $(FILENAME).chunked/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
-		./chunked-html-listing-title-hack.pl $$i >$$i.tmp; \
-		mv $$i.tmp $$i; \
+		sed -e 's/ --\([^ ->]\)/ \&#8212;\1/g' -e 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' $$i >$$i.tmp && \
+		./chunked-html-listing-title-hack.pl $$i.tmp >$$i; \
+		rm $$i.tmp; \
 	done
 
 book.xml: $(SOURCE_FILES)
@@ -110,10 +103,10 @@ book.tex: $(SOURCE_FILES)
 	# those pesky "Chapter X" are not show at all
 	sed 's/\\begin{document}/\\lstdefinelanguage{JavaScript}{keywords={typeof,new,true,false,catch,function,return,null,catch,switch,var,if,in,while,do,else,case,break},ndkeywords={class,export,boolean,throw,implements,import,this},sensitive=false,comment=[l]{\/\/},morecomment=[s]{\/*}{*\/},morestring=[b]'"'"',morestring=[b]"}\n% "define" Scala\n\\lstdefinelanguage{scala}{\nmorekeywords={abstract,case,catch,class,def,%\ndo,else,extends,false,final,finally,%\nfor,if,implicit,import,match,mixin,%\nnew,null,object,override,package,%\nprivate,protected,requires,return,sealed,%\nsuper,this,throw,trait,true,try,%\ntype,val,var,while,with,yield},\notherkeywords={=>,<-,<\\%,<:,>:,\\#,@},\nsensitive=true,\nmorecomment=[l]{\/\/},\nmorecomment=[n]{\/*}{*\/},\nmorestring=[b]",\nmorestring=[b]'"'"',\nmorestring=[b]"""\n}\n\\setcounter{secnumdepth}{-1}\n\\renewcommand\\contentsname{\\'"'"'Indice}\n&/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 	# Fix dashes, also probably only for Spanish
-	sed 's/ -{}-{}\([^ -]\)/ \\textemdash{}\1/g' book.tex | sed 's/\([^ -]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' >book.tex-tmp && mv book.tex-tmp book.tex
+	sed -e 's/ -{}-{}\([^ -]\)/ \\textemdash{}\1/g' -e 's/\([^ -]\)-{}-{}\([ ,\.:;)(]\)/\1\\textemdash{}\2/' book.tex >book.tex-tmp && mv book.tex-tmp book.tex
 
 clean:
 	rm -rf tex-tmp epub-tmp
-	rm -f book.tex book.xml cover.pdf
+	rm -f book.tex cover.pdf
 	rm -rf camino_*.chunked camino_*.pdf camino_*.html camino_*.epub
 	rm -f camino_*.xml
