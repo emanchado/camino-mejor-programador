@@ -30,6 +30,15 @@ tienes problemas, quizás te pueda servir de ayuda echarle un vistazo
 al
 [Makefile](https://raw.github.com/emanchado/camino-mejor-programador/master/Makefile).
 
+Código de ejemplo
+-----------------
+
+Varios de los artículos que componen este libro tienen ejemplos de
+código. Los que son ejecutables están en el [repositorio de
+ejemplos](https://github.com/emanchado/camino-mejor-programador-codigo),
+junto con instrucciones sobre cómo compilaros (si hace falta) y
+cómo ejecutarlos.
+
 ¿Por qué?
 ---------
 
