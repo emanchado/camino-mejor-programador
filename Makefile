@@ -37,6 +37,8 @@ $(FILENAME).html: $(SOURCE_FILES)
 	asciidoc -b html5 -a toc -a toclevels=1 -a themedir=`pwd`/theme-libro --theme=libro book.asc
 	# Build id
 	sed 's|^Last updated.*|$(BUILD_LINK)|' book.html >book.html-tmp && mv book.html-tmp book.html
+	# Table of contents -> Índice general
+	sed 's|Table of Contents</div>|Índice general</div>|' book.html >book.html-tmp && mv book.html-tmp book.html
 	# Fix generation of dashes next to words (with no space in between)
 	sed -e 's/ --\([^ ->]\)/ \&#8212;\1/g' -e 's/\([^<][^ -]\)--\([ ,\.:;)(]\)/\1\&#8212;\2/' book.html >book.html-tmp && \
 		./single-html-listing-title-hack.pl book.html-tmp >book.html && \
@@ -62,6 +64,8 @@ $(FILENAME).epub: book.xml libro.css
 $(FILENAME).chunked/index.html: book.xml libro.css
 	cp book.xml $(FILENAME).xml
 	a2x $(XSLT_OPTS) -f chunked --stylesheet libro.css $(FILENAME).xml
+	# Table of contents -> Índice general
+	sed 's|Table of Contents|Índice general|' $(FILENAME).chunked/index.html >$(FILENAME).chunked/index.html-tmp && mv $(FILENAME).chunked/index.html-tmp $(FILENAME).chunked/index.html
 	for i in $(FILENAME).chunked/ch*.html; do \
 		xmllint -format $$i >$$i.tmp; \
 		./fix-highlighting.py $$i.tmp >$$i; \
