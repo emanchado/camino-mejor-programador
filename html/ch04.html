@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Lecciones de aprender un lenguaje funcional</title>
+    <link rel="stylesheet" type="text/css" href="libro.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+    <link rel="home" href="index.html" title="El camino a un mejor programador" />
+    <link rel="up" href="index.html" title="El camino a un mejor programador" />
+    <link rel="prev" href="ch03.html" title="Prólogo" />
+    <link rel="next" href="ch05.html" title="Documentación activa" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="ch05.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" title="Lecciones de aprender un lenguaje funcional">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="_lecciones_de_aprender_un_lenguaje_funcional"></a>Lecciones de aprender un lenguaje funcional</h2>
+          </div>
+        </div>
+      </div>
+      <p>
+        <span class="emphasis">
+          <em>Esteban Manchado Velázquez</em>
+        </span>
+      </p>
+      <p>Los lenguajes funcionales son una familia de lenguajes que la mayoría de los
+programadores conoce de oídas, pero desgraciadamente no muchos conocen
+suficientemente bien. Y digo «desgraciadamente» porque, independientemente de
+que por una razón u otra los lenguajes funcionales son muy poco demandados en
+el mercado laboral, aprenderlos nos puede brindar muchas ideas interesantes,
+patrones, buenas costumbres y lecciones que podemos aplicar a muchos otros
+lenguajes.</p>
+      <p>Es difícil trazar una línea clara entre los lenguajes funcionales y los
+lenguajes no funcionales, pero podemos citar Lisp, Haskell, Erlang, Scala y
+Clojure como los lenguajes funcionales más populares actualmente. Muchos
+lenguajes de programación populares tienen algunos rasgos funcionales, como
+Javascript, Ruby y Python. Los lenguajes funcionales, o en general, de
+cualquier paradigma al que no estemos acostumbrados, nos pueden dar ideas que
+podemos aplicar no solamente en estos lenguajes que tienen rasgos funcionales,
+sino en casi cualquier lenguaje.</p>
+      <p>Aprender un lenguaje funcional lo suficiente como para tener unas nociones e
+inspirarse, no tiene por qué llevar mucho tiempo. Además, no sólo disponemos de
+Internet, sino también de excelentes libros que están pensados precisamente
+para programadores que vienen de otros lenguajes. El resto de este artículo
+explora algunas técnicas, buenas costumbres e ideas comunes en lenguajes
+funcionales, que podemos aplicar fácilmente en otros lenguajes. Por supuesto,
+algunas de estas lecciones se pueden aprender simplemente por experiencia, y no
+son necesariamente exclusivas de los lenguajes funcionales.</p>
+      <div class="section" title="1. Los lenguajes son diferentes">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_los_lenguajes_son_diferentes"></a>1. Los lenguajes son diferentes</h2>
+            </div>
+          </div>
+        </div>
+        <p>Los lenguajes de programación son como los idiomas humanos en muchos sentidos:
+tienen sintaxis, expresiones comunes, son mejores o peores que otros para
+expresar ciertas ideas, se pueden «hablar» con mayor o menor fluidez e incluso
+se puede decir que sus «hablantes» tienen una cierta «cultura» diferente de los
+«hablantes» de otros lenguajes.</p>
+        <p>Así, cuando aprendemos un lenguaje nuevo es un error verlo como «una nueva
+sintaxis»: aprender un lenguaje bien, nos hace cambiar cómo pensamos y cómo
+resolvemos los problemas. Por ejemplo, digamos que empezamos a aprender Lisp y
+que sólo conocemos lenguajes imperativos «clásicos» como C o Java. Como parte
+de un programa que estamos escribiendo, tenemos una función que calcula el
+valor total a pagar por unos artículos. Los parámetros de entrada son el
+importe de cada artículo, el número de artículos, el porcentaje de impuesto, y
+el límite pasado el cual hay que aplicar el impuesto (p.ej.: tenemos 2
+artículos a 5 euros cada uno, un impuesto del 10% y un límite de 8 euros; el
+precio final será 11. Si el límite fuese 15 euros, el precio final sería 10
+porque no se aplicaría el impuesto). Una forma de escribirla en Lisp sería la
+siguiente:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><font color="#FF0000">(</font><b><font color="#0000FF">defun</font></b> calculate-price-BAD <font color="#FF0000">(</font>cost nitems limit percent-tax<font color="#FF0000">)</font>
+  <font color="#FF0000">(</font>setq total-price <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> cost nitems<font color="#FF0000">))</font>
+  <font color="#FF0000">(</font><b><font color="#0000FF">if</font></b> <font color="#FF0000">(</font>&gt; total-price limit<font color="#FF0000">)</font>
+      <font color="#FF0000">(</font><b><font color="#0000FF">progn</font></b>
+        <font color="#FF0000">(</font>setq tax <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> total-price <font color="#FF0000">(</font>/ percent-tax <font color="#993399">100</font><font color="#FF0000">)))</font>
+        <font color="#FF0000">(</font>setq total-price <font color="#FF0000">(</font><b><font color="#0000FF">+</font></b> total-price tax<font color="#FF0000">))))</font>
+  total-price<font color="#FF0000">)</font>
+</tt></pre>
+
+         <p title="Mal ejemplo de cómo resolverlo en Lisp (calculate-prices-bad.lisp)">
+          <em><span class="emphasis"><em>Mal</em></span> ejemplo de cómo resolverlo en Lisp (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/calculate-prices-bad.lisp" target="_top">calculate-prices-bad.lisp</a>)</em>
+</p>
+        <p>Sin embargo, si escribimos la función así no aprendemos nada nuevo y mostramos
+nuestro «acento extranjero» al escribir Lisp. Este código no es legible ni para
+programadores de Java ni para programadores de Lisp, y además no aprovechamos
+las ventajas del lenguaje, mientras que sufrimos sus desventajas.
+Simplemente usamos Lisp como «un mal Java». Compárese el anterior código con el
+siguiente:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><font color="#FF0000">(</font><b><font color="#0000FF">defun</font></b> calculate-price <font color="#FF0000">(</font>cost nitems limit percent-tax<font color="#FF0000">)</font>
+  <font color="#FF0000">(</font><b><font color="#0000FF">let*</font></b> <font color="#FF0000">((</font>total-price <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> cost nitems<font color="#FF0000">))</font>
+         <font color="#FF0000">(</font>tax         <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> total-price <font color="#FF0000">(</font>/ percent-tax <font color="#993399">100</font><font color="#FF0000">))))</font>
+    <font color="#FF0000">(</font><b><font color="#0000FF">if</font></b> <font color="#FF0000">(</font>&gt; total-price limit<font color="#FF0000">)</font>
+      <font color="#FF0000">(</font><b><font color="#0000FF">+</font></b> total-price tax<font color="#FF0000">)</font>
+      total-price<font color="#FF0000">)))</font>
+</tt></pre>
+
+         <p title="Solución usando Lisp de una forma más convencional (calculate-prices.lisp)">
+          <em>Solución usando Lisp de una forma más convencional (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/calculate-prices.lisp" target="_top">calculate-prices.lisp</a>)</em>
+</p>
+        <p>Este código se parece más a lo que muchos programadores de Lisp esperarían o
+escribirían ellos mismos, y a la mayoría de las personas que sepan un poco de
+Lisp les parecerá más legible y fácil de mantener. La razón es que estamos
+jugando con las fortalezas de Lisp, en vez de intentar adaptar el lenguaje a
+nuestros conocimientos previos.</p>
+        <p>Concretamente, el segundo ejemplo se aprovecha de dos detalles muy comunes en
+Lisp que no son tan comunes en lenguajes no funcionales:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+No usar variables, sino «valores con nombre». O, dicho de otra manera,
+evitar asignar más de una vez a cada variable. Esto se puede ver en el bloque
+<code class="literal">let*</code>: las dos «variables» del bloque, <code class="literal">total-price</code> y <code class="literal">tax</code>, nunca
+reciben otros valores. Así, el bloque <code class="literal">let*</code> contiene una lista de valores con
+nombres simbólicos, lo que hace el código más claro y mantenible.
+</li>
+            <li class="listitem">
+La construcción <code class="literal">if</code> sigue el patrón funcional de ser una <span class="emphasis"><em>expresión</em></span> que
+devuelve un valor. En este caso, recibe una condición y dos expresiones: la
+primera se devuelve si la condición es verdadera, y la segunda si la condición
+resulta ser falsa. Funciona de una forma parecida al operador ternario de C y
+Java (<code class="literal">valor = condicion ? valorsiverdadero : valorsifalso</code>).
+</li>
+          </ol>
+        </div>
+        <p>Sabiendo esto, y que la última expresión de una función Lisp es el valor
+devuelto por ésta, se puede entender el segundo ejemplo mucho mejor.</p>
+      </div>
+      <div class="section" title="2. Pensar en el objetivo, no en el proceso">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_pensar_en_el_objetivo_no_en_el_proceso"></a>2. Pensar en el objetivo, no en el proceso</h2>
+            </div>
+          </div>
+        </div>
+        <p>Aunque el ejemplo de arriba es bastante simplista, también ilustra que los
+lenguajes funcionales tienden a hacerte pensar más en el objetivo que en el
+proceso. Para algoritmos, generalmente una solución en un lenguaje funcional se
+parece más a la definición matemática. En el primer ejemplo, la implementación
+de la función está basada en el proceso de calcular. En el segundo, en el
+significado de las operaciones.</p>
+        <p>Si lo pensamos en castellano, el primer ejemplo sería algo así:</p>
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>Primero multiplicamos <code class="literal">cost</code> por <code class="literal">nitems</code> para calcular el precio base, y lo
+guardamos en <code class="literal">total-price</code>. Si éste está por encima de <code class="literal">limit</code>, entonces
+primero calculamos <code class="literal">tax</code> a base de multiplicar <code class="literal">total-price</code> por <code class="literal">percent-tax</code>
+dividido por 100, y luego guardamos en <code class="literal">total-price</code> la suma del antiguo
+<code class="literal">total-price</code> más <code class="literal">tax</code>. El resultado es el valor guardado en <code class="literal">total-price</code> al
+final del proceso.</p>
+          </blockquote>
+        </div>
+        <p>El segundo ejemplo, en cambio, sería algo así:</p>
+        <div class="blockquote">
+          <blockquote class="blockquote">
+            <p>El resultado es la suma de <code class="literal">total-price</code> y <code class="literal">tax</code> si <code class="literal">total-price</code> está por
+encima de <code class="literal">limit</code>, o <code class="literal">total-price</code> en caso contrario. Definimos
+<code class="literal">total-price</code> como la multiplicación de <code class="literal">cost</code> por <code class="literal">nitems</code>, y <code class="literal">tax</code>
+como la multiplicación de <code class="literal">total-price</code> por <code class="literal">percent-tax</code> dividido por 100.</p>
+          </blockquote>
+        </div>
+        <p>Nótese cómo en la segunda explicación podemos dejar para el final la
+explicación de los valores declarados en el bloque <code class="literal">let*</code>. En muchos casos, y
+siempre que hayamos escogido buenos nombres para esos valores, no hará falta
+leer el bloque <code class="literal">let*</code> para entender la función.</p>
+        <p>Usar variables que no cambian una vez les hemos asignado un valor, es una
+buena costumbre porque hace más fácil entender de dónde sale cada valor. Por
+esa razón, el lenguaje Scala distingue entre dos tipos de variables: <code class="literal">var</code> y
+<code class="literal">val</code>. El segundo tipo, que es el más usado con diferencia, declara una
+variable <span class="emphasis"><em>inmutable</em></span>, por lo que el compilador nos asegura que no podemos
+asignar ningún otro valor una vez declarada.</p>
+        <p>Esto está relacionado con el siguiente apartado, «Diseño de abajo a arriba,
+funciones pequeñas»: para poder pensar en el significado, muchas de las
+operaciones tienen que abstraerse en pequeñas funciones.</p>
+      </div>
+      <div class="section" title="3. Diseño de abajo a arriba, funciones pequeñas">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_diseño_de_abajo_a_arriba_funciones_pequeñas"></a>3. Diseño de abajo a arriba, funciones pequeñas</h2>
+            </div>
+          </div>
+        </div>
+        <p>Otra característica común de la programación en Lisp es intentar acercar el
+lenguaje a la tarea que se intenta resolver. Una de las maneras de hacerlo es
+escribir funciones que, aunque sean pequeñas y simples, escondan detalles de
+implementación que no nos interesen y que suban el nivel de abstracción. La
+lección aquí es que escribir funciones y métodos de una o dos líneas es útil
+<span class="emphasis"><em>si</em></span> suben el nivel de abstracción. No se trata de «esconder código» para no
+tenerlo a la vista, se trata de hacer olvidar a uno mismo parte de la
+complejidad de la tarea que está realizando.</p>
+        <p>Como ejemplo, sigamos con el caso anterior de los precios y los artículos. Una
+de las operaciones que hacemos es calcular un tanto por ciento. Si suponemos
+que es una operación que usaremos más de una vez, podría tener sentido abstraer
+ese cálculo. No nos vamos a ahorrar líneas de código, pero esta versión puede
+requerir menos esfuerzo mental y ser más fácil de leer (imagínese el siguiente
+ejemplo en castellano, tal y como hicimos en el anterior apartado):</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><i><font color="#9A1900">; En el caso de Lisp, podríamos haber llamado a esta función '%', de modo que</font></i>
+<i><font color="#9A1900">; la llamada de abajo quedaría '(% percent-tax total-price)'</font></i>
+<font color="#FF0000">(</font><b><font color="#0000FF">defun</font></b> percentage <font color="#FF0000">(</font>percent amount<font color="#FF0000">)</font>
+  <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> amount <font color="#FF0000">(</font>/ percent <font color="#993399">100</font><font color="#FF0000">)))</font>
+
+<font color="#FF0000">(</font><b><font color="#0000FF">defun</font></b> calculate-price <font color="#FF0000">(</font>cost nitems limit percent-tax<font color="#FF0000">)</font>
+  <font color="#FF0000">(</font><b><font color="#0000FF">let*</font></b> <font color="#FF0000">((</font>total-price <font color="#FF0000">(</font><b><font color="#0000FF">*</font></b> cost nitems<font color="#FF0000">))</font>
+         <font color="#FF0000">(</font>tax         <font color="#FF0000">(</font>percentage percent-tax total-price<font color="#FF0000">)))</font>
+    <font color="#FF0000">(</font><b><font color="#0000FF">if</font></b> <font color="#FF0000">(</font>&gt; total-price limit<font color="#FF0000">)</font>
+      <font color="#FF0000">(</font><b><font color="#0000FF">+</font></b> total-price tax<font color="#FF0000">)</font>
+      total-price<font color="#FF0000">)))</font>
+</tt></pre>
+
+         <p title="Solución abstrayendo el cálculo de porcentajes (calculate-prices.lisp)">
+          <em>Solución abstrayendo el cálculo de porcentajes (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/calculate-prices.lisp" target="_top">calculate-prices.lisp</a>)</em>
+</p>
+        <p>Calcular un tanto por ciento es trivial, y por escribir la función <code class="literal">percentage</code>
+no estamos ahorrando líneas de código, pero cada segundo que ahorramos en
+entender trivialidades al leer la fuente es un segundo más que podemos dedicar
+a asuntos más importantes. Y el tiempo que necesitamos para entender código sin
+las abstracciones apropiadas, con frecuencia crece exponencialmente, no
+linealmente, al añadir nuevas faltas de abstracción.</p>
+        <p>Otra ventaja de abstraer funciones de esta manera es que estas funciones
+normalmente son bastante fáciles de probar, porque tienden a tener interfaces
+sencillas y responsabilidades claras. En el caso de lenguajes que tienen una
+consola interactiva (como Lisp, Python, Ruby y otros) es fácil experimentar con
+la función y ver lo que hace, facilitando la escritura de pruebas unitarias en
+cualquier lenguaje. Especialmente si evitamos los efectos colaterales, como
+veremos en el siguiente apartado.</p>
+      </div>
+      <div class="section" title="4. Efectos colaterales">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_efectos_colaterales"></a>4. Efectos colaterales</h2>
+            </div>
+          </div>
+        </div>
+        <p>Los llamados <span class="emphasis"><em>efectos colaterales</em></span> son uno de los conceptos más importantes de
+la programación funcional, por no decir que el más importante. Es lo que
+diferencia los lenguajes puramente funcionales de los lenguajes funcionales no
+puros. Incluso los programadores de los lenguajes que no son puramente
+funcionales (como Lisp) generalmente intentan evitar efectos colaterales.</p>
+        <p>Un efecto colateral es cualquier cambio que una función produce fuera del
+ámbito de la función en sí. Por ejemplo, una función que modifique una variable
+que ha recibido como parámetro (es decir, «parámetros de entrada/salida») o que
+modifique variables globales o cualquier otra cosa que no sean variables
+locales a la función está produciendo efectos colaterales. Esto incluye
+cualquier tipo de entrada/salida, como leer o escribir ficheros o interactuar
+con la pantalla, el teclado o el ratón.</p>
+        <p>¿Por qué es tan importante evitar efectos colaterales? De nuevo, como en el
+caso de las pequeñas funciones que suban el nivel de abstracción, evitar un
+solo efecto colateral no es una ventaja muy grande. Sin embargo, evitar efectos
+colaterales como regla general hace que los programas sean más fáciles de
+entender y mantener, y que haya menos sorpresas. La razón es que evitar efectos
+colaterales <span class="emphasis"><em>garantiza</em></span> que ningún error en la función pueda afectar a nada
+más. Si además no hacemos referencia a nada externo a la función, como
+variables globales, tenemos una garantía extra importantísima: la función es
+independiente del resto del código, lo que significa que ningún fallo del resto
+del programa puede afectar a nuestra función, y que podemos probar la función
+independientemente del resto del código, lo cual no sólo es práctico, sino que
+hace más fácil asegurarse de que cubrimos todos los casos posibles de la
+función con baterías de pruebas.</p>
+        <p>Veamos un ejemplo de efectos colaterales en Python. El método <code class="literal">sort</code>,
+desgraciadamente, modifica la lista sobre la que se llama. Esto puede
+producir sorpresas desagradables, como veremos en el primer ejemplo. Digamos
+que estamos escribiendo un programa para gestionar competiciones de carreras y
+escribimos una función <code class="literal">best_time</code> que recibe una lista de números y devuelve
+el menor (obviamos la existencia de la función <code class="literal">min</code> para hacer el ejemplo más
+ilustrativo):</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">def</font></b> <b><font color="#000000">best_time_BAD</font></b><font color="#990000">(</font>list<font color="#990000">):</font>
+  <b><font color="#0000FF">if</font></b> <b><font color="#000000">len</font></b><font color="#990000">(</font>list<font color="#990000">)</font> <font color="#990000">==</font> <font color="#993399">0</font><font color="#990000">:</font>
+    <b><font color="#0000FF">return</font></b> None
+  list<font color="#990000">.</font><b><font color="#000000">sort</font></b><font color="#990000">()</font>
+  <b><font color="#0000FF">return</font></b> list<font color="#990000">[</font><font color="#993399">0</font><font color="#990000">]</font>
+
+times <font color="#990000">=</font> <font color="#990000">[</font><font color="#993399">5</font><font color="#990000">,</font> <font color="#993399">9</font><font color="#990000">,</font> <font color="#993399">4</font><font color="#990000">,</font> <font color="#993399">6</font><font color="#990000">,</font> <font color="#993399">10</font><font color="#990000">,</font> <font color="#993399">8</font><font color="#990000">]</font>
+<b><font color="#000000">best_time_BAD</font></b><font color="#990000">(</font>times<font color="#990000">)</font>  <i><font color="#9A1900"># Devuelve 4</font></i>
+<b><font color="#0000FF">print</font></b> times           <i><font color="#9A1900"># ¡Esto imprime «[4, 5, 6, 8, 9, 10]»!</font></i>
+</tt></pre>
+
+         <p title="Sorpresa desagradable debida a un efecto colateral (best-time-bad.py)">
+          <em>Sorpresa desagradable debida a un efecto colateral (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/best-time-bad.py" target="_top">best-time-bad.py</a>)</em>
+</p>
+        <p>Una forma de resolver este problema es usar la función <code class="literal">sorted</code> en vez del
+método <code class="literal">sort</code>:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">def</font></b> <b><font color="#000000">best_time</font></b><font color="#990000">(</font>list<font color="#990000">):</font>
+  <b><font color="#0000FF">if</font></b> <b><font color="#000000">len</font></b><font color="#990000">(</font>list<font color="#990000">)</font> <font color="#990000">==</font> <font color="#993399">0</font><font color="#990000">:</font>
+    <b><font color="#0000FF">return</font></b> None
+  <b><font color="#0000FF">return</font></b> <b><font color="#000000">sorted</font></b><font color="#990000">(</font>list<font color="#990000">)[</font><font color="#993399">0</font><font color="#990000">]</font>
+
+times <font color="#990000">=</font> <font color="#990000">[</font><font color="#993399">5</font><font color="#990000">,</font> <font color="#993399">9</font><font color="#990000">,</font> <font color="#993399">4</font><font color="#990000">,</font> <font color="#993399">6</font><font color="#990000">,</font> <font color="#993399">10</font><font color="#990000">,</font> <font color="#993399">8</font><font color="#990000">]</font>
+<b><font color="#000000">best_time</font></b><font color="#990000">(</font>times<font color="#990000">)</font>  <i><font color="#9A1900"># Devuelve 4</font></i>
+<b><font color="#0000FF">print</font></b> times       <i><font color="#9A1900"># Imprime «[5, 9, 4, 6, 10, 8]»</font></i>
+</tt></pre>
+
+         <p title="Mejor implementación, sin efectos colaterales (best-time-bad.py)">
+          <em>Mejor implementación, sin efectos colaterales (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/best-time-bad.py" target="_top">best-time-bad.py</a>)</em>
+</p>
+        <p>En Ruby normalmente se usa la convención de añadir un «!» al final del nombre
+del método si éste produce efectos colaterales (otra convención que se puede
+apreciar en el ejemplo es cómo los métodos que devuelven verdadero/falso
+terminan en «?»). El ejemplo de arriba se podría traducir a Ruby de la
+siguiente manera:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000080">require</font></b> <font color="#FF0000">'pp'</font>             <i><font color="#9A1900"># Pretty printer</font></i>
+
+<b><font color="#0000FF">def</font></b> best_time_BAD<font color="#990000">(</font>list<font color="#990000">)</font>
+  <b><font color="#0000FF">if</font></b> list<font color="#990000">.</font>empty?
+    <b><font color="#0000FF">nil</font></b>
+  <b><font color="#0000FF">else</font></b>
+    list<font color="#990000">.</font>sort!          <i><font color="#9A1900"># «sort!», ¡con efectos colaterales!</font></i>
+    list<font color="#990000">[</font><font color="#993399">0</font><font color="#990000">]</font>
+  <b><font color="#0000FF">end</font></b>
+<b><font color="#0000FF">end</font></b>
+
+times <font color="#990000">=</font> <font color="#990000">[</font><font color="#993399">5</font><font color="#990000">,</font> <font color="#993399">9</font><font color="#990000">,</font> <font color="#993399">4</font><font color="#990000">,</font> <font color="#993399">6</font><font color="#990000">,</font> <font color="#993399">10</font><font color="#990000">,</font> <font color="#993399">8</font><font color="#990000">]</font>
+best_time_BAD<font color="#990000">(</font>times<font color="#990000">)</font>  <i><font color="#9A1900"># Devuelve 4</font></i>
+pp times              <i><font color="#9A1900"># Imprime «[4, 5, 6, 8, 9, 10]»</font></i>
+
+<b><font color="#0000FF">def</font></b> best_time<font color="#990000">(</font>list<font color="#990000">)</font>
+  <b><font color="#0000FF">if</font></b> list<font color="#990000">.</font>empty?
+    <b><font color="#0000FF">nil</font></b>
+  <b><font color="#0000FF">else</font></b>
+    list<font color="#990000">.</font>sort<font color="#990000">[</font><font color="#993399">0</font><font color="#990000">]</font>       <i><font color="#9A1900"># «sort», sin «!»</font></i>
+  <b><font color="#0000FF">end</font></b>
+<b><font color="#0000FF">end</font></b>
+
+times2 <font color="#990000">=</font> <font color="#990000">[</font><font color="#993399">5</font><font color="#990000">,</font> <font color="#993399">9</font><font color="#990000">,</font> <font color="#993399">4</font><font color="#990000">,</font> <font color="#993399">6</font><font color="#990000">,</font> <font color="#993399">10</font><font color="#990000">,</font> <font color="#993399">8</font><font color="#990000">]</font>
+best_time<font color="#990000">(</font>times2<font color="#990000">)</font>  <i><font color="#9A1900"># Devuelve 4</font></i>
+pp times2          <i><font color="#9A1900"># Imprime «[5, 9, 4, 6, 10, 8]»</font></i>
+</tt></pre>
+
+         <p title="Efectos colaterales en Ruby (best-time.rb)">
+          <em>Efectos colaterales en Ruby (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/best-time.rb" target="_top">best-time.rb</a>)</em>
+</p>
+        <p>Por último, evitar efectos colaterales permite a las funciones usar una técnica
+de optimización llamada «memorización» (<span class="emphasis"><em>memoization</em></span> en inglés). Esta
+técnica consiste en recordar el valor retornado por la función la primera vez
+que se llama.  Cuando se vuelve a llamar a la función con los mismos
+parámetros, en vez de ejecutar el cuerpo de la función, se devuelve el valor
+recordado. Si la función no produce ningún efecto colateral, esta técnica es
+perfectamente segura porque está garantizado que los mismos parámetros de
+entrada siempre producen el mismo resultado. Un ejemplo muy sencillo de
+memorización en Javascript es la siguiente implementación de la serie de
+Fibonacci:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">var</font></b> fibonacciCache <font color="#990000">=</font> <font color="#FF0000">{</font><font color="#993399">0</font><font color="#990000">:</font> <font color="#993399">1</font><font color="#990000">,</font> <font color="#993399">1</font><font color="#990000">:</font> <font color="#993399">1</font><font color="#FF0000">}</font><font color="#990000">;</font>
+
+<b><font color="#0000FF">function</font></b> <b><font color="#000000">fibonacci</font></b><font color="#990000">(</font>pos<font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">if</font></b> <font color="#990000">(</font>pos <font color="#990000">&lt;</font> <font color="#993399">0</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">throw</font></b> <font color="#FF0000">"La serie de Fibonacci sólo está definida para números naturales"</font><font color="#990000">;</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#0000FF">if</font></b> <font color="#990000">(!</font> fibonacciCache<font color="#990000">.</font><b><font color="#000000">hasOwnProperty</font></b><font color="#990000">(</font>pos<font color="#990000">))</font> <font color="#FF0000">{</font>
+    console<font color="#990000">.</font><b><font color="#000000">log</font></b><font color="#990000">(</font><font color="#FF0000">"Calculo el resultado para la posición "</font> <font color="#990000">+</font> pos<font color="#990000">);</font>
+    fibonacciCache<font color="#990000">[</font>pos<font color="#990000">]</font> <font color="#990000">=</font> <b><font color="#000000">fibonacci</font></b><font color="#990000">(</font>pos <font color="#990000">-</font> <font color="#993399">1</font><font color="#990000">)</font> <font color="#990000">+</font> <b><font color="#000000">fibonacci</font></b><font color="#990000">(</font>pos <font color="#990000">-</font> <font color="#993399">2</font><font color="#990000">);</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#0000FF">return</font></b> fibonacciCache<font color="#990000">[</font>pos<font color="#990000">];</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+         <p title="Implementación de la serie de Fibonacci con memorización (fibonacci.js)">
+          <em>Implementación de la serie de Fibonacci con memorización (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/functional-languages/fibonacci.js" target="_top">fibonacci.js</a>)</em>
+</p>
+        <p>Si se copia este código en una consola Javascript (digamos, Node) y se hacen
+distintas llamadas a la función <code class="literal">fibonacci</code>, se podrá comprobar (gracias a los
+mensajes impresos por <code class="literal">console.log</code>) que cada posición de la serie sólo se
+calcula una vez.</p>
+        <p>En lenguajes dinámicos como Python, Ruby o Javascript, es relativamente
+sencillo escribir una función que reciba otra función como parámetro y le
+aplique la técnica de «memorización». El siguiente apartado explora la técnica
+de manipular funciones como datos.</p>
+      </div>
+      <div class="section" title="5. Funciones de orden superior">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_funciones_de_orden_superior"></a>5. Funciones de orden superior</h2>
+            </div>
+          </div>
+        </div>
+        <p>Otra de las características comunes de los lenguajes funcionales es tratar a
+las funciones como «ciudadanos de primera clase». Es decir, las funciones son
+valores más o menos normales que se pueden pasar como parámetros, asignar a
+variables y devolver como resultado de la llamada a una función. Las funciones
+que utilizan esta característica, es decir, que manipulan o devuelven
+funciones, reciben el nombre de <span class="emphasis"><em>funciones de orden superior</em></span>.
+Afortunadamente, muchos lenguajes populares tienen este tipo de funciones.</p>
+        <p>La primera vez que uno se encuentra funciones de orden superior puede pensar
+que sus usos son limitados, pero realmente tienen muchas aplicaciones. Por un
+lado, tenemos las funciones y métodos que traiga el lenguaje de serie, por lo
+general de manejo de listas. Por otro, tenemos la posibilidad de escribir
+nuestras propias funciones y métodos de orden superior, para separar o
+reutilizar código de manera más efectiva.</p>
+        <p>Veamos un ejemplo de lo primero en Ruby. Algunos de los métodos de la clase
+<code class="literal">Array</code> reciben una función como parámetro (en Ruby se los llama <span class="emphasis"><em>bloques</em></span>), lo
+que permite escribir código bastante compacto y expresivo:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><i><font color="#9A1900"># Comprobar si todas las palabras tienen menos de 5 letras</font></i>
+<b><font color="#0000FF">if</font></b> words<font color="#990000">.</font>all? <font color="#FF0000">{</font><font color="#990000">|</font>w<font color="#990000">|</font> w<font color="#990000">.</font>length <font color="#990000">&lt;</font> <font color="#993399">5</font> <font color="#FF0000">}</font>
+   <i><font color="#9A1900"># ...</font></i>
+<b><font color="#0000FF">end</font></b>
+
+<i><font color="#9A1900"># Comprobar si el cliente tiene algún envío pendiente</font></i>
+<b><font color="#0000FF">if</font></b> customer<font color="#990000">.</font>orders<font color="#990000">.</font>any? <font color="#FF0000">{</font><font color="#990000">|</font>o<font color="#990000">|</font> <b><font color="#0000FF">not</font></b> o<font color="#990000">.</font>sent? <font color="#FF0000">}</font>
+   <i><font color="#9A1900"># ...</font></i>
+<b><font color="#0000FF">end</font></b>
+
+<i><font color="#9A1900"># Obtener las asignaturas suspendidas por un alumno</font></i>
+failed_subjects <font color="#990000">=</font> student<font color="#990000">.</font>subjects<font color="#990000">.</font>find_all <font color="#FF0000">{</font><font color="#990000">|</font>s<font color="#990000">|</font> s<font color="#990000">.</font>mark <font color="#990000">&lt;</font> <font color="#993399">5</font> <font color="#FF0000">}</font>
+
+<i><font color="#9A1900"># Dividir los candidatos entre los que saben más de</font></i>
+<i><font color="#9A1900"># dos idiomas y los demás</font></i>
+polyglots<font color="#990000">,</font> rest <font color="#990000">=</font> cands<font color="#990000">.</font>partition <font color="#FF0000">{</font><font color="#990000">|</font>c<font color="#990000">|</font> c<font color="#990000">.</font>languages<font color="#990000">.</font>length <font color="#990000">&gt;</font> <font color="#993399">2</font> <font color="#FF0000">}</font>
+
+<i><font color="#9A1900"># Obtener una versión en mayúsculas de las palabras</font></i>
+<i><font color="#9A1900"># de la lista</font></i>
+words <font color="#990000">=</font> <font color="#990000">[</font><font color="#FF0000">"hoygan"</font><font color="#990000">,</font> <font color="#FF0000">"kiero"</font><font color="#990000">,</font> <font color="#FF0000">"hanime"</font><font color="#990000">,</font> <font color="#FF0000">"gratix"</font><font color="#990000">]</font>
+shouts <font color="#990000">=</font> words<font color="#990000">.</font>map <font color="#FF0000">{</font><font color="#990000">|</font>w<font color="#990000">|</font> w<font color="#990000">.</font>upcase<font color="#FF0000">}</font>
+</tt></pre>
+
+         <p title="Métodos de orden superior en Ruby">
+          <em>Métodos de orden superior en Ruby</em>
+</p>
+        <p>El código equivalente que habría que escribir para conseguir el mismo resultado
+sin funciones de orden superior es bastante más largo y difícil de leer.
+Además, si quisiéramos hacer operaciones parecidas variando la condición
+(digamos, en una parte del código queremos comprobar si todas las palabras
+tienen menos de cinco letras, y en otra queremos comprobar si todas las
+palabras se componen exclusivamente de letras, sin números u otros caracteres)
+el código empeoraría rápidamente.</p>
+        <p>Escribir nuestras propias funciones tampoco tiene que ser difícil, ni usarse en
+casos muy especiales. Pueden ser usos tan comunes y sencillos como el siguiente
+ejemplo en Javascript:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><i><font color="#9A1900">// Queremos poder escribir el siguiente código</font></i>
+<b><font color="#0000FF">var</font></b> comicCollection <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">Database</font></b><font color="#990000">(</font><font color="#FF0000">'comics'</font><font color="#990000">);</font>
+comicCollection<font color="#990000">.</font><b><font color="#000000">onAdd</font></b><font color="#990000">(</font><b><font color="#0000FF">function</font></b><font color="#990000">(</font>comic<font color="#990000">)</font> <font color="#FF0000">{</font>
+    console<font color="#990000">.</font><b><font color="#000000">log</font></b><font color="#990000">(</font><font color="#FF0000">"Nuevo cómic añadido: "</font> <font color="#990000">+</font> comic<font color="#990000">.</font>title<font color="#990000">);</font>
+<font color="#FF0000">}</font><font color="#990000">);</font>
+<i><font color="#9A1900">// La siguiente línea debería imprimir «Nuevo cómic...» en la consola</font></i>
+comicCollection<font color="#990000">.</font><b><font color="#000000">add</font></b><font color="#990000">(</font><font color="#FF0000">{</font>title<font color="#990000">:</font>  <font color="#FF0000">"Batman: The Dark Knight Returns"</font><font color="#990000">,</font>
+                     author<font color="#990000">:</font> <font color="#FF0000">"Frank Miller"</font><font color="#FF0000">}</font><font color="#990000">);</font>
+
+<i><font color="#9A1900">// La implementación de onAdd puede ser muy sencilla</font></i>
+Database<font color="#990000">.</font><b><font color="#0000FF">prototype</font></b><font color="#990000">.</font>onAdd <font color="#990000">=</font> <b><font color="#0000FF">function</font></b><font color="#990000">(</font>f<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">this</font></b><font color="#990000">.</font>onAddFunction <font color="#990000">=</font> f<font color="#990000">;</font>
+<font color="#FF0000">}</font>
+<i><font color="#9A1900">// La implementación de add también</font></i>
+Database<font color="#990000">.</font><b><font color="#0000FF">prototype</font></b><font color="#990000">.</font>add <font color="#990000">=</font> <b><font color="#0000FF">function</font></b><font color="#990000">(</font>obj<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">this</font></b><font color="#990000">.</font>data<font color="#990000">.</font><b><font color="#000000">push</font></b><font color="#990000">(</font>obj<font color="#990000">);</font>
+    <b><font color="#0000FF">if</font></b> <font color="#990000">(</font><b><font color="#0000FF">typeof</font></b><font color="#990000">(</font><b><font color="#0000FF">this</font></b><font color="#990000">.</font>onAddFunction<font color="#990000">)</font> <font color="#990000">===</font> <font color="#FF0000">'function'</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+        <b><font color="#0000FF">this</font></b><font color="#990000">.</font><b><font color="#000000">onAddFunction</font></b><font color="#990000">(</font>obj<font color="#990000">);</font>
+    <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+         <p title="Funciones de orden superior en Javascript">
+          <em>Funciones de orden superior en Javascript</em>
+</p>
+        <p>A partir de Ecmascript 5, la clase <code class="literal">Array</code> añade varios métodos de orden
+superior que son comunes en la programación funcional.</p>
+      </div>
+      <div class="section" title="6. Evaluación perezosa">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_evaluación_perezosa"></a>6. Evaluación perezosa</h2>
+            </div>
+          </div>
+        </div>
+        <p>La última característica de lenguajes funcionales que exploraremos es la
+<span class="emphasis"><em>evaluación perezosa</em></span>. No hay muchos lenguajes que incluyan evaluación
+perezosa, pero se puede imitar hasta cierto punto, y saber cómo funciona puede
+darnos ideas e inspirarnos a la hora de diseñar nuestros propios sistemas. Uno
+de los relativamente pocos lenguajes que incluye evaluación perezosa es
+Haskell.</p>
+        <p>La evaluación perezosa consiste en no hacer cálculos que no sean necesarios.
+Por ejemplo, digamos que escribimos una función que genere recursivamente una
+lista de 10 elementos, y otra función que llame a la primera, pero que sólo use
+el valor del cuarto elemento. Cuando se ejecute la segunda función, Haskell
+ejecutará la primera hasta que el cuarto elemento sea calculado.  Es decir:
+Haskell no ejecutará, como la mayoría de los lenguajes, la primera función
+hasta que <span class="emphasis"><em>devuelva</em></span> su valor (una lista de 10 elementos); sólo ejecutará la
+función hasta que se <span class="emphasis"><em>genere</em></span> el cuarto elemento de la lista, que es lo único
+que necesita para continuar la ejecución del programa principal. En este
+sentido, la primera función es como una expresión matemática: inicialmente
+Haskell no conoce el valor de la expresión, y sólo calculará la parte de ésta
+que necesite. En este caso, los cuatro primeros elementos.</p>
+        <p>¿Cuál es la ventaja de la evaluación perezosa? En la mayoría de los casos,
+eficiencia. En otros casos, legibilidad. Cuando no tenemos que preocuparnos por
+la memoria o ciclos de CPU usados por nuestra función, podemos hacer que
+devuelvan (teóricamente) listas o estructuras infinitas, las cuales pueden ser
+más fáciles de leer o implementar en algunos casos.  Aunque no es el ejemplo
+más claro de legibilidad de evaluación perezosa, entender la siguiente
+implementación de la serie de Fibonacci, aclarará la diferencia con la
+evaluación estricta. Nótese que la función calcula la serie <span class="emphasis"><em>entera</em></span>, es decir,
+una lista <span class="emphasis"><em>infinita</em></span>:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt>fibs <font color="#990000">=</font> <font color="#993399">0</font> <font color="#990000">:</font> <font color="#993399">1</font> <font color="#990000">:</font> zipWith <font color="#990000">(+)</font> fibs <font color="#990000">(</font>tail fibs<font color="#990000">)</font>
+</tt></pre>
+
+         <p title="Implementación de la serie de Fibonacci, en Haskell">
+          <em>Implementación de la serie de Fibonacci, en Haskell</em>
+</p>
+        <p>Normalmente la función es imposible de entender de un primer vistazo si no
+estamos familiarizados con la programación funcional y la evaluación perezosa,
+pero hay varios puntos que nos ayudarán:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem"><code class="literal">tail lista</code> devuelve la lista dada, saltándose el primer elemento. Es
+decir, si <code class="literal">lista</code> es <code class="literal">(1 2 3)</code>, <code class="literal">tail lista</code> es <code class="literal">(2 3)</code>.
+</li>
+            <li class="listitem"><code class="literal">zipWith</code> calcula, dada una operación y dos listas, una lista que tiene:
+como primer elemento, el resultado de aplicar la operación dada al primer
+elemento de las dos listas; como segundo el resultado de aplicar la operación
+al segundo elemento de las dos listas; etc. Así, <code class="literal">zipWith</code> llamado con la
+función suma y las listas <code class="literal">(1 2 3)</code> y <code class="literal">(0 1 5)</code> resultaría en <code class="literal">(1 3 8)</code>.
+</li>
+            <li class="listitem">
+Cada elemento de la lista devuelta por <code class="literal">fibs</code> se calculará individualmente,
+y estará disponible en memoria sin necesidad de volver a ejecutar el código de
+la función.
+</li>
+          </ol>
+        </div>
+        <p>Así, lo que ocurre es:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+Haskell empieza a construir una lista con los elementos <code class="literal">0</code> y <code class="literal">1</code>. En este
+punto, <code class="literal">fibs = (0 1)</code>.
+</li>
+            <li class="listitem">
+El tercer elemento será el primer elemento de la subexpresión <code class="literal">zipWith …</code>.
+Para calcularlo, necesitamos la lista <code class="literal">fibs</code> (por ahora <code class="literal">(0 1)</code>, ya que sólo
+conocemos dos elementos) y <code class="literal">tail fibs</code> (por ahora <code class="literal">(1)</code>). Al sumar el primer
+elemento de cada una de esas listas (<code class="literal">0</code> y <code class="literal">1</code>), el resultado es <code class="literal">1</code>. En este
+punto, <code class="literal">fibs = (0 1 1)</code> y la subexpresión <code class="literal">zipWith … = (1)</code>.
+</li>
+            <li class="listitem">
+El cuarto elemento de <code class="literal">fibs</code> es el segundo elemento de <code class="literal">zipWidth …</code>. Para
+calcularlo necesitaremos el segundo elemento de <code class="literal">fibs</code> y el segundo elemento de
+<code class="literal">tail fibs</code>. El segundo elemento de <code class="literal">tail fibs</code> es el tercer elemento de
+<code class="literal">fibs</code>, que ya conocemos porque lo calculamos en el paso anterior. Nótese que
+<span class="emphasis"><em>no</em></span> hace falta ninguna llamada recursiva porque los valores que necesitamos ya
+están calculados. La evaluación perezosa funciona como una función matemática:
+no hace falta que volvamos a calcular un valor si ya sabemos el resultado. En
+este punto, <code class="literal">fibs = (0 1 1 2)</code> y la subexpresión <code class="literal">zipWith … = (1 2)</code>.
+</li>
+            <li class="listitem">
+Para el quinto elemento (el tercero de <code class="literal">zipWidth</code>), necesitaremos el tercer
+y cuarto elementos de <code class="literal">fibs</code>, que llegados a este punto ya conocemos porque
+los hemos calculado en los pasos anteriores. Y así sucesivamente.
+</li>
+          </ol>
+        </div>
+        <p>Estos pasos no se ejecutan indefinidamente: se irán ejecutando hasta que se
+obtenga el elemento de <code class="literal">fibs</code> que se necesite. Es decir, si asignamos <code class="literal">fibs</code> a
+una variable pero nunca la usamos, el código no se ejecutará en absoluto; si
+usamos el valor del tercer elemento de la serie en algún cálculo, sólo se
+ejecutarán los dos primeros pasos descritos arriba; etc. En ningún caso se
+intenta ejecutar <code class="literal">fibs</code> hasta que devuelva «el valor completo».</p>
+        <p>La evaluación perezosa se puede ver como aplicar la técnica de «memorización»
+automáticamente a todo el lenguaje. Un posible uso es calcular tablas de
+valores que son lentos de calcular: en algunos casos podríamos cargar una tabla
+precalculada en memoria, pero el coste puede ser prohibitivo si la tabla es
+grande o potencialmente infinita.</p>
+      </div>
+      <div class="section" title="7. Conclusión">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_conclusión"></a>7. Conclusión</h2>
+            </div>
+          </div>
+        </div>
+        <p>Aprender lenguajes nuevos, especialmente de paradigmas con los que estamos
+menos familiarizados, nos puede enseñar muchas cosas sobre programación en
+general. Este proceso de aprendizaje nos hará mejores programadores, y muchas
+de esas lecciones serán aplicables a todos los lenguajes que conozcamos, no
+sólo a los lenguajes similares al que acabemos de aprender. En particular, los
+lenguajes funcionales son suficientemente accessibles y similares a los
+lenguajes más populares como para enseñarnos muchas lecciones útiles.</p>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ch03.html">Prev</a> </td>
+          <td width="20%" align="center"> </td>
+          <td width="40%" align="right"> <a accesskey="n" href="ch05.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top"> </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

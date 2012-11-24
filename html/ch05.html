@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Documentación activa</title>
+    <link rel="stylesheet" type="text/css" href="libro.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+    <link rel="home" href="index.html" title="El camino a un mejor programador" />
+    <link rel="up" href="index.html" title="El camino a un mejor programador" />
+    <link rel="prev" href="ch04.html" title="Lecciones de aprender un lenguaje funcional" />
+    <link rel="next" href="ch06.html" title="Siete problemas al probar programas" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ch04.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="ch06.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" title="Documentación activa">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="_documentación_activa"></a>Documentación activa</h2>
+          </div>
+        </div>
+      </div>
+      <p>
+        <span class="emphasis">
+          <em>Joaquín Caraballo</em>
+        </span>
+      </p>
+      <p>Si en un extremo están los que definen el problema a resolver y en el otro los que lo resuelven, ¿cómo podemos asegurarnos de que todos estamos intentando resolver el mismo problema? Y, si aceptamos que la definición va a necesitar ser enriquecida, corregida, matizada, e incluso que el problema a resolver va a cambiar radicalmente durante la vida del proyecto, ¿cómo mantenemos una misma definición para todos los interesados, y más importante, cómo aseguramos que nuestro programa resuelve el problema?</p>
+      <div class="section" title="1. Las pruebas funcionales">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_las_pruebas_funcionales"></a>1. Las pruebas funcionales</h2>
+            </div>
+          </div>
+        </div>
+        <p>Para tener una cierta confianza en que la aplicación resuelve un cierto problema se llevan a cabo pruebas funcionales; estas resuelven un ejemplo concreto y representativo simulando las acciones del usuario y verificando que la reacción de la aplicación es la esperada.</p>
+        <p>Las pruebas funcionales han de mantenerse al día y evolucionar con los cambios de la aplicación y sus requisitos. Otro de los retos es que sean correctas, es decir, que el comportamiento que estén verificando sea realmente el que se requiere de la aplicación.</p>
+        <p>Es crucial que las pruebas funcionales estén automatizadas; lo típico es escribirlas en el mismo lenguaje de programación de la aplicación. Esto nos permite ejecutar un gran número de ellas de forma sistemática y tras cada cambio, con lo que también nos protegerán de que algo que funcionaba deje de hacerlo, es decir, de posibles <span class="emphasis"><em>regresiones</em></span>.</p>
+        <div class="section" title="1.1. neverread">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_neverread"></a>1.1. neverread</h3>
+              </div>
+            </div>
+          </div>
+          <p>Supongamos que tenemos un cliente con falta de tiempo para leer artículos de Internet.</p>
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>-Tantos artículos interesantes, no tengo tiempo para leerlos, pero tampoco puedo ignorarlos. Me gustaría tener una aplicación en la que copiar la dirección del artículo que me interese.</p>
+              <p>-¡Ah!, ¿quieres una aplicación que te permita almacenar enlaces a artículos? La aplicación mantendría una lista con los artículos almacenados, a la que luego podrías acceder cuando tengas tiempo y leer los artículos…</p>
+              <p>-No, no, si yo lo que quiero es que los enlaces a artículos desaparezcan, si tuviera tiempo para leerlos después usaría instapaper, hombre. Estaría bien que tuviese una lista de artículos por leer siempre vacía, me daría una sensación genial de tenerlo todo bajo control.</p>
+              <p>-Er… vale.</p>
+            </blockquote>
+          </div>
+          <p>De la conversación hemos conseguido extraer un criterio de aceptación:</p>
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>Por mucho que añadamos artículos, estos no se añadirán a una lista de artículos por leer.</p>
+            </blockquote>
+          </div>
+          <p>La prueba funcional correspondiente, verificará que la aplicación cumple el criterio para un ejemplo concreto:</p>
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>Cuando añadimos el artículo <code class="literal">art.culo/interesante.html</code>, la lista de artículos por leer permanece vacía.</p>
+            </blockquote>
+          </div>
+          <p>Las pruebas funcionales, si bien no tienen necesariamente que serlo, se llevan a cabo con frecuencia como pruebas de punta a punta <span class="emphasis"><em>(end to end)</em></span> (<a class="xref" href="bi01.html#goos">[goos]</a> pág 10), es decir, pruebas en las que se ejercita la aplicación en su conjunto y desde afuera, simulando las acciones del usuario y de los sistemas colaboradores, y evaluando la corrección según la perciben usuario y colaboradores.</p>
+          <p>Hemos decidido resolver el problema propuesto con una aplicación web, <span class="emphasis"><em>neverread</em></span>. Implementaremos en Java una prueba funcional de punta a punta que verifique el criterio de aceptación con una prueba <span class="emphasis"><em>junit</em></span> que va a iniciar la aplicación y a continuación ejercitarla y evaluarla. Para simular la interacción de un usuario a través de un navegador web utilizaremos Selenium/WebDriver/HtmlUnit:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">public</font></b> <b><font color="#0000FF">class</font></b> <font color="#008080">ListStaysEmptyTest</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">private</font></b> <font color="#008080">WebDriver</font> webDriver<font color="#990000">;</font>
+    <b><font color="#0000FF">private</font></b> <font color="#008080">NeverReadServer</font> neverread<font color="#990000">;</font>
+
+    @Test
+    <b><font color="#0000FF">public</font></b> <font color="#009900">void</font> <b><font color="#000000">articleListStaysEmptyWhenAddingNewArticle</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+        webDriver<font color="#990000">.</font><b><font color="#000000">findElement</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">name</font></b><font color="#990000">(</font><font color="#FF0000">"url"</font><font color="#990000">)).</font><b><font color="#000000">sendKeys</font></b><font color="#990000">(</font><font color="#FF0000">"interesting/article.html"</font><font color="#990000">,</font> Keys<font color="#990000">.</font>ENTER<font color="#990000">);</font>
+        <b><font color="#000000">assertThat</font></b><font color="#990000">(</font>webDriver<font color="#990000">.</font><b><font color="#000000">findElements</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">cssSelector</font></b><font color="#990000">(</font><font color="#FF0000">"li"</font><font color="#990000">)).</font><b><font color="#000000">size</font></b><font color="#990000">(),</font> <b><font color="#000000">is</font></b><font color="#990000">(</font><font color="#993399">0</font><font color="#990000">));</font>
+    <font color="#FF0000">}</font>
+
+    @Before
+    <b><font color="#0000FF">public</font></b> <font color="#009900">void</font> <b><font color="#000000">setUp</font></b><font color="#990000">()</font> <b><font color="#0000FF">throws</font></b> Exception <font color="#FF0000">{</font>
+        neverread <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">NeverReadServer</font></b><font color="#990000">();</font>
+        neverread<font color="#990000">.</font><b><font color="#000000">start</font></b><font color="#990000">(</font><font color="#993399">8081</font><font color="#990000">);</font>
+
+        <font color="#008080">WebDriver</font> driver <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">HtmlUnitDriver</font></b><font color="#990000">();</font>
+        driver<font color="#990000">.</font><b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#FF0000">"http://localhost:8081"</font><font color="#990000">);</font>
+        webDriver <font color="#990000">=</font> driver<font color="#990000">;</font>
+    <font color="#FF0000">}</font>
+
+    @After
+    <b><font color="#0000FF">public</font></b> <font color="#009900">void</font> <b><font color="#000000">tearDown</font></b><font color="#990000">()</font> <b><font color="#0000FF">throws</font></b> Exception <font color="#FF0000">{</font>
+        webDriver<font color="#990000">.</font><b><font color="#000000">close</font></b><font color="#990000">();</font>
+        neverread<font color="#990000">.</font><b><font color="#000000">stop</font></b><font color="#990000">();</font>
+    <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Prueba punta a punta en Java (purejava/ListStaysEmptyTest.java)">
+            <em>Prueba punta a punta en Java (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/purejava/ListStaysEmptyTest.java" target="_top">purejava/ListStaysEmptyTest.java</a>)</em>
+</p>
+        </div>
+      </div>
+      <div class="section" title="2. Documentación activa">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_documentación_activa_2"></a>2. Documentación activa</h2>
+            </div>
+          </div>
+        </div>
+        <p>Si bien podríamos considerar que nuestra prueba funcional en Java es la documentación principal donde se registran los criterios de aceptación; dependiendo de quién vaya a consumirla, esto puede o no ser una opción. Además, conseguir reemplazar la legibilidad de un párrafo en español con una prueba en el lenguaje de programación es todo un reto, particularmente si el lenguaje de programación es tan prolijo como Java.</p>
+        <p>En consecuencia, en la mayoría de los proyectos es necesario documentar los requisitos de manera más textual.</p>
+        <p>Una forma de intentar obtener lo mejor de las dos alternativas es conectar la documentación a la aplicación de tal forma que en todo momento sea automático y evidente verificar el cumplimiento de cada uno de los requisitos expresados, lo que nos ayudará a mantener la documentación sincronizada con la aplicación y con el cliente.</p>
+        <p>La documentación, junto con la capacidad de procesarla para su verificación, servirá así de batería de pruebas funcionales; si ejecutamos esta batería con frecuencia (idealmente con cada cambio) y la mantenemos veraz, estaremos garantizando el correcto funcionamiento de la aplicación… para la definición especificada.</p>
+      </div>
+      <div class="section" title="3. Concordion">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_concordion"></a>3. Concordion</h2>
+            </div>
+          </div>
+        </div>
+        <p>Concordion es una de las herramientas que nos pueden ayudar a conectar la documentación con la aplicación; en Concordion los criterios se escriben en HTML al que se añaden algunas marcas que comienzan con <code class="literal">concordion:</code></p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">&lt;p&gt;</font></b>
+  When an article is added, the list of unread articles stays empty
+<b><font color="#0000FF">&lt;/p&gt;</font></b>
+
+<b><font color="#0000FF">&lt;div</font></b> <font color="#009900">class</font><font color="#990000">=</font><font color="#FF0000">"example"</font><b><font color="#0000FF">&gt;</font></b>
+<b><font color="#0000FF">&lt;h3&gt;</font></b>Example<b><font color="#0000FF">&lt;/h3&gt;</font></b>
+
+<b><font color="#0000FF">&lt;p&gt;</font></b>
+  When the article
+  <b><font color="#0000FF">&lt;b</font></b> <font color="#009900">concordion:set</font><font color="#990000">=</font><font color="#FF0000">"#url"</font><b><font color="#0000FF">&gt;</font></b>interesting/article.html<b><font color="#0000FF">&lt;/b&gt;</font></b>
+  is added, the list of unread articles stays
+  <b><font color="#0000FF">&lt;b</font></b> <font color="#009900">concordion:assertEquals</font><font color="#990000">=</font><font color="#FF0000">"articleListAfterAdding(#url)"</font><b><font color="#0000FF">&gt;</font></b>empty<b><font color="#0000FF">&lt;/b&gt;</font></b>
+<b><font color="#0000FF">&lt;/p&gt;</font></b>
+<b><font color="#0000FF">&lt;/div&gt;</font></b>
+</tt></pre>
+
+         <p title="Primera prueba usando Concordion (concordion/v1/ListStaysEmpty.html)">
+          <em>Primera prueba usando Concordion (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/concordion/v1/ListStaysEmpty.html" target="_top">concordion/v1/ListStaysEmpty.html</a>)</em>
+</p>
+        <p>Vemos que hemos expresado el ejemplo en forma de condición y consecuencia que se debe verificar. Los atributos <code class="literal">concordion:set</code> y <code class="literal">concordion:assertEquals</code> conectan el documento al método de la clase de respaldo, escrita en Java, <code class="literal">String articleListAfterAdding(String url)</code>, que se encargará de hacer lo que dice el texto.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">public</font></b> <b><font color="#0000FF">class</font></b> <font color="#008080">ListStaysEmptyTest</font> <b><font color="#0000FF">extends</font></b> ConcordionTestCase <font color="#FF0000">{</font>
+    <b><font color="#0000FF">private</font></b> <font color="#008080">WebDriver</font> webDriver<font color="#990000">;</font>
+    <b><font color="#0000FF">private</font></b> <font color="#008080">NeverReadServer</font> neverread<font color="#990000">;</font>
+
+    @<b><font color="#000000">SuppressWarnings</font></b><font color="#990000">(</font>value <font color="#990000">=</font> <font color="#FF0000">"unused"</font><font color="#990000">)</font>
+    <b><font color="#0000FF">public</font></b> <font color="#008080">String</font> <b><font color="#000000">articleListAfterAdding</font></b><font color="#990000">(</font><font color="#008080">String</font> url<font color="#990000">)</font> <b><font color="#0000FF">throws</font></b> InterruptedException <font color="#FF0000">{</font>
+        webDriver<font color="#990000">.</font><b><font color="#000000">findElement</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">name</font></b><font color="#990000">(</font><font color="#FF0000">"url"</font><font color="#990000">)).</font><b><font color="#000000">sendKeys</font></b><font color="#990000">(</font>url<font color="#990000">,</font> Keys<font color="#990000">.</font>ENTER<font color="#990000">);</font>
+        <font color="#008080">List&lt;WebElement&gt;</font> pendingArticles <font color="#990000">=</font> webDriver<font color="#990000">.</font><b><font color="#000000">findElements</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">cssSelector</font></b><font color="#990000">(</font><font color="#FF0000">"li"</font><font color="#990000">));</font>
+
+        <b><font color="#0000FF">return</font></b> <b><font color="#000000">convertListOfArticlesToString</font></b><font color="#990000">(</font>pendingArticles<font color="#990000">);</font>
+    <font color="#FF0000">}</font>
+
+    <b><font color="#0000FF">private</font></b> <b><font color="#0000FF">static</font></b> <font color="#008080">String</font> <b><font color="#000000">convertListOfArticlesToString</font></b><font color="#990000">(</font><font color="#008080">List&lt;WebElement&gt;</font> pendingArticles<font color="#990000">)</font> <font color="#FF0000">{</font>
+        <b><font color="#0000FF">if</font></b> <font color="#990000">(</font>pendingArticles<font color="#990000">.</font><b><font color="#000000">isEmpty</font></b><font color="#990000">())</font> <b><font color="#0000FF">return</font></b> <font color="#FF0000">"empty"</font><font color="#990000">;</font>
+        <b><font color="#0000FF">else</font></b> <font color="#FF0000">{</font>
+            <font color="#008080">StringBuilder</font> stringBuilder <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">StringBuilder</font></b><font color="#990000">();</font>
+            stringBuilder<font color="#990000">.</font><b><font color="#000000">append</font></b><font color="#990000">(</font>pendingArticles<font color="#990000">.</font><b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#993399">0</font><font color="#990000">).</font><b><font color="#000000">getText</font></b><font color="#990000">());</font>
+
+            <b><font color="#0000FF">for</font></b> <font color="#990000">(</font><font color="#009900">int</font> i <font color="#990000">=</font> <font color="#993399">1</font><font color="#990000">;</font> i <font color="#990000">&lt;</font> pendingArticles<font color="#990000">.</font><b><font color="#000000">size</font></b><font color="#990000">();</font> i<font color="#990000">++)</font>
+                stringBuilder<font color="#990000">.</font><b><font color="#000000">append</font></b><font color="#990000">(</font><font color="#FF0000">", "</font><font color="#990000">).</font><b><font color="#000000">append</font></b><font color="#990000">(</font>pendingArticles<font color="#990000">.</font><b><font color="#000000">get</font></b><font color="#990000">(</font>i<font color="#990000">).</font><b><font color="#000000">getText</font></b><font color="#990000">());</font>
+
+            <b><font color="#0000FF">return</font></b> stringBuilder<font color="#990000">.</font><b><font color="#000000">toString</font></b><font color="#990000">();</font>
+        <font color="#FF0000">}</font>
+    <font color="#FF0000">}</font>
+</tt></pre>
+
+         <p title="Clase de respaldo de la prueba en Concordion (purejava/ListStaysEmptyTest.java)">
+          <em>Clase de respaldo de la prueba en Concordion (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/concordion/v1/ListStaysEmptyTest.java" target="_top">purejava/ListStaysEmptyTest.java</a>)</em>
+</p>
+        <p>Al ejecutar <code class="literal">ListaPermaneceVaciaTest</code>, Concordion generará un documento HTML con el texto anterior en el que se indicará si se cumple la aserción resaltándola en verde o rojo.</p>
+        <div class="section" title="3.1. Paso a paso">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_paso_a_paso"></a>3.1. Paso a paso</h3>
+              </div>
+            </div>
+          </div>
+          <p>Veamos qué es lo que está pasando aquí. Hemos escrito el criterio de aceptación en <code class="literal">ListaPermaneceVacia.html</code>.  Acompañando al HTML hemos escrito una clase en Java que extiende una clase de infrastructura de Concordion: <code class="literal">class ListaPermaneceVaciaTest extends ConcordionTestCase</code>.</p>
+          <p>Cuando ejecutamos <code class="literal">ListaPermaneceVaciaTest</code>:</p>
+          <div class="orderedlist">
+            <ol class="orderedlist" type="1">
+              <li class="listitem">
+Concordion procesa el HTML.
+</li>
+              <li class="listitem">
+Concordion detecta la marca <code class="literal">concordion:set="#url"</code> y guarda el contenido de esa marca HTML (en este caso, «art.culo/interesante.html») en la variable de Concordion <code class="literal">#url</code>.
+</li>
+              <li class="listitem">
+Concordion detecta la marca <code class="literal">concordion:assertEquals="articleListAfterAdding(#url)"</code>, por lo que busca en la clase de acompañamiento un método denominado <code class="literal">articleListAfterAdding</code> y lo ejecuta, pasándole el contenido de <code class="literal">#url</code> como parámetro.
+</li>
+              <li class="listitem">
+El método <code class="literal">articleListAfterAdding</code> simula la acción de un usuario que introduce <code class="literal">url</code> y obtiene la lista de artículos resultante.
+</li>
+              <li class="listitem">
+Mediante <code class="literal">convertListOfArticlesToString</code>, transformamos la lista producida por WebDriver en una representación textual que pueda ser comparada con el texto del HTML. Hemos decidido que la representación textual de una lista vacía sea «vacía».
+</li>
+              <li class="listitem">
+El método <code class="literal">articleListAfterAdding</code> retorna, devolviendo una cadena (en este caso «vacía») que es comparada con el contenido de la marca HTML en el que se encontró <code class="literal">concordion:assertEquals</code>.
+</li>
+              <li class="listitem">
+Concordion termina de procesar el documento HTML y genera otro HTML en el que el texto que tiene la marca <code class="literal">concordion:assertEquals</code> está resaltado en verde, para indicar que la aserción se cumple.
+</li>
+            </ol>
+          </div>
+        </div>
+        <div class="section" title="3.2. Manteniendo el nivel de abstracción apropiado">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_manteniendo_el_nivel_de_abstracción_apropiado"></a>3.2. Manteniendo el nivel de abstracción apropiado</h3>
+              </div>
+            </div>
+          </div>
+          <p>Es importante esforzarse en describir el funcionamiento de la aplicación en términos del dominio. Por ejemplo, podríamos haber caído en la tentación de escribir el ejemplo como <span class="emphasis"><em>Cuando el usuario entra una cadena en la caja de texto y pulsa enter, la lista de artículos está vacía</em></span>. Sin embargo, eso sería perjudicial porque nos alejaría de la persona que define lo que debe hacer la aplicación y resultaría más <span class="emphasis"><em>frágil</em></span>, es decir, en cuanto decidiéramos cambiar la implementación, por ejemplo, supongamos que las direcciones se introducen arrastrándolas a una zona de la aplicación, tendríamos que reescribir el documento.</p>
+          <p>A poco que la documentación activa crezca, las clases de respaldo van a necesitar una cantidad importante de código. Algunas abstracciones pueden ayudarnos reducir la repetición y la fragilidad de las clases de respaldo.</p>
+          <p>Podemos hacer que la clase de respaldo sólo <span class="emphasis"><em>hable</em></span> en el lenguaje del dominio, para lo cual hemos de desarrollar un lenguaje dedicado, con lo que el método quedaría algo así:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">public</font></b> <font color="#008080">String</font> <b><font color="#000000">articleListAfterAdding</font></b><font color="#990000">(</font><font color="#008080">String</font> article<font color="#990000">)</font> <b><font color="#0000FF">throws</font></b> InterruptedException <font color="#FF0000">{</font>
+    driver<font color="#990000">.</font><b><font color="#000000">addArticle</font></b><font color="#990000">(</font>article<font color="#990000">);</font>
+    <b><font color="#0000FF">return</font></b> <b><font color="#000000">convertListOfArticlesToString</font></b><font color="#990000">(</font>driver<font color="#990000">.</font><b><font color="#000000">getListOfArticles</font></b><font color="#990000">());</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Método de respaldo usando lenguaje del dominio (concordion/v2_appdriver/ListStaysEmptyTest.java)">
+            <em>Método de respaldo usando lenguaje del dominio (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/concordion/v2_appdriver/ListStaysEmptyTest.java" target="_top">concordion/v2_appdriver/ListStaysEmptyTest.java</a>)</em>
+</p>
+          <p>Otra posibilidad es abstraer la página web en términos de los elementos del entorno gráfico, es decir, que hable de elementos visuales de la página.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">public</font></b> <font color="#008080">String</font> <b><font color="#000000">articleListAfterAdding</font></b><font color="#990000">(</font><font color="#008080">String</font> url<font color="#990000">)</font> <b><font color="#0000FF">throws</font></b> InterruptedException <font color="#FF0000">{</font>
+    page<font color="#990000">.</font><b><font color="#000000">enterIntoNewArticlesTextBox</font></b><font color="#990000">(</font>url<font color="#990000">);</font>
+    <font color="#008080">List&lt;String&gt;</font> pendingArticles <font color="#990000">=</font> page<font color="#990000">.</font><b><font color="#000000">getArticlesInListOfArticles</font></b><font color="#990000">();</font>
+
+    <b><font color="#0000FF">return</font></b> <b><font color="#000000">convertListOfArticlesToString</font></b><font color="#990000">(</font>pendingArticles<font color="#990000">);</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Método de respaldo usando lenguaje del entorno gráfico (concordion/v3_pagedriver/ListaStaysEmptyTest.java)">
+            <em>Método de respaldo usando lenguaje del entorno gráfico (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/concordion/v3_pagedriver/ListStaysEmptyTest.java" target="_top">concordion/v3_pagedriver/ListaStaysEmptyTest.java</a>)</em>
+</p>
+          <p>La capa de abstracción en términos de lenguaje del dominio es la opción más <span class="emphasis"><em>pura</em></span>, pero dependiendo del proyecto podremos preferir una capa que se exprese en términos gráficos o ambas, dependiendo de la complejidad del proyecto y de cuán involucrado esté el cliente en los detalles gráficos.</p>
+        </div>
+      </div>
+      <div class="section" title="4. Pruebas asíncronas">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_pruebas_asíncronas"></a>4. Pruebas asíncronas</h2>
+            </div>
+          </div>
+        </div>
+        <p>En las secciones anteriores nos hemos permitido hacer un poco <span class="emphasis"><em>trampas</em></span> que deberíamos descubrir antes de cerrar el artículo. Supongamos que el desarrollador, al escribir el código de la aplicación comete una equivocación por no entender debidamente lo que necesita el cliente; decide hacer una aplicación que <span class="emphasis"><em>añade</em></span> los artículos a una lista de artículos a leer.  Nuestras pruebas funcionales deberían detectar este error marcando la aserción en rojo. Sin embargo, nos encontramos con que la pruebas pasan.</p>
+        <p>Evidentemente, nuestras pruebas funcionales no son correctas, esto se debe a que estamos verificando que el estado de la lista de artículos es el mismo después de entrar el nuevo artículo que antes de entrarlo, y la prueba verifica la condición antes de que la aplicación tenga tiempo de añadir erróneamente artículos a la lista.</p>
+        <p>Probar sistemas asíncronos es lo suficientemente complejo como para justificar un artículo en sí mismo, pero si enumeramos algunas de las opciones, de más rápidas y sencillas de implementar a menos, tenemos:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+Probamos sólo la parte síncrona del sistema. Esto hace las pruebas más sencillas y rápidas a costa de reducir el alcance.
+</li>
+            <li class="listitem">
+Introducimos puntos de sincronización. Volveremos a este en un segundo.
+</li>
+            <li class="listitem">
+Verificamos periódicamente la aserción hasta que se cumpla o se agote el tiempo de espera. En esta opción es crucial ajustar la duración, si esperamos demasiado las pruebas tardarán demasiado innecesariamente, si esperamos demasiado poco tendremos falsos negativos.
+</li>
+          </ol>
+        </div>
+        <p>En nuestro ejemplo sabemos que, cada vez que la aplicación responde a la entrada de un nuevo artículo, lo último que hace es borrar la caja de texto. Por lo tanto, podemos utilizar este evento como punto de sincronización, es decir, antes de verificar que la lista permanece vacía esperaremos a que la caja se haya borrado.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">public</font></b> <font color="#009900">void</font> <b><font color="#000000">addArticle</font></b><font color="#990000">(</font><font color="#008080">String</font> url<font color="#990000">)</font> <font color="#FF0000">{</font>
+    webDriver<font color="#990000">.</font><b><font color="#000000">findElement</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">name</font></b><font color="#990000">(</font><font color="#FF0000">"url"</font><font color="#990000">)).</font><b><font color="#000000">sendKeys</font></b><font color="#990000">(</font>url<font color="#990000">,</font> Keys<font color="#990000">.</font>ENTER<font color="#990000">);</font>
+
+    <b><font color="#0000FF">new</font></b> <b><font color="#000000">WebDriverWait</font></b><font color="#990000">(</font>webDriver<font color="#990000">,</font> <font color="#993399">2</font><font color="#990000">).</font><b><font color="#000000">until</font></b><font color="#990000">(</font><b><font color="#0000FF">new</font></b> ExpectedCondition<font color="#990000">&lt;</font>Object<font color="#990000">&gt;()</font> <font color="#FF0000">{</font>
+        @Override
+        <b><font color="#0000FF">public</font></b> <font color="#008080">Object</font> <b><font color="#000000">apply</font></b><font color="#990000">(</font><font color="#008080">WebDriver</font> webDriver<font color="#990000">)</font> <font color="#FF0000">{</font>
+            <b><font color="#0000FF">return</font></b> <font color="#FF0000">""</font><font color="#990000">.</font><b><font color="#000000">equals</font></b><font color="#990000">(</font>webDriver<font color="#990000">.</font><b><font color="#000000">findElement</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">name</font></b><font color="#990000">(</font><font color="#FF0000">"url"</font><font color="#990000">)).</font><b><font color="#000000">getAttribute</font></b><font color="#990000">(</font><font color="#FF0000">"value"</font><font color="#990000">));</font>
+        <font color="#FF0000">}</font>
+    <font color="#FF0000">}</font><font color="#990000">);</font>
+<font color="#FF0000">}</font>
+
+<b><font color="#0000FF">public</font></b> <font color="#008080">List&lt;String&gt;</font> <b><font color="#000000">getListOfArticles</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">return</font></b> <b><font color="#000000">webElementsToTheirTexts</font></b><font color="#990000">(</font>webDriver<font color="#990000">.</font><b><font color="#000000">findElements</font></b><font color="#990000">(</font>By<font color="#990000">.</font><b><font color="#000000">cssSelector</font></b><font color="#990000">(</font><font color="#FF0000">"li"</font><font color="#990000">)));</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+         <p title="Ejemplo de punto de sincronización (concordion/v5_with_synchronisation/tools/NeverReadDriver.java)">
+          <em>Ejemplo de punto de sincronización (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/active-documentation/src/test-acceptance/concordion/v5_with_synchronisation/tools/NeverReadDriver.java" target="_top">concordion/v5_with_synchronisation/tools/NeverReadDriver.java</a>)</em>
+</p>
+      </div>
+      <div class="section" title="5. Conclusión">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_conclusión_2"></a>5. Conclusión</h2>
+            </div>
+          </div>
+        </div>
+        <p>La <span class="emphasis"><em>documentación activa</em></span> es una forma de probar funcionalmente un programa en el que cada criterio de aceptación se enuncia con un texto que se enlaza a la ejecución de código que verifica el criterio. Al ejecutarla, se produce un resultado que indica, de forma legible para los expertos del dominio, qué criterios de aceptación cumple el programa y qué criterios no cumple. Como casi todo, su uso debería adaptarse a la composición del equipo y la complejidad del proyecto.</p>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ch04.html">Prev</a> </td>
+          <td width="20%" align="center"> </td>
+          <td width="40%" align="right"> <a accesskey="n" href="ch06.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top"> </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

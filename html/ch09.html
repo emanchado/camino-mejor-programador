@@ -1,0 +1,682 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Desarrollo dirigido por pruebas</title>
+    <link rel="stylesheet" type="text/css" href="libro.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+    <link rel="home" href="index.html" title="El camino a un mejor programador" />
+    <link rel="up" href="index.html" title="El camino a un mejor programador" />
+    <link rel="prev" href="ch08.html" title="Integración continua" />
+    <link rel="next" href="bi01.html" title="Bibliografía" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ch08.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="bi01.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" title="Desarrollo dirigido por pruebas">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="_desarrollo_dirigido_por_pruebas"></a>Desarrollo dirigido por pruebas</h2>
+          </div>
+        </div>
+      </div>
+      <p>
+        <span class="emphasis">
+          <em>Joaquín Caraballo</em>
+        </span>
+      </p>
+      <p>El desarrollo dirigido por pruebas (o TDD por sus siglas en inglés) consiste en escribir la prueba que demuestra una característica del software antes de la característica en sí; paso a paso, se va acrecentando una batería de pruebas con el código para explotación, al ritmo de:</p>
+      <div class="blockquote">
+        <blockquote class="blockquote">
+          <p>rojo - verde - refactorización</p>
+        </blockquote>
+      </div>
+      <p>Donde en el paso rojo escribimos una prueba que el software no satisface, en el verde modificamos el código de explotación para que la satisfaga y en el de refactorización mejoramos el código sin cambiar funcionalidad, con la confianza de que la batería de pruebas que hemos ido creando hasta el momento nos protege de estropear algo sin darnos cuenta.</p>
+      <div class="section" title="1. Ejemplo">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ejemplo"></a>1. Ejemplo</h2>
+            </div>
+          </div>
+        </div>
+        <p>Probablemente la forma más fácil de explicar TDD es con un ejemplo a nivel unitario. Supongamos que nuestra aplicación necesita convertir millas a kilómetros; empezamos con una prueba:</p>
+        <div class="section" title="1.1. Rojo">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_rojo"></a>1.1. Rojo</h3>
+              </div>
+            </div>
+          </div>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Converts miles into kilometers"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">MilesToKilometersConverter.convert</font></b><font color="#990000">(</font><font color="#993399">1.0</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#993399">1.609</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Primera prueba (example0/MilesToKilometersConverterTest.scala)">
+            <em>Primera prueba (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala" target="_top">example0/MilesToKilometersConverterTest.scala</a>)</em>
+</p>
+          <p>A continuación, como estamos usando para los ejemplos Scala, que es un lenguaje compilado, antes  de poder ejecutar las pruebas necesitamos escribir un poco más de código. Nos limitaremos a añadir el mínimo código de explotación necesario para que compile. <sup>[<a id="idp3769312" href="#ftn.idp3769312" class="footnote">8</a>]</sup></p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">object</font></b> MilesToKilometersConverter <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">convert</font></b><font color="#990000">(</font>miles<b><font color="#0000FF">:</font></b> <font color="#009900">Double</font><font color="#990000">)</font><b><font color="#0000FF">:</font></b> <font color="#009900">Double</font> <b><font color="#0000FF">=</font></b>
+    <b><font color="#0000FF">throw</font></b> <b><font color="#0000FF">new</font></b> <b><font color="#000000">RuntimeException</font></b><font color="#990000">(</font><font color="#FF0000">"Not yet implemented"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código necesario para que la primera prueba compile">
+            <em>Código necesario para que la primera prueba compile</em>
+</p>
+          <p>Para terminar el paso rojo, ejecutamos la prueba, comprobando que falla (lo que muchos entornos marcan en rojo) lanzando la excepción que esperábamos:</p>
+          <pre class="screen">Not yet implemented
+java.lang.RuntimeException: Not yet implemented</pre>
+          <p>Aunque este paso parezca trivial, nos ha obligado a tomar unas cuantas decisiones importantes:</p>
+          <p>Primero, nos ha obligado a definir el contrato de uso del conversor; en este caso, el nombre sugiere que convierte específicamente millas a kilómetros, y no a la inversa; el método de conversión forma parte del objeto (y no de la clase) <code class="literal">MilesToKilometersConverter</code>, por lo que no es necesario crear un objeto conversor llamando a <code class="literal">new</code>, y sugiere que no tiene estado <sup>[<a id="idp3775648" href="#ftn.idp3775648" class="footnote">9</a>]</sup>; las millas están expresadas con tipo <code class="literal">Double</code>; etc.</p>
+          <p>Segundo y más fundamental, la prueba constituye un ejemplo que comienza a definir la funcionalidad de la unidad; que al estar expresado en un lenguaje de programación nos protege de las ambigüedades del lenguaje natural. Por ejemplo, no dudaremos de la definición de milla:</p>
+          <div class="blockquote">
+            <blockquote class="blockquote">
+              <p>Cuando dijimos millas, ¿eran millas internacionales (1,609km)? ¿Millas náuticas (1,852km)? ¿Millas nórdicas (10km)?</p>
+            </blockquote>
+          </div>
+          <p>Porque la prueba ha dejado claro que el tipo de milla que importa en nuestra aplicación <span class="emphasis"><em>es igual a 1,609 kilómetros.</em></span></p>
+          <p>Aunque a veces parezca innecesario, merece la pena, antes de progresar al paso verde, completar el rojo llegando a ejecutar una prueba que <span class="emphasis"><em>sabemos</em></span> que va a fallar; esto nos obliga a pensar en la interfaz que estamos creando, y con frecuencia desvela suposiciones erróneas… especialmente cuando resulta que la prueba no falla, o que lo hace de una forma distinta de la que esperábamos.</p>
+        </div>
+        <div class="section" title="1.2. Verde">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_verde"></a>1.2. Verde</h3>
+              </div>
+            </div>
+          </div>
+          <p>A continuación acrecentamos el código de explotación. Lo más purista es escribir sólo el código imprescindible para superar la prueba:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">object</font></b> MilesToKilometersConverter <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">convert</font></b><font color="#990000">(</font>miles<b><font color="#0000FF">:</font></b> <font color="#009900">Double</font><font color="#990000">)</font><b><font color="#0000FF">:</font></b> <font color="#009900">Double</font> <b><font color="#0000FF">=</font></b> <font color="#993399">1.609</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código mínimo para que la prueba pase">
+            <em>Código mínimo para que la prueba pase</em>
+</p>
+          <p>Y ejecutar la prueba, que nuestra implementación superará con un color verde, si usamos un entorno que lo represente así.</p>
+        </div>
+        <div class="section" title="1.3. ¿Refactorización?">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_refactorización"></a>1.3. ¿Refactorización?</h3>
+              </div>
+            </div>
+          </div>
+          <p>En esta iteración es pronto para refactorizar. Pasamos al siguiente paso.</p>
+        </div>
+        <div class="section" title="1.4. Rojo">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_rojo_2"></a>1.4. Rojo</h3>
+              </div>
+            </div>
+          </div>
+          <p>Antes de saltar a la implementación general, merece la pena que consideremos otras condiciones de entrada: ¿aceptamos distancias negativas? Como en este caso sí las aceptamos, lo expresamos con otra prueba.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Converts negative miles into kilometers"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">MilesToKilometersConverter.convert</font></b><font color="#990000">(-</font><font color="#993399">2.0</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(-</font><font color="#993399">3.218</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Segunda prueba (example0/MilesToKilometersConverterTest.scala)">
+            <em>Segunda prueba (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example0/MilesToKilometersConverterTest.scala" target="_top">example0/MilesToKilometersConverterTest.scala</a>)</em>
+</p>
+          <p>Ejecutamos las pruebas para ver como la nueva falla.</p>
+          <pre class="screen">1.609 was not equal to -3.218
+org.scalatest.TestFailedException: 1.609 was not equal to -3.218</pre>
+        </div>
+        <div class="section" title="1.5. Verde">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_verde_2"></a>1.5. Verde</h3>
+              </div>
+            </div>
+          </div>
+          <p>Ahora que tenemos dos ejemplos de la funcionalidad de <code class="literal">convert</code>, es un buen momento para buscar una implementación más general <sup>[<a id="idp3790056" href="#ftn.idp3790056" class="footnote">10</a>]</sup> que no sólo satisfaga estas dos pruebas, sino que también nos proporcione la funcionalidad general de la que son ejemplo. Como la siguiente:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">object</font></b> MilesToKilometersConverter <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">convert</font></b><font color="#990000">(</font>miles<b><font color="#0000FF">:</font></b> <font color="#009900">Double</font><font color="#990000">)</font><b><font color="#0000FF">:</font></b> <font color="#009900">Double</font> <b><font color="#0000FF">=</font></b> miles <font color="#990000">*</font> <font color="#993399">1.609</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código para la segunda prueba (example0/MilesToKilometersConverter.scala)">
+            <em>Código para la segunda prueba (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example0/MilesToKilometersConverter.scala" target="_top">example0/MilesToKilometersConverter.scala</a>)</em>
+</p>
+          <p>Podríamos haber pasado a la solución general directamente, y a menudo haremos exactamente eso, sin embargo, como vimos en el anterior paso verde, empezar por la solución más simple y dejar la generalización para el siguiente ciclo, nos ayuda a centrarnos primero en definir qué funcionalidad vamos a añadir y cuál va a ser el contrato de la unidad que estamos probando, resolviendo ambigüedades y desvelando suposiciones erróneas. Esto será particularmente útil cuando no tengamos claro lo que queremos hacer y cómo queremos implementarlo.</p>
+        </div>
+        <div class="section" title="1.6. Refactorización">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_refactorización_2"></a>1.6. Refactorización</h3>
+              </div>
+            </div>
+          </div>
+          <p>Tras cada paso verde debemos plantearnos la mejora del código, con la confianza de que las pruebas nos van a proteger de romper algo que funcionaba anteriormente. Las refactorizaciones pueden centrarse en el detalle (¿es mejor expresar <code class="literal">miles * 1.609</code> o <code class="literal">1.609 * miles</code>? ¿el parámetro debería llamarse <code class="literal">miles</code> o <code class="literal">distanceInMiles</code>?), pero es fundamental que con frecuencia también reconsideremos el diseño de la aplicación y lo transformemos en lo más apropiado para el estado actual del código, sin ignorar la dirección futura en la que queremos ir pero sin fraguar demasiado lo que puede que nunca necesitemos.</p>
+        </div>
+      </div>
+      <div class="section" title="2. Por qué y para qué">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_por_qué_y_para_qué"></a>2. Por qué y para qué</h2>
+            </div>
+          </div>
+        </div>
+        <p>El motivo más importante <sup>[<a id="idp3798448" href="#ftn.idp3798448" class="footnote">11</a>]</sup> para desarrollar dirigido por pruebas es el énfasis en la función de nuestro código y en su idoneidad para ponerlo a prueba y por lo tanto usarlo. Este énfasis nos obliga a preguntarnos cada vez que vamos a añadir código de explotación: ¿es esto lo que necesito? ¿hace falta <span class="emphasis"><em>ahora</em></span>?; ayudándonos a escribir exclusivamente lo que necesitamos y a mantener el tamaño y la complejidad del código al mínimo necesario.</p>
+        <p>Si bien TDD no exime de buscar y dirigir el diseño deliberadamente, escribir código que, desde el primer momento, es fácil de probar favorece una cierta simplicidad y, definitivamente, evidencia el acoplamiento, guiándonos hacia el cuidado de la colaboración entre las unidades. En particular, la inyección de dependencias y la separación entre sus interfaces y las implementaciones, emergen de forma natural, dado que facilitan las pruebas automatizadas.</p>
+        <p>Los proyectos que se desarrollan dirigidos por pruebas cuentan en todo momento con una batería de pruebas al día, que documenta la intención de cada unidad del software, de combinaciones de unidades y del software en su totalidad. Además, las pruebas, si bien no la garantizan, dan una buena indicación de la corrección del software; lo que reduce el miedo a romper algo, y lo sustituye por un hábito diligente de refactorizar con frecuencia y mejorar el diseño progresivamente.</p>
+        <div class="section" title="2.1. Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamiento">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_ejemplo_de_cómo_las_pruebas_nos_guían_respecto_a_la_cohesión_y_el_acoplamiento"></a>2.1. Ejemplo de cómo las pruebas nos guían respecto a la cohesión y el acoplamiento</h3>
+              </div>
+            </div>
+          </div>
+          <p>En la clase siguiente, el método <code class="literal">translate</code> traduce un texto del español a una especie de inglés, mostrando por pantalla el resultado; este código es poco probable que haya sido desarrollado guiado por pruebas, dado que el resultado principal, la traducción, no se pone a disposición del codigo externo de ninguna manera que sea fácil de incluir en una prueba, sino que se manifiesta llamando al método <code class="literal">println</code> que da acceso a la consola, es decir, mediante un <span class="emphasis"><em>efecto secundario</em></span>, lo que dificulta la verificación desde una prueba.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">SpanishIntoEnglishTranslator</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">translate</font></b><font color="#990000">(</font>spanish<b><font color="#0000FF">:</font></b> String<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">println(spanish.split</font></b><font color="#990000">(</font><font color="#FF0000">' '</font><font color="#990000">).</font><b><font color="#000000">map</font></b><font color="#990000">(</font><b><font color="#0000FF">_</font></b> <b><font color="#0000FF">match</font></b> <font color="#FF0000">{</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"yo"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"I"</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"soy"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"am"</font>
+      <b><font color="#0000FF">case</font></b> <b><font color="#0000FF">_</font></b> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"mmmeh"</font>
+    <font color="#FF0000">}</font><font color="#990000">).</font><b><font color="#000000">mkString</font></b><font color="#990000">(</font><font color="#FF0000">" "</font><font color="#990000">))</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código díficil de probar (example1coupled/SpanishIntoEnglishTranslator.scala)">
+            <em>Código díficil de probar (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example1coupled/SpanishIntoEnglishTranslator.scala" target="_top">example1coupled/SpanishIntoEnglishTranslator.scala</a>)</em>
+</p>
+          <p>Si lo desarrollamos con la facilidad de prueba en mente desde el principio, probablemente nos encontraremos con que, para probar el resultado de la traducción, necesitamos que el código que traduce devuelva el resultado; de hecho, ¿acaso no es la traducción en sí la responsabilidad principal de esta clase, y no el mostrar por pantalla? Si pudiéramos obtener el resultado, una prueba de nuestro traductor podría ser algo así:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">var</font></b> translator<b><font color="#0000FF">:</font></b> SpanishIntoEnglishTranslator <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">_</font></b>
+
+before <font color="#FF0000">{</font>
+  translator <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">new</font></b> <b><font color="#000000">SpanishIntoEnglishTranslator</font></b><font color="#990000">()</font>
+<font color="#FF0000">}</font>
+
+<b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"translates what it can"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">translator.translate</font></b><font color="#990000">(</font><font color="#FF0000">"yo soy"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"I am"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+
+<b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"mmmehs what it can't"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">translator.translate</font></b><font color="#990000">(</font><font color="#FF0000">"dame argo"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"mmmeh mmmeh"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Primera prueba para el traductor (example2/SpanishIntoEnglishTranslatorTest.scala)">
+            <em>Primera prueba para el traductor (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example2/SpanishIntoEnglishTranslatorTest.scala" target="_top">example2/SpanishIntoEnglishTranslatorTest.scala</a>)</em>
+</p>
+          <p>Lo que nos llevaría a un traductor menos acoplado a la muestra por pantalla</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">SpanishIntoEnglishTranslator</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">translate</font></b><font color="#990000">(</font>spanish<b><font color="#0000FF">:</font></b> String<font color="#990000">)</font><b><font color="#0000FF">:</font></b> String <b><font color="#0000FF">=</font></b>
+    <b><font color="#000000">spanish.split</font></b><font color="#990000">(</font><font color="#FF0000">' '</font><font color="#990000">).</font><b><font color="#000000">map</font></b><font color="#990000">(</font><b><font color="#0000FF">_</font></b> <b><font color="#0000FF">match</font></b> <font color="#FF0000">{</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"yo"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"I"</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"soy"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"am"</font>
+      <b><font color="#0000FF">case</font></b> <b><font color="#0000FF">_</font></b> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"mmmeh"</font>
+    <font color="#FF0000">}</font><font color="#990000">).</font><b><font color="#000000">mkString</font></b><font color="#990000">(</font><font color="#FF0000">" "</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Un traductor más fácil de probar (example2/SpanishIntoEnglishTranslator.scala)">
+            <em>Un traductor más fácil de probar (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example2/SpanishIntoEnglishTranslator.scala" target="_top">example2/SpanishIntoEnglishTranslator.scala</a>)</em>
+</p>
+        </div>
+      </div>
+      <div class="section" title="3. Probar el conjunto de la aplicación">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_probar_el_conjunto_de_la_aplicación"></a>3. Probar el conjunto de la aplicación</h2>
+            </div>
+          </div>
+        </div>
+        <p>Hasta ahora nos hemos centrado en las pruebas unitarias; no obstante, si somos consecuentes con los principios que hemos visto &#8212;guiarnos manteniendo el enfoque en los objetivos del software, documentar y verificar&#8212;, deberemos considerar fundamental guiar el desarrollo de cada parte de la funcionalidad mediante una prueba que la ejercite en su conjunto; lo ideal será que todas las pruebas funcionales verifiquen el conjunto del software, en un entorno similar al de explotación, o incluso en el entorno de explotación en sí. En la práctica suele haber muchos obstáculos, por ejemplo, puede que sea demasiado costoso llevar a cabo <span class="emphasis"><em>de verdad</em></span> ciertas acciones destructivas, que no haya suficientes recursos, o que se hayan impuesto decisiones arquitectónicas que dificulten las pruebas; sin embargo, eso no significa que tengamos que claudicar completamente; a menudo, lograremos las mejoras más importantes en el software y en la organización en la que se crea cuestionando las limitaciones.</p>
+        <div class="section" title="3.1. Ejemplo">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_ejemplo_2"></a>3.1. Ejemplo</h3>
+              </div>
+            </div>
+          </div>
+          <p>Volvamos al ejemplo inicial de conversión de distancias, y supongamos que necesitamos ofrecer a nuestros clientes un servicio de conversión de unidades a través de un servicio web, porque hemos decidido que no hay suficientes conversores en Internet. La <span class="emphasis"><em>primera</em></span> prueba que vamos a escribir, incluso antes de las que vimos en la introducción, es una prueba que ejercite el conjunto de la aplicación. Nos concentraremos en un cierto mínimo incremento de funcionalidad, visible para los usuarios del sistema, que requiera una implementación reducida y que tenga un alto valor desde un punto de vista comercial o de los objetivos últimos del proyecto. En nuestro caso empezamos con la conversión de millas a kilómetros.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">ConversionTest</font>
+    <b><font color="#0000FF">extends</font></b> FunSuite <b><font color="#0000FF">with</font></b> ShouldMatchers <b><font color="#0000FF">with</font></b> BeforeAndAfter <font color="#FF0000">{</font>
+
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Converts miles into kilometers"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#FF0000">"http://localhost:8080/1.0"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"1.609"</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">get</font></b><font color="#990000">(</font>url<b><font color="#0000FF">:</font></b> String<font color="#990000">)</font><b><font color="#0000FF">:</font></b> String <b><font color="#0000FF">=</font></b> <font color="#FF0000">{</font>
+    <b><font color="#000000">Request.Get(url).execute().returnContent().asString</font></b><font color="#990000">()</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#0000FF">var</font></b> converter<b><font color="#0000FF">:</font></b> Server <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">_</font></b>
+
+  before <font color="#FF0000">{</font>
+    converter <b><font color="#0000FF">=</font></b> <b><font color="#000000">Converter.start</font></b><font color="#990000">(</font><font color="#993399">8080</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+
+  after <font color="#FF0000">{</font>
+    <b><font color="#000000">converter.stop</font></b><font color="#990000">()</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Prueba funcional para el conversor de millas (step1/functional/ConversionTest.scala)">
+            <em>Prueba funcional para el conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step1/functional/ConversionTest.scala" target="_top">step1/functional/ConversionTest.scala</a>)</em>
+</p>
+          <p>El método <code class="literal">get</code> es aquí un método de ayuda para pruebas, que hace una petición <span class="emphasis"><em>HTTP get</em></span> y devuelve en contenido del cuerpo del mensaje. Evidentemente, poner esto en funcionamiento requiere un cierto trabajo, pero si nos concentramos en lo fundamental, no será tanto y además nos ayudará a plantearnos cuestiones importantes acerca del sistema, particularmente a nivel de aplicación, por ejemplo: <span class="emphasis"><em>¿cómo nos comunicaremos con el sistema?</em></span>; y acerca de cómo lo vamos a probar. Así, desde el primer momento la facilidad de prueba es un <span class="emphasis"><em>usuario de pleno derecho</em></span> de nuestro proyecto.</p>
+          <p>Con esta prueba como guía, nos concentraremos ahora en recorrer todo el sistema, casi a toda velocidad, hasta que la satisfagamos. En el mundo de Java/Scala, la forma típica de resolver esto es con un Servlet. De nuevo comenzamos con una prueba, esta vez a nivel unitario. <sup>[<a id="idp3822712" href="#ftn.idp3822712" class="footnote">12</a>]</sup></p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">ConverterTest</font> <b><font color="#0000FF">extends</font></b> FunSuite <font color="#FF0000">{</font>
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Responds to get requests converting miles into kilometers"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">val</font></b> response <b><font color="#0000FF">=</font></b> <b><font color="#000000">mock</font></b><font color="#990000">(</font>classOf<font color="#990000">[</font>HttpServletResponse<font color="#990000">])</font>
+    <b><font color="#0000FF">val</font></b> printWriter <b><font color="#0000FF">=</font></b> <b><font color="#000000">mock</font></b><font color="#990000">(</font>classOf<font color="#990000">[</font>PrintWriter<font color="#990000">])</font>
+    <b><font color="#000000">when(response.getWriter).thenReturn</font></b><font color="#990000">(</font>printWriter<font color="#990000">)</font>
+
+    <b><font color="#0000FF">new</font></b> <b><font color="#000000">Converter().doGet(mock</font></b><font color="#990000">(</font>classOf<font color="#990000">[</font>HttpServletRequest<font color="#990000">]),</font> response<font color="#990000">)</font>
+
+    <b><font color="#000000">verify(printWriter).print</font></b><font color="#990000">(</font><font color="#FF0000">"1.609"</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Prueba unitaria para el conversor de millas (step1/ConverterTest.scala)">
+            <em>Prueba unitaria para el conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step1/ConverterTest.scala" target="_top">step1/ConverterTest.scala</a>)</em>
+</p>
+          <p>Un conversor más o menos mínimo usando Jetty viene a ser:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">Converter</font> <b><font color="#0000FF">extends</font></b> HttpServlet <font color="#FF0000">{</font>
+  <b><font color="#0000FF">override</font></b> <b><font color="#0000FF">def</font></b> <b><font color="#000000">doGet</font></b><font color="#990000">(</font>req<b><font color="#0000FF">:</font></b> HttpServletRequest<font color="#990000">,</font> resp<b><font color="#0000FF">:</font></b> HttpServletResponse<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">resp.getWriter.print</font></b><font color="#990000">(</font><font color="#FF0000">"1.609"</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+
+<b><font color="#0000FF">object</font></b> Converter <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">main</font></b><font color="#990000">(</font>args<b><font color="#0000FF">:</font></b> Array<font color="#990000">[</font>String<font color="#990000">])</font><font color="#FF0000">{</font>
+    <b><font color="#000000">start</font></b><font color="#990000">(</font><font color="#993399">8080</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">start</font></b><font color="#990000">(</font>port<b><font color="#0000FF">:</font></b> <font color="#009900">Int</font><font color="#990000">)</font><b><font color="#0000FF">:</font></b> Server <b><font color="#0000FF">=</font></b> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">val</font></b> context <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">new</font></b> <b><font color="#000000">ServletContextHandler</font></b><font color="#990000">()</font>
+    <b><font color="#000000">context.setContextPath</font></b><font color="#990000">(</font><font color="#FF0000">"/"</font><font color="#990000">)</font>
+    <b><font color="#000000">context.addServlet</font></b><font color="#990000">(</font><b><font color="#0000FF">new</font></b> <b><font color="#000000">ServletHolder</font></b><font color="#990000">(</font><b><font color="#0000FF">new</font></b> <b><font color="#000000">Converter</font></b><font color="#990000">()),</font> <font color="#FF0000">"/*"</font><font color="#990000">)</font>
+
+    <b><font color="#0000FF">val</font></b> converter <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">new</font></b> <b><font color="#000000">Server</font></b><font color="#990000">(</font>port<font color="#990000">)</font>
+    <b><font color="#000000">converter.setHandler</font></b><font color="#990000">(</font>context<font color="#990000">)</font>
+
+    <b><font color="#000000">converter.start</font></b><font color="#990000">()</font>
+    converter
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Primera implementación del servicio de conversión de millas (step1/Converter.scala)">
+            <em>Primera implementación del servicio de conversión de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step1/Converter.scala" target="_top">step1/Converter.scala</a>)</em>
+</p>
+          <p>Como vemos la funcionalidad que estamos ofreciendo es, como en el ejemplo inicial, trivial. Pero llegar a ella nos ha obligado a definir el esqueleto de todo nuestro sistema, incluyendo código de explotación y de prueba.</p>
+          <p>A continuación progresaremos dependiendo de nuestras prioridades. Por ejemplo, podemos concentrarnos en completar funcionalmente la conversión de millas a kilómetros.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Converts negative miles into kilometers"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#FF0000">"http://localhost:8080/-2.0"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"-3.218"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Segunda prueba funcional del conversor de millas (step2/functional/ConversionTest.scala)">
+            <em>Segunda prueba funcional del conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step2/functional/ConversionTest.scala" target="_top">step2/functional/ConversionTest.scala</a>)</em>
+</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">Converter</font> <b><font color="#0000FF">extends</font></b> HttpServlet <font color="#FF0000">{</font>
+  <b><font color="#0000FF">override</font></b> <b><font color="#0000FF">def</font></b> <b><font color="#000000">doGet</font></b><font color="#990000">(</font>req<b><font color="#0000FF">:</font></b> HttpServletRequest<font color="#990000">,</font> resp<b><font color="#0000FF">:</font></b> HttpServletResponse<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">val</font></b> miles <b><font color="#0000FF">=</font></b> <b><font color="#000000">req.getRequestURI.substring</font></b><font color="#990000">(</font><font color="#993399">1</font><font color="#990000">).</font>toDouble
+    <b><font color="#000000">resp.getWriter.print</font></b><font color="#990000">(</font>miles <font color="#990000">*</font> <font color="#993399">1.609</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código para la segunda prueba funcional del conversor de millas (step2/Converter.scala)">
+            <em>Código para la segunda prueba funcional del conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step2/Converter.scala" target="_top">step2/Converter.scala</a>)</em>
+</p>
+          <p>A continuación el manejo de los casos de error, como cantidades de millas que no sean numéricas</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"Responds with 400 (Bad Request) and error message to unparseable amounts of miles"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">statusCode</font></b><font color="#990000">(</font><font color="#FF0000">"http://localhost:8080/blah"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#993399">400</font><font color="#990000">)</font>
+  <b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#FF0000">"http://localhost:8080/blah"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"Miles incorrectly specified: /blah"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Prueba para caso de error del conversor de millas (step3/functional/ConversionTest.scala)">
+            <em>Prueba para caso de error del conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/test/scala/org/casa/unitconvert/step3/functional/ConversionTest.scala" target="_top">step3/functional/ConversionTest.scala</a>)</em>
+</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">Converter</font> <b><font color="#0000FF">extends</font></b> HttpServlet <font color="#FF0000">{</font>
+  <b><font color="#0000FF">override</font></b> <b><font color="#0000FF">def</font></b> <b><font color="#000000">doGet</font></b><font color="#990000">(</font>req<b><font color="#0000FF">:</font></b> HttpServletRequest<font color="#990000">,</font> resp<b><font color="#0000FF">:</font></b> HttpServletResponse<font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">val</font></b> milesAsString <b><font color="#0000FF">=</font></b> <b><font color="#000000">req.getRequestURI.substring</font></b><font color="#990000">(</font><font color="#993399">1</font><font color="#990000">)</font>
+    <b><font color="#0000FF">try</font></b> <font color="#FF0000">{</font>
+      <b><font color="#0000FF">val</font></b> miles <b><font color="#0000FF">=</font></b> milesAsString<font color="#990000">.</font>toDouble
+      <b><font color="#000000">resp.getWriter.print</font></b><font color="#990000">(</font>miles <font color="#990000">*</font> <font color="#993399">1.609</font><font color="#990000">)</font>
+    <font color="#FF0000">}</font>
+    <b><font color="#0000FF">catch</font></b> <font color="#FF0000">{</font>
+      <b><font color="#0000FF">case</font></b> <b><font color="#0000FF">_:</font></b> NumberFormatException <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">{</font>
+        <b><font color="#000000">resp.setStatus</font></b><font color="#990000">(</font>HttpServletResponse<font color="#990000">.</font>SC<b><font color="#0000FF">_</font></b>BAD<b><font color="#0000FF">_</font></b>REQUEST<font color="#990000">)</font>
+        <b><font color="#000000">resp.getWriter.print</font></b><font color="#990000">(</font><font color="#FF0000">"Miles incorrectly specified: "</font> <font color="#990000">+</font> req<font color="#990000">.</font>getRequestURI<font color="#990000">)</font>
+      <font color="#FF0000">}</font>
+    <font color="#FF0000">}</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código de manejo de errores para el conversor de millas (step3/Converter.scala)">
+            <em>Código de manejo de errores para el conversor de millas (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/unitconvert/src/main/scala/org/casa/unitconvert/step3/Converter.scala" target="_top">step3/Converter.scala</a>)</em>
+</p>
+          <p>Además de los pasos <span class="emphasis"><em>rojos</em></span> y <span class="emphasis"><em>verdes</em></span> que hemos visto en el ejemplo hasta ahora, a medida que la aplicación va creciendo, debemos tanto refactorizar a nivel unitario como ir mejorando el diseño; por ejemplo, si en los próximos pasos la aplicación necesitase responder a distintas rutas con distintas conversiones, probablemente decidiríamos extraer el análisis de las URIs a una unidad independiente e introduciríamos distintos objetos a los que delegar dependiendo del tipo de conversión.</p>
+        </div>
+      </div>
+      <div class="section" title="4. Probar una sola cosa a la vez">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_probar_una_sola_cosa_a_la_vez"></a>4. Probar una sola cosa a la vez</h2>
+            </div>
+          </div>
+        </div>
+        <p>El mantenimiento de la batería de pruebas, que crece con la aplicación, requiere una inversión de esfuerzo constante; hacer que cada prueba verifique únicamente un aspecto de la aplicación nos ayudará a mantener este esfuerzo manejable y además las hará más fáciles de entender, y por lo tanto más eficientes. Idealmente, el cambio de un detalle del funcionamiento de nuestra aplicación debería afectar exclusivamente a una prueba que sólo verifica ese detalle, o, dicho de otra manera:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+si es relativamente fácil cambiar un cierto aspecto del funcionamiento sin que falle ninguna prueba, tenemos una laguna en la cobertura de la batería; <sup>[<a id="idp3845560" href="#ftn.idp3845560" class="footnote">13</a>]</sup>
+</li>
+            <li class="listitem">
+si falla más de una, la batería tiene código redundante, incrementando el coste de mantenimiento;
+</li>
+            <li class="listitem">
+si la prueba que falla incluye la verificación de elementos que no están directamente relacionados con nuestro cambio, probablemente sea demasiado compleja, dado que introducir el cambio en el sistema requiere tener en cuenta aspectos independientes de la aplicación.
+</li>
+          </ul>
+        </div>
+        <div class="section" title="4.1. Ejemplo de pruebas centradas">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_ejemplo_de_pruebas_centradas"></a>4.1. Ejemplo de pruebas centradas</h3>
+              </div>
+            </div>
+          </div>
+          <p>Volvamos a donde dejamos el ejemplo del traductor y supongamos que lo siguiente que queremos hacer es separar las palabras del texto original no sólo mediante espacios, sino también mediante cambios de línea. Como estamos guiando los cambios con pruebas, añadimos a <code class="literal">SpanishIntoEnglishTranslatorTest</code> una prueba que verifique el nuevo funcionamiento.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"splits by change of line"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+  <b><font color="#000000">translator.translate</font></b><font color="#990000">(</font><font color="#FF0000">"yo</font><font color="#CC33CC">\n</font><font color="#FF0000">soy"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"I am"</font><font color="#990000">)</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Ejemplo de prueba no centrada">
+            <em>Ejemplo de prueba no centrada</em>
+</p>
+          <p>El problema que tiene esto es que la prueba mezcla la separación del texto original y la traducción de las palabras; la idea que queremos transmitir con este ejemplo estaría más clara si pudiéramos expresar la entrada como <code class="literal">"xxx\nxx"</code> y la condición a cumplir como <code class="literal">should be(Seq("xxx", "xx"))</code>; sin embargo, la forma actual del sistema no lo permite, porque la traducción es parte del método que estamos probando.</p>
+          <p>Supongamos además que el siguiente incremento funcional afectase a la traducción de palabras en sí, por ejemplo, cambiando el idioma origen al francés o a otra variante del español; este cambio afectaría a cada una de las pruebas de <code class="literal">SpanishIntoEnglishTranslatorTest</code>, pero, ¿por qué debería verse afectada una prueba como <code class="literal">test("splits by change of line")</code>, cuyo propósito es probar la separación en palabras?</p>
+          <p>Podemos ver estas deficiencias de nuestra batería como el resultado de una granularidad inapropiada, dado que la misma prueba está verificando varias cosas: separación, traducción y reunión de palabras. La solución consistiría en refactorizar antes de aplicar el cambio: ¿Quizá la clase que se encarga de descomponer y componer debería ser distinta de la que traduzca palabra por palabra?</p>
+          <p>Extraemos la división de palabras a su propia unidad, con lo que podemos expresar, con una prueba más centrada, la división del texto a traducir por saltos de línea:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">SplitterTest</font> <b><font color="#0000FF">extends</font></b> FunSuite <b><font color="#0000FF">with</font></b> ShouldMatchers <font color="#FF0000">{</font>
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"splits by space"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">Splitter</font></b><font color="#990000">(</font><font color="#FF0000">"xxx xx"</font><font color="#990000">)</font> should <b><font color="#000000">be(Seq</font></b><font color="#990000">(</font><font color="#FF0000">"xxx"</font><font color="#990000">,</font> <font color="#FF0000">"xx"</font><font color="#990000">))</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"splits by change of line"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">Splitter</font></b><font color="#990000">(</font><font color="#FF0000">"xxx</font><font color="#CC33CC">\n</font><font color="#FF0000">xx"</font><font color="#990000">)</font> should <b><font color="#000000">be(Seq</font></b><font color="#990000">(</font><font color="#FF0000">"xxx"</font><font color="#990000">,</font> <font color="#FF0000">"xx"</font><font color="#990000">))</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Prueba del divisor de palabras (example3/SplitterTest.scala)">
+            <em>Prueba del divisor de palabras (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SplitterTest.scala" target="_top">example3/SplitterTest.scala</a>)</em>
+</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">object</font></b> Splitter <b><font color="#0000FF">extends</font></b> <font color="#990000">((</font>String<font color="#990000">)</font> <b><font color="#0000FF">=&gt;</font></b> Seq<font color="#990000">[</font>String<font color="#990000">])</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">apply</font></b><font color="#990000">(</font>s<b><font color="#0000FF">:</font></b> String<font color="#990000">)</font><b><font color="#0000FF">:</font></b> Seq<font color="#990000">[</font>String<font color="#990000">]</font> <b><font color="#0000FF">=</font></b> s split <font color="#FF0000">"""[ </font><font color="#CC33CC">\n</font><font color="#FF0000">]"""</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código para el divisor de palabras (example3/Splitter.scala)">
+            <em>Código para el divisor de palabras (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example3/Splitter.scala" target="_top">example3/Splitter.scala</a>)</em>
+</p>
+          <p>El traductor lo recibe como una dependencia inyectada mediante el constructor. <sup>[<a id="idp3860328" href="#ftn.idp3860328" class="footnote">14</a>]</sup></p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">SpanishIntoEnglishTranslatorTest</font>
+    <b><font color="#0000FF">extends</font></b> FunSuite <b><font color="#0000FF">with</font></b> ShouldMatchers <b><font color="#0000FF">with</font></b> BeforeAndAfter <font color="#FF0000">{</font>
+
+  <b><font color="#0000FF">var</font></b> translator<b><font color="#0000FF">:</font></b> SpanishIntoEnglishTranslator <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">_</font></b>
+
+  before <font color="#FF0000">{</font>
+    translator <b><font color="#0000FF">=</font></b> <b><font color="#0000FF">new</font></b> <b><font color="#000000">SpanishIntoEnglishTranslator</font></b><font color="#990000">(</font><b><font color="#0000FF">_</font></b> split <font color="#FF0000">' '</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"translates what it can"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">translator.translate</font></b><font color="#990000">(</font><font color="#FF0000">"yo soy"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"I am"</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+
+  <b><font color="#000000">test</font></b><font color="#990000">(</font><font color="#FF0000">"mmmehs what it can't"</font><font color="#990000">)</font> <font color="#FF0000">{</font>
+    <b><font color="#000000">translator.translate</font></b><font color="#990000">(</font><font color="#FF0000">"dame argo"</font><font color="#990000">)</font> should <b><font color="#000000">be</font></b><font color="#990000">(</font><font color="#FF0000">"mmmeh mmmeh"</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Pruebas para un traductor desacoplado del divisor de palabras (example3/SpanishIntoEnglishTranslatorTest.scala)">
+            <em>Pruebas para un traductor desacoplado del divisor de palabras (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/test/scala/org/casa/translation/example3/SpanishIntoEnglishTranslatorTest.scala" target="_top">example3/SpanishIntoEnglishTranslatorTest.scala</a>)</em>
+</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <font color="#008080">SpanishIntoEnglishTranslator</font><font color="#990000">(</font><b><font color="#0000FF">val</font></b> <b><font color="#000000">splitter:</font></b> <font color="#990000">(</font>String<font color="#990000">)</font> <b><font color="#0000FF">=&gt;</font></b> Seq<font color="#990000">[</font>String<font color="#990000">])</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">def</font></b> <b><font color="#000000">translate</font></b><font color="#990000">(</font>spanish<b><font color="#0000FF">:</font></b> String<font color="#990000">)</font><b><font color="#0000FF">:</font></b> String <b><font color="#0000FF">=</font></b> <font color="#FF0000">{</font>
+    <b><font color="#0000FF">val</font></b> split <b><font color="#0000FF">=</font></b> <b><font color="#000000">splitter</font></b><font color="#990000">(</font>spanish<font color="#990000">)</font>
+    <b><font color="#000000">split.map</font></b><font color="#990000">(</font><b><font color="#0000FF">_</font></b> <b><font color="#0000FF">match</font></b> <font color="#FF0000">{</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"yo"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"I"</font>
+      <b><font color="#0000FF">case</font></b> <font color="#FF0000">"soy"</font> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"am"</font>
+      <b><font color="#0000FF">case</font></b> <b><font color="#0000FF">_</font></b> <b><font color="#0000FF">=&gt;</font></b> <font color="#FF0000">"mmmeh"</font>
+    <font color="#FF0000">}</font><font color="#990000">).</font><b><font color="#000000">mkString</font></b><font color="#990000">(</font><font color="#FF0000">" "</font><font color="#990000">)</font>
+  <font color="#FF0000">}</font>
+<font color="#FF0000">}</font>
+</tt></pre>
+
+           <p title="Código del traductor desacoplado del divisor de palabras (example3/SpanishIntoEnglishTranslator.scala)">
+            <em>Código del traductor desacoplado del divisor de palabras (<a class="ulink" href="https://github.com/emanchado/camino-mejor-programador-codigo/blob/master/tdd/tdd-examples/src/main/scala/org/casa/translation/example3/SpanishIntoEnglishTranslator.scala" target="_top">example3/SpanishIntoEnglishTranslator.scala</a>)</em>
+</p>
+          <p>El aumento de la granularidad nos ha permitido que la introducción de funcionalidad nueva no afecte a multitud de pruebas. Sin embargo, esto no ha sido gratis; hemos aumentado la complejidad del código. Al final, todas estas decisiones hay que valorarlas una a una y decidir qué es lo más apropiado en cada caso, teniendo en cuenta aspectos como la complejidad, el tiempo de ejecución y la dirección en la que esperamos y queremos que vaya el proyecto.</p>
+        </div>
+      </div>
+      <div class="section" title="5. Mantener verde la batería">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_mantener_verde_la_batería"></a>5. Mantener verde la batería</h2>
+            </div>
+          </div>
+        </div>
+        <p>La batería de pruebas es la documentación de la funcionalidad de nuestro código. Una documentación que se mantiene al día, porque va creciendo con cada cambio y es ejercitada, es decir, ejecutamos las pruebas, al menos con cada envío de los cambios al repositorio.</p>
+        <p>Trabajar dirigido por pruebas significa mantener siempre el correcto funcionamiento del sistema; idealmente la última versión en el repositorio común deberá estar en todo momento lista para ponerla en explotación, y las pruebas satisfechas en todo momento <sup>[<a id="idp3868920" href="#ftn.idp3868920" class="footnote">15</a>]</sup>, con lo que la documentación proporcionada por las pruebas estará siempre al día. Para lograrlo, deberemos comprobar la satisfacción de las pruebas antes de enviar cualquier cambio al repositorio común; además, muchos equipos se ayudan de un sistema de integración continua que verifica automáticamente la batería cada vez que se detecta un cambio en el repositorio.</p>
+        <p>A medida que crece la aplicación, el tiempo que requiere la batería completa tiende a aumentar, lo que incrementa el coste del desarrollo y motiva a los desarrolladores a no siempre satisfacer la batería completa o a espaciar los envíos de cambios al repositorio común; ambos efectos muy perniciosos. Para mantener viable la programación dirigida por pruebas, debemos esforzarnos en mantener reducido este tiempo; la manera de lograrlo va más allá de un artículo introductorio, pero incluye la selección y el ajuste de la tecnología empleada para los distintos elementos de la batería, la ejecución en paralelo e incluso la partición de la aplicación en sí o cualquier ajuste que la haga más rápida.<sup>[<a id="idp3871816" href="#ftn.idp3871816" class="footnote">16</a>]</sup></p>
+        <p>Otro problema relacionado con el coste de la batería son los fallos intermitentes, que necesitarán un esfuerzo importante de mantenimiento; hemos de invertir el esfuerzo necesario para entender la raíz de cada fallo y resolverlo. Las fuentes típicas de fallos intermitentes son los aspectos no deterministas del software; por ejemplo, cuando lo que verificamos es de naturaleza asíncrona, necesitamos controlar el estado de la aplicación mediante puntos de sincronización. Algunas condiciones son imposibles de verificar per se, como la ausencia de comportamiento; en estos casos a menudo la solución pasa por alterar la aplicación desvelando su estado lo suficiente como para que las pruebas puedan sincronizarse con la aplicación y sepan cuándo debería haber tenido lugar el evento que estemos verificando. También suelen causar fallos intermitentes las dependencias de elementos fuera del control de la prueba, como el reloj del sistema; y su solución pasa normalmente por la inclusión y el control de dicho elemento desde la prueba, por ejemplo, alterando la percepción del tiempo de la aplicación mediante un <span class="emphasis"><em>proxy</em></span> controlable desde las pruebas.</p>
+      </div>
+      <div class="section" title="6. Críticas">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_críticas"></a>6. Críticas</h2>
+            </div>
+          </div>
+        </div>
+        <div class="section" title="6.1. Diseño prematuro">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_diseño_prematuro"></a>6.1. Diseño prematuro</h3>
+              </div>
+            </div>
+          </div>
+          <p>El ejemplo de pruebas centradas ilustra también una de las principales críticas contra el desarrollo dirigido por pruebas: para poder probar la clase de traducción satisfactoriamente, la hemos descompuesto en un diccionario y un desensamblador/ensamblador de palabras; sin embargo, si de verdad fuéramos a diseñar un sistema de traducción automatizada esta abstracción no sería apropiada, ya que el diccionario necesita el contexto, la disposición de palabras en el texto resultante depende de la función gramatical, etc. ¿Significa esto que el TDD nos ha guiado en la dirección incorrecta?</p>
+          <p>Como dijimos antes, desarrollar dirigidos por pruebas significa considerar las pruebas como usuarios de pleno derecho de nuestro código, añadiendo, así, un coste en cantidad de código y en la complejidad del diseño que elegimos pagar para beneficiarnos de la guía de las pruebas; optar por el TDD es considerar que este coste vale la pena. Sería menos costoso desarrollar sin la guía de las pruebas si supiésemos exactamente cuáles son los requisitos e incluso qué código escribir desde el principio. El TDD se opone a esta visión considerando el desarrollo como un proceso progresivo en el que el equipo va descubriendo <span class="emphasis"><em>qué</em></span> y <span class="emphasis"><em>cómo</em></span> desarrollar, a medida que crea la aplicación y la va poco a poco transformando, enriqueciendo y simplificando, pasando siempre de un sistema que funciona a un otro sistema que funciona, y que hace quizá un poco más que el anterior.</p>
+          <p>Volviendo a la prematuridad del diseño, si bien es cierto que las pruebas a veces adelantan la necesidad de descomponer el código, estas decisiones se vuelven más baratas dado que los cambios en el diseños son menos costosos gracias a la protección que nos da nuestra batería. Y, además, esto se ve también compensado por las innumerables ocasiones en las que no añadiremos complejidad al código de explotación porque esa complejidad no es necesaria para satisfacer las pruebas, probablemente porque no lo es en absoluto para lo que requerimos de nuestra aplicación en ese momento.</p>
+        </div>
+        <div class="section" title="6.2. Guiar sólo mediante pruebas funcionales">
+          <div class="titlepage">
+            <div>
+              <div>
+                <h3 class="title"><a id="_guiar_sólo_mediante_pruebas_funcionales"></a>6.2. Guiar sólo mediante pruebas funcionales</h3>
+              </div>
+            </div>
+          </div>
+          <p>Algunos equipos experimentados deciden utilizar las pruebas para guiar el desarrollo a nivel funcional, pero no a nivel unitario, sólo escribiendo pruebas unitarias cuando no resulta práctico cubrir con pruebas funcionales ciertas partes del código. Esto lo hacen porque ven las pruebas unitarias más como un lastre que como una guía útil en el diseño interno de la aplicación, quizá porque consideran que su criterio es suficiente para lograr un buen diseño interno. Nuestra recomendación es comenzar guiando todas las unidades por pruebas y progresar hacia un equilibrio en el que no probemos a nivel unitario el código que sea obvio, pero donde reconozcamos que el código que no merece la pena guiar mediante pruebas por ser obvio probablemente es poco útil <sup>[<a id="idp3881248" href="#ftn.idp3881248" class="footnote">17</a>]</sup>, y que el que es difícil de probar probablemente peca de acoplado. La recomendación es, en definitiva, aplicar el sentido común pero no renunciar a la guía que nos proporcionan las pruebas en el desarrollo de los niveles inferiores de la aplicación.</p>
+        </div>
+      </div>
+      <div class="section" title="7. Conclusión">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_conclusión_4"></a>7. Conclusión</h2>
+            </div>
+          </div>
+        </div>
+        <p>El desarrollo dirigido por pruebas nos ayuda a construir aplicaciones donde aquello que nos motiva a escribir el software guía cada línea de código, evitando a cada nivel desperdiciar nuestros esfuerzos en desarrollar funcionalidad que no sea exactamente la que necesitamos, o que sea simplemente innecesaria. La guía de las pruebas, combinada con el diseño continuo, hace posible un estilo de desarrollo orgánico, en el que el equipo evoluciona la aplicación, a medida que mejora su conocimiento de los requisitos del dominio y de la implementación ideal para resolverlos. Además, la utilización de pruebas desde el primer momento, desvela el acoplamiento y nos incita a descomponer el código en unidades cohesivas con depencias claramente identificadas.</p>
+        <p>Si bien no hay un concenso absoluto en la idoneidad del desarrollo guiado por pruebas, muchos equipos lo usan, particularmente para aplicaciones comerciales y en lenguajes orientados a objetos. Nuestra opinión es que, además de dar sentido y ritmo a cada actividad del desarrollo, lo hace más divertido, porque da al desarrollador más libertad para mejorar y acrecentar el software.</p>
+      </div>
+      <div class="footnotes">
+        <br />
+        <hr width="100" align="left" />
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3769312" href="#idp3769312" class="simpara">8</a>] </sup>Si estamos usando un entorno de desarrollo, la función de <span class="emphasis"><em>arreglo</em></span> hará la mayor parte del trabajo por nosotros. En muchos lenguajes como Scala, el compilador nos obligará a incluir alguna implementación antes de permitirnos ejecutar. Algunos desarrolladores suelen implementar inicialmente los métodos lanzando una excepción como en el ejemplo, lo que ayuda a mantener la separación rojo-verde, ya que no se piensa en la implementación hasta el paso verde. Aunque esto pueda parecer prolijo, resulta bastante rápido de producir si tenemos preparada una plantilla en nuestro entorno que introducimos con un atajo. Otra opción es generar la implementación más sencilla que se nos ocurra &#8212;por ejemplo, devolviendo <code class="literal">0</code> o <code class="literal">null</code>&#8212;.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3775648" href="#idp3775648" class="simpara">9</a>] </sup>Para los lectores más familiarizados con Java que con Scala, los objectos creados con <code class="literal">object</code> en Scala son semejantes a la parte estática de las clases en Java; los métodos definidos bajo <code class="literal">object</code> no están ligados a ningún ejemplar (en inglés <span class="emphasis"><em>instance</em></span>) de la clase <code class="literal">MilesToKilometersConverter</code> &#8212;que de hecho aquí no existe&#8212;. Lo cierto es que estos objetos sí que pueden tener estado (de la misma manera que podemos tener campos estáticos en Java), pero muchos equipos eligen no usar esta característica del lenguaje, a no ser que haya un buen motivo; por eso decimos que definir el método <code class="literal">convert</code> en el objeto sugiere que el conversor no tiene estado.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3790056" href="#idp3790056" class="simpara">10</a>] </sup>A esta generalización Kent Beck la llama <a class="ulink" href="http://www.informit.com/articles/article.aspx?p=30641" target="_top"><span class="emphasis"><em>triangulación</em></span></a>. No estoy seguro de que me guste el término, porque la triangulación geométrica a la que hace analogía permite de forma determinista encontrar una posición a partir de los datos de que se dispone. Aquí, sin embargo, los ejemplos por sí solos no nos permitirían encontrar la solución general, que precisa que además entendamos el problema más allá de los ejemplos.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3798448" href="#idp3798448" class="simpara">11</a>] </sup><span class="emphasis"><em>Para mí</em></span> el más importante, seguro que otros discreparán.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3822712" href="#idp3822712" class="simpara">12</a>] </sup>En este ejemplo hemos usado dobles de prueba para verificar el comportamiento de <code class="literal">Converter</code> con sus colaboradores; simplemente estamos comprobando que, cuando llamamos al método <code class="literal">doGet()</code> pasando un objeto de tipo <code class="literal">HttpServletRequest</code> y otro de tipo <code class="literal">HttpServletResponse</code>, el método bajo prueba llama al método <code class="literal">getWriter</code> del segundo parámetro y, al devolver <code class="literal">getWriter</code> un objeto de tipo <code class="literal">PrintWriter</code>, el método bajo prueba llama al método <code class="literal">print</code> del <code class="literal">PrintWriter</code> con el parámetro <code class="literal">"1.609"</code>. Gracias a herramientas como Mockito (<a class="xref" href="bi01.html#mockito">[mockito]</a>), que hemos usado en el ejemplo, es más fácil explicar la interacción en código que en español. En <span class="emphasis"><em>Diseño ágil con TDD</em></span> (<a class="xref" href="bi01.html#bleyco-bis">[bleyco-bis]</a>) se explica el uso de dobles y de otros aspectos de la programación dirigida por pruebas.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3845560" href="#idp3845560" class="simpara">13</a>] </sup>El tipo de pruebas con las que guiamos el desarrollo en este artículo documentan el comportamiento con buenos ejemplos, pero generalmente no lo garantizan para todas las posibles entradas, ni aspiran a hacerlo; por lo tanto, normalmente es muy fácil cambiar el comportamiento de forma intencionada sin que las pruebas dejen de satisfacerse &#8212;por ejemplo, con algo como <code class="literal">if(input==15) throw new EasterEgg</code>&#8212;; una buena cobertura en TDD está en el punto de equilibrio en el que sea poco probable cambiar la funcionalidad accidentalmente sin que fallen las pruebas.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3860328" href="#idp3860328" class="simpara">14</a>] </sup>En este ejemplo nos hemos quedado con pruebas que ejercitan las unidades unidades independientemente; perdiendo la cobertura de la combinación de ambas unidades. Sin embargo, en la práctica, este código formaría parte de un proyecto mayor que contaría con baterías de pruebas de mayor ámbito, que incluirían la verificación del comportamiento conjunto.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3868920" href="#idp3868920" class="simpara">15</a>] </sup>De hecho, algunos equipos hacen exactamente eso, ponen cada versión que satisface la batería completa automáticamente en explotación.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3871816" href="#idp3871816" class="simpara">16</a>] </sup>Otra forma de reducir el tiempo es transigiendo en alguna medida, es decir, no cumpliendo en ocasiones todo lo que describimos en este artículo.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3881248" href="#idp3881248" class="simpara">17</a>] </sup>En algunos casos, debido a una convención sospechosa o a las limitaciones de nuestro lenguaje de programación &#8212;por ejemplo, los métodos <span class="emphasis"><em>set</em></span> y <span class="emphasis"><em>get</em></span> en Java&#8212;.</p>
+        </div>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ch08.html">Prev</a> </td>
+          <td width="20%" align="center"> </td>
+          <td width="40%" align="right"> <a accesskey="n" href="bi01.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top"> </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

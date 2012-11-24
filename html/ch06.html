@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Siete problemas al probar programas</title>
+    <link rel="stylesheet" type="text/css" href="libro.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+    <link rel="home" href="index.html" title="El camino a un mejor programador" />
+    <link rel="up" href="index.html" title="El camino a un mejor programador" />
+    <link rel="prev" href="ch05.html" title="Documentación activa" />
+    <link rel="next" href="ch07.html" title="Calidad en software" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ch05.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="ch07.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" title="Siete problemas al probar programas">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="_siete_problemas_al_probar_programas"></a>Siete problemas al probar programas</h2>
+          </div>
+        </div>
+      </div>
+      <p>
+        <span class="emphasis">
+          <em>Esteban Manchado Velázquez</em>
+        </span>
+      </p>
+      <p>La mayoría de los profesionales de la informática coincidirán en que probar es
+una de las tareas fundamentales del desarrollo, pero si ya es difícil aprender
+técnicas de programación, mucho más difícil es aprender técnicas de pruebas,
+tanto manuales como automáticas. Primero, porque desgraciadamente es un
+conocimiento menos extendido. Segundo, porque es aún más abstracto que la
+programación.</p>
+      <p>Por ello, todos los consejos y la experiencia compartida de los que nos podamos
+aprovechar son especialmente importantes. Los siguientes problemas están
+centrados en las pruebas automáticas, pero muchos de ellos ocurren también al
+hacer pruebas manuales. Están ordenados por experiencia: el primer problema
+aparece principalmente en equipos que nunca han escrito pruebas, y el último lo
+tienen incluso desarrolladores con años de experiencia.</p>
+      <p>Como todo, hay que aplicar las soluciones propuestas entendiendo por qué, cómo
+y cuándo son aplicables y útiles, nunca siguiéndolas ciegamente en todas las
+situaciones.</p>
+      <div class="section" title="1. Dejar las pruebas para el final">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_dejar_las_pruebas_para_el_final"></a>1. Dejar las pruebas para el final</h2>
+            </div>
+          </div>
+        </div>
+        <p>Aunque es normal que al acercarse el final de cada ciclo de desarrollo se
+intensifique el esfuerzo de pruebas (especialmente las manuales), es un error
+mayúsculo no haber probado desde el principio del desarrollo. Esto no es un
+tópico o una consideración teórica o académica: no probar desde el principio
+del ciclo de desarrollo tiene muchas desventajas. Por ejemplo:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+El esfuerzo mental de probar un programa grande es mucho mayor que el
+esfuerzo de probar un programa pequeño. No se sabe por dónde empezar, es
+difícil saber cuándo terminar, y es fácil quedarse con la sensación de que no
+todo está probado correctamente. Si probamos los componentes que vamos creando
+desde el principio, es mucho más fácil saber cómo atacar el problema y hacer
+pruebas más completas.
+</li>
+            <li class="listitem">
+Si probamos mientras escribimos código y sabemos el nivel de calidad de
+éste, será más fácil hacer estimaciones sobre los recursos necesarios para
+terminar el resto del trabajo. Esto nos dará mucha más flexibilidad para
+renegociar fechas o las características que se tendrán que quedar fuera, en vez
+de pasar al estado de alarma cuando nos demos cuenta, demasiado tarde, de que
+no tenemos tiempo de arreglar los fallos que encontremos los últimos días.
+</li>
+            <li class="listitem">
+Cuando hemos «terminado» un proyecto y sólo queda probar, es normal tener la
+tendencia a «no querer ver fallos» o restarles importancia, a que nos inunde
+un falso optimismo que confirme que de verdad hemos terminado y no queda nada
+por hacer. Sobre todo si quedan pocos días hasta la entrega y sentimos que no
+podemos hacer gran cosa, y sólo queremos entregar el resultado y olvidarnos del
+proyecto. Esto ocurre mucho menos si tenemos a profesionales exclusivamente
+dedicados a las pruebas, claro.
+</li>
+            <li class="listitem">
+Probar desde el principio significa que estaremos probando durante más
+tiempo, por lo que habremos encontrado más casos que puedan ser problemáticos,
+y por tanto más fallos (y las soluciones a éstos), antes de que sea demasiado
+tarde.
+</li>
+            <li class="listitem">
+Todas las pruebas que hagamos pronto ayudarán a aumentar la calidad del
+código, lo que no sólo afecta a la calidad final del producto, sino a lo fácil
+que es escribir y depurar cualquier otro código que dependa del primero. Los
+fallos de interacción entre las dos bases de código serán más fáciles de
+encontrar y, en particular, la fuente de los errores.
+</li>
+            <li class="listitem">
+Si desde el principio escribimos pruebas automáticas, nos obligaremos a
+nosotros mismos a escribir APIs más limpias. Generalmente, código más fácil de
+probar es código más desacoplado, más limpio y más estable. Indudablemente, una
+de las ventajas de escribir pruebas automáticas es que ayudan a mantener un
+diseño de mayor calidad. Pero si no probamos desde el principio, perdemos esta
+ventaja.
+</li>
+            <li class="listitem">
+Al no probar desde el principio, desarrollaremos código que no es
+especialmente fácil de probar, y cuanto más tarde empecemos a adaptar el código
+para que lo sea, más esfuerzo costará. Una vez hayamos escrito una gran
+cantidad de código sin tener en cuenta si es fácil de probar o no, la tentación
+de dejar muchas partes sin pruebas será irresistible. Y, por supuesto, si no
+hacemos el esfuerzo de adaptar el código en ese momento, entraremos en un
+círculo vicioso.
+</li>
+          </ol>
+        </div>
+        <p>Como tarde o temprano se tendrá que probar el resultado del trabajo, mejor
+empezar temprano porque es menos costoso (en tiempo y esfuerzo mental) y los
+resultados son mejores. Escribir código sin probar es simplemente irresponsable
+y una falta de respeto con respecto a los usuarios del producto <span class="emphasis"><em>y</em></span> al resto de
+los miembros del equipo, especialmente los que tengan que mantener el código
+después y cualquier miembro del equipo que use directa o indirectamente el
+código sin probar.</p>
+      </div>
+      <div class="section" title="2. Ser demasiado específico en las comprobaciones">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ser_demasiado_específico_en_las_comprobaciones"></a>2. Ser demasiado específico en las comprobaciones</h2>
+            </div>
+          </div>
+        </div>
+        <p>Esto es un problema bastante común, sobre todo cuando se empiezan a hacer
+pruebas. Las pruebas automáticas son, de alguna manera, una descripción de lo
+que se espera que el programa haga. Una especificación en código, por así
+decirlo. Como tal, sólo debe describir el comportamiento que esperamos que no
+cambie. Si somos demasiado específicos o exigentes en las comprobaciones de
+nuestras pruebas, éstas no sólo evitarán que introduzcamos fallos en el código,
+sino también que podamos hacer otro tipo de cambios.</p>
+        <p>Por ejemplo, digamos que estamos escribiendo una aplicación de tareas
+pendientes muy sencilla. La clase que representa una lista de tareas se llama
+BrownList, y podría tener una pinta así en Ruby:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> BrownList
+  <b><font color="#0000FF">def</font></b> initialize<font color="#990000">(</font>db<font color="#990000">)</font>
+    <i><font color="#9A1900"># ...</font></i>
+  <b><font color="#0000FF">end</font></b>
+
+  <b><font color="#0000FF">def</font></b> add_brown<font color="#990000">(</font>title<font color="#990000">)</font>
+    <i><font color="#9A1900"># Insertamos en una base de datos, devolvemos un id</font></i>
+  <b><font color="#0000FF">end</font></b>
+
+  <b><font color="#0000FF">def</font></b> mark_brown_done<font color="#990000">(</font>id<font color="#990000">)</font>
+    <i><font color="#9A1900"># Marcamos el id dado como hecho</font></i>
+  <b><font color="#0000FF">end</font></b>
+
+  <b><font color="#0000FF">def</font></b> pending_browns
+    <i><font color="#9A1900"># Devolvemos una lista de las tareas pendientes</font></i>
+  <b><font color="#0000FF">end</font></b>
+<b><font color="#0000FF">end</font></b>
+
+<i><font color="#9A1900"># Se usa así</font></i>
+bl <font color="#990000">=</font> BrownList<font color="#990000">.</font>new<font color="#990000">(</font>db_handle<font color="#990000">)</font>
+id <font color="#990000">=</font> bl<font color="#990000">.</font>add_brown<font color="#990000">(</font><font color="#FF0000">"Tarea pendiente"</font><font color="#990000">)</font>
+bl<font color="#990000">.</font>mark_brown_done<font color="#990000">(</font>id<font color="#990000">)</font>
+lista_tareas_pendientes <font color="#990000">=</font> bl<font color="#990000">.</font>pending_browns
+</tt></pre>
+
+         <p title="Ejemplo de implementación de la clase BrownList">
+          <em>Ejemplo de implementación de la clase <code class="literal">BrownList</code></em>
+</p>
+        <p>Ahora, para probar que el método <code class="literal">add_brown</code> funciona, puede que se nos ocurra
+conectarnos a la base de datos y comprobar si tiene la fila correcta. En la
+gran mayoría de los casos esto es un error. Para entender por qué, hay que
+darse cuenta de que las pruebas definen <span class="emphasis"><em>qué</em></span> significa que el código funcione.
+Así, si las pruebas usan detalles de la implementación, se estará definiendo de
+manera implícita que el programa sólo «funciona bien» si mantiene los mismos
+detalles de implementación. Lo cual es, naturalmente, un error, porque no
+permite que el código evolucione.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> TestBrownList <font color="#990000">&lt;</font> Test<font color="#990000">::</font>Unit<font color="#990000">::</font>TestCase
+  <b><font color="#0000FF">def</font></b> setup
+    <i><font color="#9A1900"># Recreamos la base de datos de pruebas para que esté vacía</font></i>
+  <b><font color="#0000FF">end</font></b>
+
+  <b><font color="#0000FF">def</font></b> test_add_brown_simple_____MAL
+    db_handle <font color="#990000">=</font> <font color="#990000">...</font>
+    bl <font color="#990000">=</font> BrownList<font color="#990000">.</font>new<font color="#990000">(</font>db_handle<font color="#990000">)</font>
+    bl<font color="#990000">.</font>add_brown<font color="#990000">(</font><font color="#FF0000">"Tarea de prueba"</font><font color="#990000">)</font>
+
+    count <font color="#990000">=</font> db_handle<font color="#990000">.</font>execute<font color="#990000">(</font><font color="#FF0000">"SELECT COUNT(*) FROM browns"</font><font color="#990000">)</font>
+    assert_equal <font color="#993399">1</font><font color="#990000">,</font> count
+  <b><font color="#0000FF">end</font></b>
+<b><font color="#0000FF">end</font></b>
+</tt></pre>
+
+         <p title="Mal ejemplo de prueba del método add_brown de BrownList">
+          <em><span class="emphasis"><em>Mal</em></span> ejemplo de prueba del método <code class="literal">add_brown</code> de <code class="literal">BrownList</code></em>
+</p>
+        <p>En este ejemplo concreto, hay muchos casos en los que esta prueba fallaría, a
+pesar de que el código podría estar funcionando perfectamente:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+El nombre de la tabla donde guardamos las tareas cambia
+</li>
+            <li class="listitem">
+Añadimos la característica multiusuario, por lo que podría haber más tareas
+  en esa tabla de las que queremos contar
+</li>
+            <li class="listitem">
+Decidimos que vamos a usar una base de datos no-SQL, por lo que la manera de
+  contar cambiaría
+</li>
+            <li class="listitem">
+Añadimos un paso intermedio de algún tipo, de tal manera que las tareas no se
+  crearían inicialmente en la base de datos, sino en algo como <span class="emphasis"><em>memcached</em></span>, y
+  unos segundos después irían a la base de datos
+</li>
+          </ul>
+        </div>
+        <p>Las pruebas no deben limitarnos cuando reorganizamos código o cambiamos
+detalles de implementación. De hecho, una de las ventajas de tener pruebas
+automáticas es que cuando reorganicemos código, sabremos si estamos haciendo
+algo mal porque las pruebas fallarán. Si no estamos seguros de que cuando una
+prueba falla es porque hay un problema en el código, nuestras pruebas no nos
+están ayudando. Al menos, no todo lo que deberían.</p>
+        <p>Lo que queremos comprobar en la prueba es, realmente, si hay una nueva tarea
+añadida. Una manera de probarlo es usar el método <code class="literal">pending_browns</code>.  Uno podría
+pensar que no es una buena idea porque, si hay un error en <code class="literal">add_brown</code> y otro
+en <code class="literal">pending_browns</code> que se cancelen mutuamente, las pruebas pasarán igualmente.
+Eso es verdad, pero en la mayoría de los casos <span class="emphasis"><em>no importa</em></span>, porque desde el
+punto de vista del usuario de la clase, ésta se comporta como debería. Cuando
+descubramos el fallo, lo podremos arreglar no sólo sin tener que cambiar las
+pruebas o el código que llama a <code class="literal">BrownList</code>, sino sin que haya habido ningún
+cambio en el comportamiento de <code class="literal">BrownList</code> desde el punto de vista de los
+usuarios.</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> TestBrownList <font color="#990000">&lt;</font> Test<font color="#990000">::</font>Unit<font color="#990000">::</font>TestCase
+  <b><font color="#0000FF">def</font></b> setup
+    <i><font color="#9A1900"># Recreamos la base de datos de pruebas para que esté vacía</font></i>
+  <b><font color="#0000FF">end</font></b>
+
+  <b><font color="#0000FF">def</font></b> test_add_brown_simple
+    db_handle <font color="#990000">=</font> <font color="#990000">...</font>
+    bl <font color="#990000">=</font> BrownList<font color="#990000">.</font>new<font color="#990000">(</font>db_handle<font color="#990000">)</font>
+    bl<font color="#990000">.</font>add_brown<font color="#990000">(</font><font color="#FF0000">"Tarea de prueba"</font><font color="#990000">)</font>
+
+    assert_equal <font color="#993399">1</font><font color="#990000">,</font> bl<font color="#990000">.</font>pending_browns<font color="#990000">.</font>length
+  <b><font color="#0000FF">end</font></b>
+<b><font color="#0000FF">end</font></b>
+</tt></pre>
+
+         <p title="Mejor ejemplo de prueba del método add_brown de BrownList">
+          <em>Mejor ejemplo de prueba del método <code class="literal">add_brown</code> de <code class="literal">BrownList</code></em>
+</p>
+        <p>Para terminar de ilustrar este consejo, imaginemos ahora que escribimos una
+interfaz web para nuestra aplicación de tareas pendientes. Si queremos
+comprobar que la interfaz web funciona correctamente, una (mala) idea que puede
+pasarnos por la cabeza es comparar el HTML de la página con el HTML que
+esperamos.  Si comparamos el HTML completo (o una captura de pantalla),
+nuestras pruebas serán muy, muy frágiles. Por ejemplo, nuestras pruebas
+fallarán cuando hagamos cualquiera de estos cambios:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+Cambiar el id de algún elemento o el nombre de alguna clase CSS
+</li>
+            <li class="listitem">
+Cambiar un elemento de sitio o intercambiar la posición de dos opciones en un
+  menú
+</li>
+            <li class="listitem">
+Añadir una nueva opción o información extra
+</li>
+            <li class="listitem">
+Corregir una falta de ortografía o redactar un texto de forma diferente
+</li>
+          </ul>
+        </div>
+        <p>Si nuestras pruebas comparan la salida HTML exacta, implícitamente estamos
+definiendo nuestra aplicación no como una aplicación web con ciertas
+características, sino como una aplicación que genera ciertas cadenas de HTML.
+Ya que al usuario no le importa el HTML generado, sino que la aplicación
+funcione, podemos ver que este enfoque no es el más apropiado.</p>
+        <p>Una forma mucho mejor de probar una aplicación web es <span class="emphasis"><em>buscar</em></span> las partes
+interesantes. Por ejemplo, comprobar que el título de la nueva tarea aparece en
+el contenido de la página justo después de crearla. O comprobar que ya no está
+ahí después de borrarla. O comprobar que, al renombrar una tarea, el título
+antiguo ya no aparece, pero sí el nuevo. Sin embargo, hacer esas comprobaciones
+directamente puede ser tedioso y puede añadir algo de fragilidad a nuestras
+pruebas, por lo que lo mejor es desacoplar los detalles del HTML generado de
+las comprobaciones que queremos hacer. Una de las técnicas para conseguir esto
+se conoce como <span class="emphasis"><em>PageObjects</em></span>, pero explorar <span class="emphasis"><em>PageObjects</em></span> va mucho más allá del
+objetivo de este artículo.</p>
+        <p>Como resumen de este consejo, podemos decir que las <span class="emphasis"><em>pruebas no sólo deben
+fallar cuando hay algún problema, sino que también deben pasar mientras no haya
+ninguno</em></span>.</p>
+      </div>
+      <div class="section" title="3. No ejecutarlas con frecuencia">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_no_ejecutarlas_con_frecuencia"></a>3. No ejecutarlas con frecuencia</h2>
+            </div>
+          </div>
+        </div>
+        <p>Las pruebas no son un añadido al código, son parte integrante de éste.
+Asimismo, ejecutarlas es parte del ciclo normal de desarrollo. Si no las
+ejecutamos con frecuencia, no van a ser tan efectivas. Primero, porque cuando
+haya fallos, es probable que sea más de uno. En ese caso, será más difícil
+encontrar el origen de éstos. ¿Es un solo error el que provoca todos los fallos
+en las pruebas, uno por cada prueba? Segundo, porque si hemos hecho muchos
+cambios desde la última vez que ejecutamos las pruebas, tendremos más código
+que revisar en busca del problema.</p>
+        <p>Ejecutar las pruebas con frecuencia (idealmente, después de cada cambio que
+hacemos) hace que sea muy fácil encontrar la causa del error, porque lo único
+que puede haber sido la causa de los fallos son los cambios desde la última vez
+que las ejecutamos. Si ejecutamos las pruebas antes de mandar nuestros cambios
+al control de versiones, y vemos que una de las pruebas falla, será suficiente
+ejecutar <code class="literal">git diff</code> (o <code class="literal">svn diff</code> o similar) para ver qué cambios deben de
+haber producido el problema. Además, cuanto más alta sea la frecuencia con la
+que ejecutemos las pruebas, más seguros estaremos de que el código funciona
+correctamente. En la medida de lo posible, en el mundo de la programación es
+mejor evitar la fé: trabajaremos más tranquilos y con más confianza si podemos
+demostrar que el código funciona en los casos cubiertos por las pruebas.</p>
+        <p>El último punto importante de este consejo es tener una máquina «neutral» que
+ejecute las pruebas automáticas que tengamos, <span class="emphasis"><em>cada vez que alguien manda un
+cambio al control de versiones</em></span>. Las ventajas son muchas:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+Incluso si alguien se olvida de ejecutar las pruebas antes de enviar los
+  cambios, tenemos garantizado que las pruebas se ejecutarán.
+</li>
+            <li class="listitem">
+Si alguien se olvida de añadir un fichero al control de versiones, ese
+  fichero no aparecerá en la máquina de integración continua, por lo que las
+  pruebas fallarán y nos daremos cuenta del error.
+</li>
+            <li class="listitem">
+Los resultados de las pruebas en la máquina de integración continua son más
+  fiables, porque tiene la misma configuración que las máquinas de producción.
+  Por ejemplo, si un programador escribe una nueva prueba que depende de un
+  nuevo módulo o de un cambio de configuración que sólo existe en la máquina de
+  ese programador, la prueba pasará en su máquina, pero fallará en integración
+  continua. Este fallo nos avisará del problema antes de que el proyecto pase a
+  producción.
+</li>
+            <li class="listitem">
+Como tenemos los resultados de las pruebas para cada cambio que se haya
+  hecho, y ejecutados en la misma máquina, podemos saber qué cambio exacto
+  produjo el problema, lo que hace mucho más fácil arreglarlo.
+</li>
+          </ul>
+        </div>
+        <p>Véase el artículo de Martin Fowler <a class="xref" href="bi01.html#fowlerci">[fowlerci]</a> sobre integración continua para
+más información.</p>
+      </div>
+      <div class="section" title="4. No controlar el entorno">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_no_controlar_el_entorno"></a>4. No controlar el entorno</h2>
+            </div>
+          </div>
+        </div>
+        <p>Otro problema bastante común es escribir pruebas sin controlar el entorno en el
+que se ejecutan. En parte esta (mala) costumbre viene de la creencia de que las
+pruebas tienen que adaptarse a diferentes circunstancias y ser robustas como
+los programas que escribimos. Esto es un malentendido.</p>
+        <p>Volvamos al ejemplo anterior de la aplicación de tareas pendientes. Cuando
+escribimos las pruebas, los pasos <span class="emphasis"><em>no</em></span> fueron:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+Obtener el número de tareas actuales, llamarlo <span class="emphasis"><em>n</em></span>
+</li>
+            <li class="listitem">
+Añadir una tarea
+</li>
+            <li class="listitem">
+Comprobar que el número de tareas actuales es <span class="emphasis"><em>n</em></span> + 1
+</li>
+          </ol>
+        </div>
+        <p>Los pasos fueron:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+Dejar la base de datos en un estado conocido (en este caso, vacía)
+</li>
+            <li class="listitem">
+Añadir una tarea
+</li>
+            <li class="listitem">
+Comprobar que el número de tareas es <span class="emphasis"><em>exactamente</em></span> 1
+</li>
+          </ol>
+        </div>
+        <p>Esta diferencia es fundamental. Uno podría pensar que la primera prueba es
+mejor porque «funciona en más casos». Sin embargo, esto es un error por las
+siguientes razones:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+Escribir código robusto requiere mucho más esfuerzo mental, especialmente a
+  medida que crecen las posibilidades. Como no necesitamos esa robustez, mejor
+  dejarla de lado.
+</li>
+            <li class="listitem">
+Las pruebas serán menos flexibles, porque no podremos probar qué ocurre en
+  casos específicos (p.ej. cuando hay exactamente 20 tareas, cuando hay más de
+  100 tareas, etc.).
+</li>
+            <li class="listitem">
+Si no controlamos y rehacemos el entorno de ejecución de las pruebas, unas
+  pruebas dependerán, potencialmente, de otras. Lo que significa que el
+  comportamiento de unas pruebas puede cambiar el resultado de otras. En el
+  caso ideal, que es el caso común, las pruebas se pueden ejecutar una a una
+  independientemente y tienen exactamente el mismo resultado.
+</li>
+            <li class="listitem">
+No siempre darán el mismo resultado, incluso cuando las ejecutemos por sí
+  solas. Por ejemplo, digamos que hay un fallo en <code class="literal">add_brown</code> que sólo aparece
+  cuando hay más de 20 tareas. En ese caso, si nunca borramos la base de datos,
+  nuestras pruebas fallarán… cuando las hayamos ejecutado suficientes veces.
+  Y si las dejamos así, y hay otro fallo que sólo aparece cuando no haya
+  ninguna tarea, las pruebas nunca nos avisarán del segundo fallo.
+</li>
+          </ul>
+        </div>
+        <p>Si queremos probar ciertos casos de datos iniciales, es más claro y más fiable
+probar esos casos expresamente y por separado. Tendremos la ventaja de que
+estará claro al leer las pruebas qué casos cubrimos, y ejecutar las pruebas
+<span class="emphasis"><em>una sola vez</em></span> nos hará estar seguros de que <span class="emphasis"><em>todos</em></span> los casos que nos
+interesan funcionan perfectamente. Como regla general, cualquier incertidumbre
+o indeterminismo sobre la ejecución o resultados de las pruebas que podamos
+eliminar, debe ser eliminado.</p>
+        <p>Podemos terminar este consejo con una reflexión: <span class="emphasis"><em>las pruebas no son mejores
+porque pasen con más frecuencia, sino porque demuestren que un mayor
+número de casos interesantes funcionan exactamente como queremos</em></span>.</p>
+      </div>
+      <div class="section" title="5. Reusar datos de prueba">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_reusar_datos_de_prueba"></a>5. Reusar datos de prueba</h2>
+            </div>
+          </div>
+        </div>
+        <p>Cuando empezamos a escribir pruebas, algo que necesitamos con frecuencia son
+datos iniciales o de prueba (en inglés, <span class="emphasis"><em>fixtures</em></span>). Si no tenemos una forma
+fácil de crear esos bancos de datos para cada prueba, tendremos la tentación de
+tener un solo conjunto de datos iniciales que usaremos en <span class="emphasis"><em>todas</em></span> las pruebas
+de nuestro proyecto. Aunque en algunos casos pueda resultar práctico compartir
+datos de prueba entre <span class="emphasis"><em>algunas</em></span> pruebas, esta costumbre puede traer un problema
+añadido.</p>
+        <p>A medida que escribimos nuevas pruebas, éstas necesitarán más datos de
+contraste. Si añadimos estos datos a nuestro único conjunto de datos iniciales,
+cabe la posibilidad de que algunas de las pruebas antiguas empiece a fallar
+(p.ej. una prueba que cuente el número de tareas en el sistema). Si ante este
+problema reescribimos la prueba antigua para que pase con el nuevo conjunto de
+datos, estaremos haciendo más complejas nuestras pruebas, y además corremos el
+riesgo de cometer un fallo al reescribir la prueba antigua. Por no mencionar
+que si seguimos por este camino, puede que en la siguiente ocasión tengamos que
+reescribir dos pruebas. O cinco. O veinte.</p>
+        <p>Todo esto está relacionado, en cierta manera, con el problema descrito en el
+anterior apartado: pensar en las pruebas como pensamos en el resto del código.
+En este caso, pensar que tener más datos de prueba es mejor, porque se parecerá
+más al caso real en el que se ejecutará el programa. Sin embargo, en la mayoría
+de los casos esto no representa ninguna ventaja, pero sí que tiene al menos una
+desventaja: cuando alguna prueba falle y tengamos que investigar por qué,
+será más difícil encontrar el problema real cuantos más datos haya. Si podemos
+escribir nuestras pruebas teniendo un solo objeto de prueba, o incluso ninguno,
+mejor que mejor.</p>
+      </div>
+      <div class="section" title="6. No facilitar el proceso de pruebas">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_no_facilitar_el_proceso_de_pruebas"></a>6. No facilitar el proceso de pruebas</h2>
+            </div>
+          </div>
+        </div>
+        <p>El apartado sobre ejecutar las pruebas con frecuencia ya mencionaba que las
+pruebas son parte integrante del código. Aunque no funciona exactamente de la
+misma manera ni tienen las mismas propiedades, sí que se tienen que mantener
+con el mismo cuidado y esfuerzo con el que mantenemos el resto del código.</p>
+        <p>Este apartado hace hincapié en que tenemos que hacer lo posible para facilitar
+la escritura de pruebas. Éstas no son una necesidad molesta a la que tenemos
+que dedicar el menor tiempo posible: como parte integrante de nuestro código se
+merece la misma dedicación que el resto. Así, nuestro código de prueba debe ser
+legible, conciso y fácil de escribir. Si cuesta escribir pruebas, ya sea en
+tiempo, esfuerzo mental o líneas de código, tenemos un problema que debemos
+resolver, ya sea reorganizando código, escribiendo métodos de conveniencia o
+usando cualquier otra técnica que nos ayude. Desgraciadamente, muchos
+desarrolladores piensan que es normal que sea costoso escribir pruebas y no
+hacen nada por mejorar la situación. En última instancia, esto hace que el
+equipo escriba menos pruebas, y de peor calidad.</p>
+        <p>Veamos un caso concreto. Digamos que queremos probar la interfaz web de nuestra
+aplicación de tareas pendientes. Una de las primeras pruebas que escribiríamos
+aseguraría que crear una tarea simple funciona. Una primera implementación
+podría quedar así:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <b><font color="#000000">TestBrownListDashboard_______MAL</font></b><font color="#990000">(</font>unittest<font color="#990000">.</font>TestCase<font color="#990000">):</font>
+
+    <b><font color="#0000FF">def</font></b> <b><font color="#000000">setUp</font></b><font color="#990000">(</font>self<font color="#990000">):</font>
+        <i><font color="#9A1900"># Rehacemos la base de datos y creamos el navegador en self.driver</font></i>
+
+    <b><font color="#0000FF">def</font></b> <b><font color="#000000">testAddBrownSimple______MAL</font></b><font color="#990000">(</font>self<font color="#990000">):</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">get</font></b><font color="#990000">(</font><font color="#FF0000">"/"</font><font color="#990000">)</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementById</font></b><font color="#990000">(</font><font color="#FF0000">"username"</font><font color="#990000">).</font><b><font color="#000000">send_keys</font></b><font color="#990000">(</font><font color="#FF0000">"usuario"</font><font color="#990000">)</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementById</font></b><font color="#990000">(</font><font color="#FF0000">"password"</font><font color="#990000">).</font><b><font color="#000000">send_keys</font></b><font color="#990000">(</font><font color="#FF0000">"contraseña"</font><font color="#990000">)</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementById</font></b><font color="#990000">(</font><font color="#FF0000">"login"</font><font color="#990000">).</font><b><font color="#000000">click</font></b><font color="#990000">()</font>
+
+        new_brown_title <font color="#990000">=</font> <font color="#FF0000">"My title"</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementById</font></b><font color="#990000">(</font><font color="#FF0000">"new_brown"</font><font color="#990000">).</font><b><font color="#000000">send_keys</font></b><font color="#990000">(</font>new_brown_title<font color="#990000">)</font>
+        self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementById</font></b><font color="#990000">(</font><font color="#FF0000">"create_brown"</font><font color="#990000">).</font><b><font color="#000000">click</font></b><font color="#990000">()</font>
+        title_tag <font color="#990000">=</font> self<font color="#990000">.</font>driver<font color="#990000">.</font><b><font color="#000000">findElementByTagName</font></b><font color="#990000">(</font><font color="#FF0000">"task-1-title"</font><font color="#990000">)</font>
+        self<font color="#990000">.</font><b><font color="#000000">assertEqual</font></b><font color="#990000">(</font>title_tag<font color="#990000">.</font>text<font color="#990000">,</font> new_brown_title<font color="#990000">)</font>
+</tt></pre>
+
+         <p title="Ejemplo de prueba funcional difícil de escribir">
+          <em>Ejemplo de prueba funcional difícil de escribir</em>
+</p>
+        <p>Aunque aisladamente, este código es relativamente fácil de leer y entender, tiene varios problemas:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+No es todo lo compacto que podría ser
+</li>
+            <li class="listitem">
+Contiene código que sabemos que se duplicará en otras pruebas
+</li>
+            <li class="listitem">
+No contiene abstracciones, por lo que cuando haya cambios en la aplicación
+  (digamos, el id de "username" o "password" cambia), tendremos que buscar
+  dónde nos referimos a éstos para actualizar el código
+</li>
+            <li class="listitem">
+No está escrito usando el lenguaje del dominio de la aplicación, sino usando
+  el lenguaje de automatización de un navegador, por lo que es más difícil de
+  leer y mantener
+</li>
+          </ul>
+        </div>
+        <p>Una alternativa mucho mejor sería la siguiente:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#0000FF">class</font></b> <b><font color="#000000">TestBrownListDashboard</font></b><font color="#990000">(</font>BrownFunctionalTestCase<font color="#990000">):</font>
+
+    <b><font color="#0000FF">def</font></b> <b><font color="#000000">testAddBrownSimple</font></b><font color="#990000">(</font>self<font color="#990000">):</font>
+        self<font color="#990000">.</font><b><font color="#000000">assertLogin</font></b><font color="#990000">(</font><font color="#FF0000">"usuario"</font><font color="#990000">,</font> <font color="#FF0000">"contraseña"</font><font color="#990000">)</font>
+
+        new_brown_title <font color="#990000">=</font> <font color="#FF0000">"My title"</font>
+        self<font color="#990000">.</font><b><font color="#000000">createBrown</font></b><font color="#990000">(</font>new_brown_title<font color="#990000">)</font>
+        self<font color="#990000">.</font><b><font color="#000000">assertBrownExists</font></b><font color="#990000">(</font>new_brown_title<font color="#990000">)</font>
+</tt></pre>
+
+         <p title="Ejemplo de prueba funcional más fácil de escribir">
+          <em>Ejemplo de prueba funcional más fácil de escribir</em>
+</p>
+        <p>Las mejoras de la segunda versión son las siguientes:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem"><code class="literal">TestBrownListDashboard</code> ahora hereda de una nueva clase,
+  <code class="literal">BrownFunctionalTestCase</code>, que será una clase base para todas nuestras clases
+  de prueba. Aquí añadiremos todo el código común a diferentes pruebas de
+  nuestra aplicación.
+</li>
+            <li class="listitem">
+Como tenemos una clase base, ya no necesitamos escribir el método <code class="literal">setUp</code>
+  porque ésta ya crea la base de datos e inicializa el navegador de prueba por
+  nosotros.
+</li>
+            <li class="listitem">
+Para abrir sesión, simplemente llamamos a un nuevo método <code class="literal">assertLogin</code>. No
+  sólo es mucho más compacto y legible, sino que si alguna vez cambian los
+  detalles de cómo iniciamos sesión, podemos simplemente cambiar la
+  implementación de este método.
+</li>
+            <li class="listitem">
+Crear una nueva tarea es tan fácil como llamar a un nuevo método
+  <code class="literal">createBrown</code>, y comprobar que se ha creado correctamente se lleva a cabo llamando al método
+  <code class="literal">assertBrownExists</code>. Dependiendo del caso, podríamos incluso haber creado un
+  método <code class="literal">assertCreateBrown</code>, pero por ahora parece mejor dejar ambas
+  operaciones separadas.
+</li>
+          </ul>
+        </div>
+        <p>Como se puede ver, una simple reorganización del código (del mismo tipo que
+haríamos con el código principal del programa) puede tener un impacto muy
+grande en la facilidad de mantenimiento de nuestras pruebas.</p>
+        <p>La necesidad de facilitar la escritura de pruebas se extiende a todas las
+tareas relacionadas con probar nuestro código, no sólo mantener el código de
+pruebas automáticas. Digamos que escribimos un programa cliente-servidor. Si
+cada vez que encontramos un problema no somos capaces de depurarlo, o de
+asegurar si está de verdad arreglado o no porque no tenemos una forma fácil de
+probar el cliente o el servidor por separado, tenemos un problema. Una de las
+varias soluciones posibles es tener un cliente de prueba con el que podamos
+enviar al servidor cualquier petición que se nos ocurra, y un servidor de
+prueba con el que podamos enviar al cliente cualquier respuesta que se nos
+ocurra.  Herramientas para capturar <span class="emphasis"><em>fácilmente</em></span> el tráfico entre cliente y
+servidor también pueden ahorrarnos mucho tiempo a la larga.</p>
+        <p>Al fin y al cabo, estamos hablando de la calidad de nuestro trabajo, no en un
+sentido abstracto o teórico, sino en el sentido más pragmático desde el punto
+de vista del usuario. Si no podemos comprobar que nuestro programa se comporta
+debidamente, nos quedarán muchos fallos por descubrir, y por tanto que
+arreglar, que llegarán a los usuarios finales.</p>
+      </div>
+      <div class="section" title="7. Depender de muchos servicios externos">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_depender_de_muchos_servicios_externos"></a>7. Depender de muchos servicios externos</h2>
+            </div>
+          </div>
+        </div>
+        <p>El último consejo es el más avanzado, y es el consejo con el que hay que tener
+más cuidado al aplicarlo. La tendencia natural al crear entornos de prueba es
+replicar algo lo más parecido posible al entorno real, usando las mismas bases
+de datos, los mismos servidores y la misma configuración. Aunque esto tiene
+sentido y es <span class="emphasis"><em>necesario</em></span> en pruebas de aceptación y pruebas de integración
+<sup>[<a id="idp3672232" href="#ftn.idp3672232" class="footnote">1</a>]</sup>, puede ser bastante contraproducente en pruebas unitarias y
+similares, en las que sólo queremos probar componentes relativamente pequeños.</p>
+        <p>Depender de servicios externos como una base de datos, un servidor web, una
+cola de tareas, etc. hace que las pruebas sean más frágiles, porque aumentan
+las posibilidades de que fallen por una mala configuración, en vez de porque
+hemos encontrado un problema en el código. Como en la mayoría de los tipos de
+pruebas, como las unitarias, sólo queremos probar que cierto componente
+concreto funciona correctamente, no hace falta que lo integremos con el resto
+de los componentes. En muchos casos, podemos reemplazar esos componentes con
+versiones «de pega» que se comporten como nos haga falta para cada prueba.</p>
+        <p>Un ejemplo claro de las ventajas de usar componentes «de pega» es el desarrollo
+y prueba de una aplicación que usa una API, tanto en el caso de que escribimos
+sólo el cliente como en el caso de que escribimos tanto el cliente como el
+servidor. Aunque para hacer pruebas de integración deberíamos usar el servidor
+real, la mayoría de las pruebas tendrán un ámbito más limitado (bien sean
+pruebas unitarias, o pruebas funcionales que sólo cubran el comportamiento del
+cliente). Para éstas sabemos, al tener la documentación de dicha API:</p>
+        <div class="orderedlist">
+          <ol class="orderedlist" type="1">
+            <li class="listitem">
+Qué llamadas debe generar nuestra aplicación en ciertas situaciones.
+</li>
+            <li class="listitem">
+Cómo tiene que reaccionar nuestra aplicación ante ciertas respuestas del
+servidor.
+</li>
+          </ol>
+        </div>
+        <p>Armados con este conocimiento, podemos diseñar pruebas que no dependen del
+servidor. No depender del servidor tiene varias ventajas, entre otras:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+Las pruebas se ejecutan más rápido.
+</li>
+            <li class="listitem">
+Las pruebas se pueden ejecutar sin tener conexión a internet o acceso al
+  servidor (incluyendo que el servidor esté funcionando correctamente).
+</li>
+            <li class="listitem">
+Cuando hay fallos, éstos son más fáciles de depurar y corregir.
+</li>
+            <li class="listitem">
+Podemos probar muchas situaciones que no podemos reproducir fácilmente en un
+  servidor real, como no poder conectar al servidor, que el servidor devuelva
+  cualquier tipo de error, que devuelva ciertas combinaciones de datos que son
+  difíciles de obtener, condiciones de carrera, etc.
+</li>
+          </ul>
+        </div>
+        <p>No todo son ventajas, claro. Si el servidor introduce cambios que rompen la
+compatibilidad con la documentación que tenemos, esos fallos no se descubrirán
+hasta las pruebas de integración. De manera similar, si nuestras pruebas
+dependen de un comportamiento concreto, documentado o no, y este comportamiento
+cambia, de nuevo no detectaremos estos fallos hasta las pruebas de integración.</p>
+        <p>Veamos un ejemplo más concreto. Digamos que escribimos un programa que utiliza
+la API pública de Kiva, una organización que permite, mediante microcréditos,
+prestar dinero a personas que lo necesitan. Nuestra aplicación mostrará los
+últimos préstamos listados en la web de Kiva (digamos, 50), información que
+obtenemos usando la llamada <code class="literal">/loans/newest</code>. Sin embargo, hay varios casos que
+son muy difíciles de probar con un servidor real:</p>
+        <div class="itemizedlist">
+          <ul class="itemizedlist" type="disc">
+            <li class="listitem">
+Esa funcionalidad de la API sólo devuelve 20 elementos por llamada, por lo
+  que tenemos que hacer varias llamadas para obtener todos los préstamos que
+  queremos.
+</li>
+            <li class="listitem">
+Si se añaden nuevos préstamos mientras estamos haciendo las llamadas para
+  obtener 50 préstamos, tendremos préstamos repetidos, lo que queremos evitar.
+</li>
+            <li class="listitem">
+Puede ocurrir que no haya 50 préstamos en un momento dado, así que tendremos
+  que conformarnos con los datos que haya (en vez de, por ejemplo, entrar en un
+  bucle infinito).
+</li>
+            <li class="listitem">
+Puede que el servidor tenga algún problema y no devuelva una respuesta
+  correcta, o que simplemente haya problemas de conectividad entre el cliente y
+  el servidor. Como mínimo queremos asegurarnos, como en el caso anterior, de
+  que el cliente no se queda en un bucle infinito, haciendo peticiones
+  ciegamente hasta que hayamos recibido 50 préstamos.
+</li>
+          </ul>
+        </div>
+        <p>Probar todos esos casos a mano con el servidor real de Kiva es prácticamente
+imposible, principalmente porque no podemos hacer que el servidor devuelva las
+respuestas necesarias para reproducir cada caso. Si todas nuestras pruebas
+dependen del servidor no podremos estar seguros de si el código funciona bien.
+Sin embargo, todos estos casos son muy fáciles de probar si evitamos
+conectarnos al servidor real. Los casos mencionados arriba se podrían escribir
+de la siguiente manera en Javascript, usando Jasmine:</p>
+<!-- Generator: GNU source-highlight 3.1.6
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre class="programlisting"><tt><b><font color="#000000">it</font></b><font color="#990000">(</font><font color="#FF0000">"should correctly get items from several pages"</font><font color="#990000">,</font> <b><font color="#0000FF">function</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">var</font></b> fakeServer <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">FakeServer</font></b><font color="#990000">(</font>fixtureWith100Loans<font color="#990000">);</font>
+  <b><font color="#0000FF">var</font></b> kivaLoanLoader <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">KivaLoanLoader</font></b><font color="#990000">(</font>fakeServer<font color="#990000">);</font>
+  kivaLoanLoader<font color="#990000">.</font><b><font color="#000000">fetchLoans</font></b><font color="#990000">(</font><font color="#993399">50</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">.</font>length<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#993399">50</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">0</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan1"</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">50</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan50"</font><font color="#990000">);</font>
+<font color="#FF0000">}</font><font color="#990000">);</font>
+
+<b><font color="#000000">it</font></b><font color="#990000">(</font><font color="#FF0000">"should correctly skip items duplicated in different pages"</font><font color="#990000">,</font> <b><font color="#0000FF">function</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">var</font></b> fakeServer <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">FakeServer</font></b><font color="#990000">(</font>fixtureWith100LoansSomeRepeated<font color="#990000">);</font>
+  <b><font color="#0000FF">var</font></b> kivaLoanLoader <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">KivaLoanLoader</font></b><font color="#990000">(</font>fakeServer<font color="#990000">);</font>
+  kivaLoanLoader<font color="#990000">.</font><b><font color="#000000">fetchLoans</font></b><font color="#990000">(</font><font color="#993399">25</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">.</font>length<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#993399">25</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">19</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan20"</font><font color="#990000">);</font>
+  <i><font color="#9A1900">// El siguiente caso será loan20 repetido, si el código no funciona bien</font></i>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">20</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan21"</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">24</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan25"</font><font color="#990000">);</font>
+<font color="#FF0000">}</font><font color="#990000">);</font>
+
+<b><font color="#000000">it</font></b><font color="#990000">(</font><font color="#FF0000">"should stop when there's no more data"</font><font color="#990000">,</font> <b><font color="#0000FF">function</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">var</font></b> fakeServer <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">FakeServer</font></b><font color="#990000">(</font>fixtureWith30Loans<font color="#990000">);</font>
+  <b><font color="#0000FF">var</font></b> kivaLoanLoader <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">KivaLoanLoader</font></b><font color="#990000">(</font>fakeServer<font color="#990000">);</font>
+  <i><font color="#9A1900">// La línea siguiente será un bucle infinito si el código no es correcto</font></i>
+  kivaLoanLoader<font color="#990000">.</font><b><font color="#000000">fetchLoans</font></b><font color="#990000">(</font><font color="#993399">40</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">.</font>length<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#993399">30</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">0</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan1"</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">[</font><font color="#993399">29</font><font color="#990000">].</font>id<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#FF0000">"loan30"</font><font color="#990000">);</font>
+<font color="#FF0000">}</font><font color="#990000">);</font>
+
+<b><font color="#000000">it</font></b><font color="#990000">(</font><font color="#FF0000">"should stop on server errors"</font><font color="#990000">,</font> <b><font color="#0000FF">function</font></b><font color="#990000">()</font> <font color="#FF0000">{</font>
+  <b><font color="#0000FF">var</font></b> fakeServer <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">FakeServer</font></b><font color="#990000">(</font>fixtureWithOnlyServerError<font color="#990000">);</font>
+  <b><font color="#0000FF">var</font></b> kivaLoanLoader <font color="#990000">=</font> <b><font color="#0000FF">new</font></b> <b><font color="#000000">KivaLoanLoader</font></b><font color="#990000">(</font>fakeServer<font color="#990000">);</font>
+  <i><font color="#9A1900">// La línea siguiente será un bucle infinito si el código no es correcto</font></i>
+  kivaLoanLoader<font color="#990000">.</font><b><font color="#000000">fetchLoans</font></b><font color="#990000">(</font><font color="#993399">20</font><font color="#990000">);</font>
+  <b><font color="#000000">expect</font></b><font color="#990000">(</font>kivaLoanLoader<font color="#990000">.</font>loans<font color="#990000">.</font>length<font color="#990000">).</font><b><font color="#000000">toEqual</font></b><font color="#990000">(</font><font color="#993399">0</font><font color="#990000">);</font>
+<font color="#FF0000">}</font><font color="#990000">);</font>
+</tt></pre>
+
+         <p title="Ejemplo de cómo probar el cliente ficticio de la API de Kiva">
+          <em>Ejemplo de cómo probar el cliente ficticio de la API de Kiva</em>
+</p>
+      </div>
+      <div class="section" title="8. Conclusión">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_conclusión_3"></a>8. Conclusión</h2>
+            </div>
+          </div>
+        </div>
+        <p>Probar programas es una tarea importante pero bastante difícil de hacer
+correctamente. Sin embargo, si empezamos a hacer pruebas desde el comienzo del
+proyecto, las ejecutamos con frecuencia y nos preocupamos de que sean fáciles
+de mantener, nuestras probabilidades de producir programas robustos serán mucho
+más altas.</p>
+      </div>
+      <div class="footnotes">
+        <br />
+        <hr width="100" align="left" />
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3672232" href="#idp3672232" class="simpara">1</a>] </sup>Las pruebas de integración son las más completas que hacemos, que
+determinan si el proyecto, como un todo, funciona desde el punto de vista del
+usuario.</p>
+        </div>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ch05.html">Prev</a> </td>
+          <td width="20%" align="center"> </td>
+          <td width="40%" align="right"> <a accesskey="n" href="ch07.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top"> </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

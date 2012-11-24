@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Calidad en software</title>
+    <link rel="stylesheet" type="text/css" href="libro.css" />
+    <meta name="generator" content="DocBook XSL Stylesheets V1.76.1" />
+    <link rel="home" href="index.html" title="El camino a un mejor programador" />
+    <link rel="up" href="index.html" title="El camino a un mejor programador" />
+    <link rel="prev" href="ch06.html" title="Siete problemas al probar programas" />
+    <link rel="next" href="ch08.html" title="Integración continua" />
+  </head>
+  <body>
+    <div class="navheader">
+      <table width="100%" summary="Navigation header">
+        <tr>
+          <td width="20%" align="left"><a accesskey="p" href="ch06.html">Prev</a> </td>
+          <th width="60%" align="center"> </th>
+          <td width="20%" align="right"> <a accesskey="n" href="ch08.html">Next</a></td>
+        </tr>
+      </table>
+      <hr />
+    </div>
+    <div class="chapter" title="Calidad en software">
+      <div class="titlepage">
+        <div>
+          <div>
+            <h2 class="title"><a id="_calidad_en_software"></a>Calidad en software</h2>
+          </div>
+        </div>
+      </div>
+      <p>
+        <span class="emphasis">
+          <em>Esteban Manchado Velázquez</em>
+        </span>
+      </p>
+      <p>«Calidad» es una palabra muy usada pero un concepto bastante escurridizo, al
+menos a la hora de encontrar maneras fiables de mejorarla o simplemente
+mantenerla una vez hemos llegado a un nivel aceptable. Este artículo explorará
+qué es la calidad y cómo mejorarla en nuestros proyectos.</p>
+      <div class="section" title="1. Significado">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_significado"></a>1. Significado</h2>
+            </div>
+          </div>
+        </div>
+        <p>El primer problema de la calidad es definirla. Hay muchas definiciones, pero mi
+preferida en el contexto de la ingeniería de software es «adecuación al uso».
+Uno de los problemas de la definición es que es muy vaga pero, paradójicamente,
+el propio hecho de ser tan vaga es lo que la hace útil. La calidad es un asunto
+muy complejo, por lo que simplificarlo, lejos de ayudarnos a entender, sólo nos
+dará la ilusión de que lo entendemos. Y la ilusión de entendimiento es muy
+peligrosa porque hace que nos resistamos al aprendizaje real.</p>
+        <p>El segundo problema de la calidad es hacer que todos los interesados compartan
+lo que entienden por ésta. Este entendimiento compartido nos ayudará a
+centrarnos en los objetivos importantes, que son las necesidades del cliente
+del proyecto. Esto no significa que sólo sean importantes los aspectos que el
+cliente <span class="emphasis"><em>menciona</em></span>: con frecuencia, los clientes dan por sentadas una serie de
+propiedades (eficiencia, fiabilidad, etc), y nuestro trabajo es asegurarnos de
+que éstas se cumplen tanto como los requisitos explícitos. Esto es, la calidad
+necesita de aspectos técnicos como código rápido o diseño simple, pero éstos
+deben estar supeditados a las necesidades y los deseos del cliente, implícitos
+y explícitos.</p>
+      </div>
+      <div class="section" title="2. Cómo mejorar la calidad">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_cómo_mejorar_la_calidad"></a>2. Cómo mejorar la calidad</h2>
+            </div>
+          </div>
+        </div>
+        <p>Como ya expone el apartado anterior, es imposible dar una «receta mágica» para
+mejorar la calidad. De hecho, intentar mejorar la calidad simplemente siguiendo
+una lista de pasos es un camino casi seguro hacia el fracaso. No importa qué
+pasos sigamos, qué hayamos oído de ellos o quién los haya recomendado: nuestra
+única vía para alcanzar un buen nivel de calidad es usar nuestra experiencia y
+conocimiento del contexto para decidir qué es lo que nos ayudará en cada
+momento. Tenemos que ser conscientes de lo que hacemos y tomar el control de
+nuestras decisiones.</p>
+        <p>Sin embargo, sí se pueden dar <span class="emphasis"><em>guías</em></span> para mejorar la calidad. Por ejemplo:
+mantener siempre el qué, no el cómo, como la guía de todo lo que hacemos;
+mantener el escepticismo y cuestionar cómo hacemos las cosas y por qué; estar
+preparado para cambiar cómo trabajamos y luchar contra la «programación de
+culto al cargo» <sup>[<a id="idp3699504" href="#ftn.idp3699504" class="footnote">2</a>]</sup>; no creer en la tecnología como el centro de lo que hacemos;
+darse cuenta de que lo principal no es hacer código bonito o fácil de entender,
+sino resolver problemas <sup>[<a id="idp3700680" href="#ftn.idp3700680" class="footnote">3</a>]</sup>; no
+creer que los problemas tengan una solución única o mejor.</p>
+        <p>Esto no quiere decir que las herramientas, técnicas y costumbres no sean
+útiles. En absoluto. Lo que sí significa es que éstas nos ayudarán según qué
+contextos, según qué proyectos, según qué equipos y según qué clientes, pero
+nunca en todos los casos. Los otros artículos de este libro describen algunas
+de estas técnicas y herramientas, que son muy útiles y todo buen profesional
+debe conocer y dominar, pero uno de los mensajes principales de este artículo
+es que conocer y adaptarse al contexto es importante, y que aplicar ciegamente
+cualquiera de estas técnicas o herramientas es un error.</p>
+        <p>Para ilustrar las ideas de este artículo, y como inspiración para ayudar a
+pensar fuera de cánones más académicos, los siguientes apartados muestran una
+serie de ejemplos de situaciones junto con sugerencias de posibles soluciones.
+Obviamente no puede haber solución única o «correcta» en estos ejemplos, entre
+otras razones porque ninguna descripción literaria puede dar toda la
+información necesaria para tomar una buena decisión.</p>
+      </div>
+      <div class="section" title="3. Ejemplo 1: procesos">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ejemplo_1_procesos"></a>3. Ejemplo 1: procesos</h2>
+            </div>
+          </div>
+        </div>
+        <p>Como regla general, tener procesos y reglas ayuda a los equipos de desarrollo a
+trabajar más eficientemente. Por una parte, facilita que nos concentremos en lo
+que estamos haciendo y no en el cómo <sup>[<a id="idp3704448" href="#ftn.idp3704448" class="footnote">4</a>]</sup>.  Por otra, facilita la
+automatización.</p>
+        <p>Sin embargo, los procesos y las reglas pueden quedarse obsoletos. Por ejemplo,
+digamos que uno o dos miembros del equipo causan problemas con la integración
+continua: con frecuencia hacen cambios que hacen fallar a la batería de pruebas
+y no tienen disciplina para escribir pruebas. Ante esta situación, decidimos
+que cada cambio enviado al repositorio debe contener alguna modificación a
+algún fichero de pruebas. La medida funciona más o menos bien, esos miembros
+del equipo empiezan a tomarse las pruebas más en serio, y así aumentamos la
+productividad del equipo con ella.</p>
+        <p>Ahora bien, todas las reglas tienen partes buenas y partes malas, como todo.
+Esta medida concreta puede ser molesta cuando simplemente queramos arreglar una
+falta de ortografía en un comentario, actualizar la documentación, o
+reformatear el código (ya que nuestro cambio no modificaría ningún fichero de
+pruebas). Por tanto, si en algún momento esos miembros del equipo se marchan o
+llegan al punto de escribir buenas pruebas y no necesitar la anterior medida,
+puede que llegue el momento de eliminar esta regla. Mantener y seguir reglas
+simplemente porque «siempre han funcionado» es caer en la tentación de seguir
+el «culto al cargo».</p>
+      </div>
+      <div class="section" title="4. Ejemplo 2: automatización de pruebas">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ejemplo_2_automatización_de_pruebas"></a>4. Ejemplo 2: automatización de pruebas</h2>
+            </div>
+          </div>
+        </div>
+        <p>Una de las constantes en los artículos de este libro es el uso de pruebas
+automáticas. Aunque es desde luego una de las prácticas más recomendadas y
+útiles, también es verdad que con frecuencia tenemos que trabajar con código
+legado (es decir, sin pruebas). En esos casos, ¿qué hacemos?</p>
+        <p>Por ejemplo, digamos que nos unimos a un equipo que no tiene cultura de pruebas
+automáticas, y vamos retrasados con la siguiente entrega. Una parte concreta
+del código está dando bastantes problemas, y las pruebas manuales (la manera en
+la que el equipo prueba el código) no están encontrando suficientes fallos, o
+no lo suficientemente pronto. Aunque automatizar las pruebas es probablemente
+la mejor idea a largo plazo, no hay ninguna regla exenta de excepciones
+<sup>[<a id="idp3710760" href="#ftn.idp3710760" class="footnote">5</a>]</sup>. Puede que el equipo no tenga
+suficiente experiencia en pruebas automáticas como para que introducirlas
+mejore la situación <span class="emphasis"><em>antes de la entrega</em></span>. Puede que las partes críticas del
+proyecto en el que trabajamos no sean fáciles de probar de manera fiable con
+pruebas automáticas, y empeñarnos en poner énfasis en éstas a toda costa no
+ayude al equipo en el contexto de esta entrega. Puede que la tensión de ir
+retrasados haga al equipo ser «optimistas» al escribir pruebas, y las pruebas
+den un falso sentido de seguridad. Puede que los que toman las decisiones no
+estén convencidos, y que a corto plazo no valga la pena gastar tiempo y energía
+en convencerlos. Y puede que hayamos convencido a los que toman las decisiones,
+pero <span class="emphasis"><em>el equipo</em></span> no esté convencido, e intentar forzarlos a escribir pruebas
+sólo vaya a provocar un bajón de moral y un conjunto de pruebas automáticas de
+muy mala calidad.</p>
+        <p>Y si por la razón que sea llegamos a la conclusión de que intentar implantar
+pruebas automáticas para la próxima entrega no es una buena idea, ¿qué podemos
+hacer? Una de las posibilidades es empezar haciendo más efectivo al equipo sin
+cambiar radicalmente su filosofía de trabajo. Por ejemplo, puede que tras
+analizar la situación descubramos que esa parte del programa es más difícil de
+probar de manera manual porque no da suficiente información.  Quizás añadir una
+opción «escondida» que haga esa parte menos opaca puede ser suficiente hasta la
+fecha clave. O simplemente mejorar la comunicación entre los miembros del
+equipo. Porque, entre otras cosas, siempre es positivo respetar la manera de
+trabajar de un equipo («que siempre ha funcionado»): no sólo mejora las
+relaciones entre sus miembros, sino que ayuda a ganarse su respeto y atención,
+que serán necesarios más tarde para poder implementar cambios grandes como
+desarrollo dirigido por pruebas o simplemente escribir pruebas automáticas. Y
+mientras tanto, podemos ir enseñando poco a poco al equipo a automatizar las
+pruebas para ir cambiando a un modelo (posiblemente) más escalable.</p>
+      </div>
+      <div class="section" title="5. Ejemplo 3: especificaciones">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ejemplo_3_especificaciones"></a>5. Ejemplo 3: especificaciones</h2>
+            </div>
+          </div>
+        </div>
+        <p>Cuando se desarrolla software normalmente se tienen especificaciones. Pueden
+ser formales (un documento) o informales (el conocimiento compartido del
+equipo). El objetivo de las especificaciones es poder concentrarse en la
+solución técnica sin tener que estar preguntando continuamente a los clientes
+o al resto del equipo sobre el enfoque a la hora de resolver el problema. Pero,
+de nuevo, las especificaciones son sólo una herramienta, y cumplir más a
+rajatabla con las especificaciones no tiene por qué garantizar una mayor
+calidad del proyecto una vez completado.</p>
+        <p>Digamos que estamos desarrollando el software que conduce un coche automático.
+Uno de los requisitos del coche es que pare en los pasos de peatones cuando
+detecte que una persona está cruzando. Sin embargo, mucha gente no cruza por
+los pasos de peatones, así que el coche sería mucho más seguro si no dependiera
+de éstos, sino que pudiera detectar por sí mismo si tiene algo delante que
+podría llegar a atropellar. Es decir, las especificaciones son una herramienta
+muy útil, pero nunca son el objetivo final del desarrollo de software. Las
+personas que escriben las especificaciones cometen errores, las condiciones del
+proyecto cambian, etc.  Mantener siempre el escepticismo y una visión más
+completa de nuestros objetivos, y no dejarnos llevar por el «no es mi trabajo»,
+el «no me pagan por esto» o el «yo sólo hago lo que me dicen», es mucho más
+importante que cumplir la especificación diligentemente. Dicho de otra manera,
+nuestro trabajo no es escribir software que cumple a rajatabla una descripción
+textual de un problema. Es hacer software útil y resolver problemas.</p>
+      </div>
+      <div class="section" title="6. Ejemplo 4: diseño simple">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_ejemplo_4_diseño_simple"></a>6. Ejemplo 4: diseño simple</h2>
+            </div>
+          </div>
+        </div>
+        <p>Una parte importante de la calidad es, por supuesto, tener código mantenible.
+El código mantenible normalmente se consigue con código legible y un diseño
+simple. Sin embargo, y como muchas otras cosas, estos dos aspectos son sólo una
+herramienta para conseguir calidad: un código legible y un diseño simple hacen
+que el código contenga, de media, menos errores, y éstos serán más fáciles de
+detectar y corregir.</p>
+        <p>Ahora, ¿qué pasa si en algún momento las necesidades del proyecto chocan con
+nuestro (por ahora) diseño simple?  La respuesta es obvia: las necesidades del
+cliente son el objetivo número uno, y lo demás se tiene que adaptar a éstas.
+Intentar adaptar las necesidades del cliente al diseño de la aplicación es, en
+la mayoría de los casos, un error. Si para resolver el nuevo problema hacemos
+el diseño menos lineal o más complejo, no estamos «haciendo una chapuza porque
+el cliente no tiene las ideas claras» o porque «no sabe cómo funciona la
+aplicación»: estamos ayudando a resolver un problema real. Si eso implica hacer
+una «chapuza» en el código, eso probablemente significa que tenemos que revisar
+el diseño de nuestra aplicación. No porque lo hayamos hecho mal desde el
+principio, sino porque hemos descubierto nuevos requisitos, o refinado los que
+teníamos.</p>
+      </div>
+      <div class="section" title="7. Conclusiones">
+        <div class="titlepage">
+          <div>
+            <div>
+              <h2 class="title" style="clear: both"><a id="_conclusiones"></a>7. Conclusiones</h2>
+            </div>
+          </div>
+        </div>
+        <p>Una conclusión a la que podemos llegar es que la calidad es difícil de
+conseguir y de medir, y se necesita experiencia y mucho trabajo para obtenerla.
+Pero la conclusión más importante es que <span class="emphasis"><em>es imposible mejorar la calidad de un
+proyecto informático aplicando reglas o metodologías</em></span>.  Da igual cuánta
+experiencia o cuánto conocimiento tenga la persona que las haya formulado,
+ningún conjunto de reglas o metodologías puede resolver nuestros problemas si
+las aplicamos sin entender lo que hacemos y en qué contexto son útiles.</p>
+      </div>
+      <div class="footnotes">
+        <br />
+        <hr width="100" align="left" />
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3699504" href="#idp3699504" class="simpara">2</a>] </sup>Hacer las cosas de cierta manera simplemente porque lo
+hemos hecho o visto antes, sin entender por qué son así o qué utilidad tienen.
+Ver <a class="ulink" href="http://en.wikipedia.org/wiki/Cargo_cult_programming" target="_top">Cargo Cult Programming</a>
+en Wikipedia.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3700680" href="#idp3700680" class="simpara">3</a>] </sup>Los buenos profesionales hacen las dos cosas,
+pero es más profesional tener más de lo segundo que más de lo primero.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3704448" href="#idp3704448" class="simpara">4</a>] </sup>Si siempre hacemos ciertas cosas
+de la misma manera y ésta funciona razonablemente bien, no tenemos que gastar
+tiempo ni energía decidiendo cómo hacerlas.</p>
+        </div>
+        <div class="footnote">
+          <p><sup>[<a id="ftn.idp3710760" href="#idp3710760" class="simpara">5</a>] </sup>Aunque uno podría decir que «no hay ninguna regla exenta de
+excepciones» también tiene excepciones…</p>
+        </div>
+      </div>
+    </div>
+    <div class="navfooter">
+      <hr />
+      <table width="100%" summary="Navigation footer">
+        <tr>
+          <td width="40%" align="left"><a accesskey="p" href="ch06.html">Prev</a> </td>
+          <td width="20%" align="center"> </td>
+          <td width="40%" align="right"> <a accesskey="n" href="ch08.html">Next</a></td>
+        </tr>
+        <tr>
+          <td width="40%" align="left" valign="top"> </td>
+          <td width="20%" align="center">
+            <a accesskey="h" href="index.html">Home</a>
+          </td>
+          <td width="40%" align="right" valign="top"> </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
