@@ -18,7 +18,7 @@ Formatos
 El libro se escribió en
 [AsciiDoc](http://www.methods.co.nz/asciidoc/), y está disponible para
 descarga en PDF, ePub, HTML (en una sola página). Además, se puede
-[leer en HTML](/html/) (en varias páginas).
+[leer en HTML](html/) (en varias páginas).
 
 Puedes visitar el [proyecto en
 GitHub](https://github.com/emanchado/camino-mejor-programador) para
