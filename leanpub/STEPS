@@ -1,0 +1,12 @@
+Steps to convert the Leanpub Markdown source files (created by the
+HTML importer, feeding it the chunked HTML version produced by a2x,
+and sitting under manuscript-auto-converted/) into a final, refined
+version that can be used as Leanpub sources to get a final book:
+
+* Fix Book.txt (order and which files, and remove index.txt)
+* Make sure all source code blocks begin with " __" (first two in
+  ch04.txt need fixing)
+* Remove the emphasis in titles ("^__Mal_" in ch04.txt and ch06.txt)
+* Run "./convert.pl manuscript-auto-converted manuscript convert_done"
+
+Now the sources under manuscript/ are ready to compile.
